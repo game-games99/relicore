@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RELICORE - v1.9</title>
+<title>RELICORE - v1.10</title>
 <style>
 :root { --bg: #ffffff; --panel: #f8f9fa; --border: #dee2e6; --primary: #007bff; --text: #212529; --hp: #dc3545; --dark: #1a1a1a; --gold: #d4af37; --growth: #ff69b4; --relic-purple: #6610f2; --relic-bg: #fcfaff; --relic-rainbow: linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); --cosmic-blue: #00d4ff; --cosmic-white: #ffffff; }
 * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; box-sizing: border-box; }
@@ -184,7 +184,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Robot
 <div class="privacy-link" onclick="openPolicy()">プライバシーポリシー</div>
 </div>
 </div>
-<div class="ver-footer">RELICORE v1.9</div>
+<div class="ver-footer">RELICORE v1.10</div>
 <script>
 const SAVE_KEY = "relicore_player_data";
 const BOSS_MAX_HP_BASE = 100000000000000000000n;
@@ -449,21 +449,31 @@ const skillLv = Math.min(10, player.totalLevel);
 const bushinCount = Math.min(50000, player.inventory[401] || 0); const gouyokuCount = Math.min(50000, player.inventory[502] || 0);
 let logHtml = `<div>${specialTags}<span style="color:#007bff; font-weight:bold;">攻撃！${formatV(finalDmg)} ダメージ！</span></div>` + getDropLog(skillLv + bushinCount + (gouyokuCount * 5));
 
+// 【修正2】回復ギミックの厳格化
 if(finalDmg >= currentBossHP) {
-if((player.inventory[701] || 0) > 0) {
-    currentBossHP = 0n;
-    player.killCount++;
-    if(!player.isCleared) {
-        stopAttack();
-        isModalOpen = true;
-        document.getElementById("clear-modal").style.display = "flex";
-    } else {
+    if(!player.isCleared) { // 相手が神（終末神アポカリス＝ティア）の場合
+        if((player.inventory[701] || 0) > 0) { // パンドラの箱を所持しているか
+            currentBossHP = 0n;
+            player.killCount++;
+            stopAttack();
+            isModalOpen = true;
+            document.getElementById("clear-modal").style.display = "flex";
+        } else { 
+            currentBossHP = BigInt(player.bossMaxHP); 
+            logHtml += `<div><span style="color:#ff0000; font-weight:bold;">終焉の回帰……！ (HP全回復)</span></div>`; 
+        }
+    } else { // 相手が災厄（エンドレスモード）の場合
+        currentBossHP = 0n;
+        player.killCount++;
         handleBossDefeat();
     }
-} else { currentBossHP = BigInt(player.bossMaxHP); logHtml += `<div><span style="color:#ff0000; font-weight:bold;">終焉の回帰……！ (HP全回復)</span></div>`; }
 } else {
-currentBossHP -= finalDmg;
-if(currentBossHP < 1n) { currentBossHP = BigInt(player.bossMaxHP); logHtml += `<div><span style="color:#ff0000; font-weight:bold;">終焉の回帰……！ (HP全回復)</span></div>`; }
+    currentBossHP -= finalDmg;
+    // HPが1になった瞬間に全て回復するギミック（神かつパンドラ未所持時）
+    if(currentBossHP < 1n && !player.isCleared && !(player.inventory[701] || 0) > 0) { 
+        currentBossHP = BigInt(player.bossMaxHP); 
+        logHtml += `<div><span style="color:#ff0000; font-weight:bold;">終焉の回帰……！ (HP全回復)</span></div>`; 
+    }
 }
 
 if(currentBossHP > 0n) {
@@ -545,9 +555,18 @@ function refreshUI() {
 const b = getRelicBonus(); const skillMult = calcFinalDmgMult(); const lv = player.totalLevel;
 document.getElementById("p-atk").textContent = formatV(BigInt(Math.floor(Number(player.baseAtk + b.atk) * b.mult * skillMult)));
 document.getElementById("p-hp").textContent = formatV(BigInt(Math.floor(Number(player.baseHP + b.hp) * b.mult)));
-document.getElementById("bosshp-cur").textContent = formatV(currentBossHP);
+
+// 【修正1】HP表示の分離
+const hpDisp = document.getElementById("bosshp-cur");
+if (!player.isCleared) {
+    hpDisp.textContent = currentBossHP.toLocaleString();
+    document.getElementById("boss-display-name").textContent = "終末神アポカリス＝ティア";
+} else {
+    hpDisp.textContent = formatV(currentBossHP);
+    document.getElementById("boss-display-name").textContent = "溢れし災厄";
+}
+
 document.getElementById("hp-bar-fill").style.width = `${Number(currentBossHP * 100n / BigInt(player.bossMaxHP))}%`;
-document.getElementById("boss-display-name").textContent = player.isCleared ? "溢れし災厄" : "終末神アポカリス＝ティア";
 const area = document.getElementById("st-rank-area"); const title = document.getElementById("st-rank-title");
 const rankIdx = getCurrentRankIndex();
 document.getElementById("st-rank-lv").textContent = `${RANK_NAMES[rankIdx]} Lv.${lv}`;
@@ -582,7 +601,7 @@ const rawLv = player.totalLevel;
 const lv = Math.min(10, rawLv);
 const bushinCount = Math.min(50000, player.inventory[401] || 0);
 const gouyokuCount = Math.min(50000, player.inventory[502] || 0);
-const skills = [{ id: "futaiten", nameJp: "不退転の力", desc: "戦闘を経験するたびにランダムな遺物を (1+所持数) つ獲得する。攻撃するたびに深淵に漂う遺物を魂に刻む。" },{ id: "setsuna", nameJp: "刹那の堆積", desc: "HP 1 ～ (戦闘経験値) の間でランダムに上昇。戦闘経験を積むたびにHP増加幅+1。確かな意思が核に宿る。" },{ id: "inga", nameJp: "因果の拒絶", desc: "稀に攻撃を無効化する。経験値が深まるごとに下限が向上。" },{ id: "hangeki", nameJp: "反撃の狼煙", desc: "生存時★3以上の遺物を確定で入手する。不屈の闘志を燃やし、新たな力を手に入れる。" },{ id: "konken", nameJp: "魂の研磨", desc: "遺物獲得数/経験値ボーナスが向上。蓄積した戦闘経験に応じて機能強化。" },{ id: "shikoku", nameJp: "死を刻む", desc: "経験を積むたびに最終ダメージを増加させる。" }];
+const skills = [{ id: "futaiten", nameJp: "不退転の力", desc: "戦闘を経験するたびにランダムな遺物を (1+所持数) つ獲得する。攻撃するたびに深淵に漂う遺物を魂に刻む。" },{ id: "setsuna", nameJp: "刹那の堆積", desc: "再起するたびにHP増加幅+1。勝利への渇望が核に宿る。" },{ id: "inga", nameJp: "因果の拒絶", desc: "稀に攻撃を無効化する。経験値が深まるごとに下限が向上。" },{ id: "hangeki", nameJp: "反撃の狼煙", desc: "生存時★3以上の遺物を確定で入手する。不屈の闘志を燃やし、新たな力を手に入れる。" },{ id: "konken", nameJp: "魂の研磨", desc: "遺物獲得数/経験値ボーナスが向上。蓄積した戦闘経験に応じて機能強化。" },{ id: "shikoku", nameJp: "死を刻む", desc: "経験を積むたびに最終ダメージを増加させる。" }];
 let html = "";
 skills.forEach(s => {
 let hlContent = "";
