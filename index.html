@@ -238,7 +238,7 @@ const RELIC_MASTER = [
 {id:601, star:6, name:"絶対統率レリック・オーバーロード", atk:1500000, hp:4500000, desc:"敵HPが自身のATKの100倍以上の時、与ダメージ+8%。"}, {id:602, star:6, name:"魂律解放レリ・クシア", atk:2500000, hp:3500000, desc:"100回攻撃ごとに次の一撃の最終ダメージ+200%。"}, {id:603, star:6, name:"原初核冠レリコア・レガリア", atk:2000000, hp:4000000, desc:"★1〜3遺物のステータス上昇効果を20%増加させる。"}, {id:604, star:6, name:"虚無終焉レリ・ノヴァ", atk:5555555, hp:0, desc:"攻撃時0.1%の確率で与ダメージ+500%。"},
 {id:605, star:6, name:"戦碑累功レリ・エンス", atk:3000000, hp:3000000, desc:"1つにつき獲得経験値+5。"},
 {id:701, star:7, name:"パンドラの箱", atk:155528931, hp:355528931, desc:"神を屠る唯一の条件。災厄の底に希望を宿す。"}, {id:702, star:7, name:"終焉の福音", atk:200000000, hp:450000000, desc:"敵HPが50%以下のとき、与ダメージ+30%。(重複不可)"}, {id:703, star:7, name:"神滅のアカシックレコード", atk:100000000, hp:550000000, desc:"与ダメージの最終倍率にさらに+20%。(重複不可)"},
-{id:704, star:7, name:"災厄の残滓", atk:500000000, hp:500000000, desc:"すべての遺物のステータス上昇値を10倍にする。(所持制限1)"},
+{id:704, star:7, name:"災厄の残滓", atk:500000000, hp:500000000, desc:"すべての遺物のステータス上昇値を10倍にする。(効果は重複なし)"},
 {id:801, star:999, name:"秩序のリバランス", atk:0, hp:0, desc:"【超越】低ダメージを敵最大HP割合の絶対ダメージに変換。討伐数に応じて威力が上昇。"}
 ];
 
@@ -383,11 +383,9 @@ let specialTags = "";
 
 const bossMaxHP = BigInt(player.bossMaxHP);
 
-// 秩序のリバランス ロジック
 if ((player.inventory[801] || 0) > 0) {
-    const threshold = bossMaxHP / 10000n; // 0.01%
+    const threshold = bossMaxHP / 10000n; 
     if (finalDmg < threshold) {
-        // 最低保証: 0.02% × 討伐スケーリング (log10(kills+1))
         const scalingMult = Math.log10(player.killCount + 1) + 1.0;
         finalDmg = BigInt(Math.floor(Number(bossMaxHP) * 0.0002 * scalingMult));
         specialTags += `<span class="c8">【均衡】</span>`;
@@ -444,7 +442,11 @@ if(finalDmg >= currentBossHP) {
 
 if(currentBossHP > 0n) {
   const currentTotalHP = BigInt(Math.floor(Number(player.baseHP + bonus.hp) * bonus.mult));
-  let minCut = (Math.floor(lv/5) * 2) + Math.min(20, player.inventory[403] || 0);
+  // 因果の拒絶: レベルによる下限上昇を最大20%に制限
+  let baseCut = Math.min(20, Math.floor(lv/5) * 2);
+  let ingaVal = Math.min(10, player.inventory[403] || 0);
+  let minCut = baseCut + ingaVal;
+  
   let rawEnemyAtk = currentTotalHP * 3n;
   let finalMitigated = BigInt(Math.floor(Number(rawEnemyAtk) * (1 - (Math.floor(Math.random() * (101 - Math.min(95, minCut))) + Math.min(95, minCut)) / 100))) - BigInt((player.inventory[501] || 0) * 500000);
   if(finalMitigated < 0n) finalMitigated = 0n;
@@ -504,7 +506,7 @@ function getDropLog(count) {
  for (let s = 1; s <= 7; s++) {
      if (starCounts[s] === 0) continue;
      if (starCounts[s] > 30) { finalEntries.push(`<span class="c${s}">★${s}遺物 合計${starCounts[s]}個</span>`); }
-     else { Object.entries(starGroups[s]).forEach(([id, c]) => { const m = RELIC_MASTER.find(x => x.id == id); finalEntries.push(`<span class="c${s}">★${s} ${m.name}${c > 1 ? '×' + c : ''}</span>`); }); }
+     else { Object.entries(starGroups[s]).forEach(([id, c]) => { const m = RELIC_MASTER.find(x => x.id == id); finalEntries.push(`<span class="c${s}">★${s} ${m.name}${c > 1 ? '×' + count : ''}</span>`); }); }
  }
  return finalEntries.length > 0 ? `<div style="font-size:0.82em;">獲得：${finalEntries.join("、 ")}</div>` : "";
 }
@@ -531,7 +533,7 @@ else if (rankIdx >= 9) { area.classList.add("rank-glow-max"); title.style.color 
 let hadoText = "";
 if(player.hasMeta) hadoText = "宇宙的覚醒：全理の超克";
 else if(player.hasCrown) hadoText = "宇宙的覚醒：絶対的権威";
-else if(player.hasWorldOrder) hadoText = "宇宙的覚醒：秩序の法";
+else if(player.hasWorldOrder) hadoText = "宇宙적覚醒：秩序の法";
 else if(player.hasDivineGuide) hadoText = "隠しスキル：天帝の導き";
 else if(player.hasGreatHado) hadoText = "隠しスキル：破軍の大号令";
 else if(player.hasHado) hadoText = "隠しスキル：破軍の号令";
@@ -556,7 +558,11 @@ skills.forEach(s => {
 let highlight = "";
 if(s.id === "futaiten") { highlight = `獲得ボーナス：+${Math.floor(lv/10) + bushinCount + (gouyokuCount * 5)}`; }
 else if(s.id === "setsuna") { const setsunaVal = Math.min(50000, player.inventory[402] || 0) * 5; highlight = `HP増加幅: +${lv + setsunaVal} / 上限: ${formatV(lv * 100)}`; }
-else if(s.id === "inga") { let baseCut = Math.floor(lv/5) * 2; let ingaVal = Math.min(10, player.inventory[403] || 0); highlight = `無効化：${Math.min(95, baseCut + ingaVal)}% ～ 100% / 固定軽減: ${formatV((player.inventory[501] || 0) * 500000)}`; }
+else if(s.id === "inga") { 
+    let baseCut = Math.min(20, Math.floor(lv/5) * 2); 
+    let ingaVal = Math.min(10, player.inventory[403] || 0); 
+    highlight = `無効化：${Math.min(95, baseCut + ingaVal)}% ～ 100% / 固定軽減: ${formatV((player.inventory[501] || 0) * 500000)}`; 
+}
 else if(s.id === "hangeki") { const zanko = (player.inventory[404] || 0) > 0; highlight = `確定：${Math.floor(lv/20) + 1}個 (★2${zanko ? '/★3' : ''})`; }
 else if(s.id === "konken") { const ensCount = (player.inventory[605] || 0) * 5; highlight = `経験値：+${Math.floor(lv/2) + 1 + (player.inventory[405] || 0) + ensCount}`; }
 else if(s.id === "shikoku") { const fixedBonus = (lv * 0.00004) + ((player.inventory[406] || 0) * 0.00004); highlight = `最終ダメージ：+${(fixedBonus * 100).toFixed(4)}%`; }
