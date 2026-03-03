@@ -87,14 +87,22 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Robot
 .btn-attack { width: 100%; padding: 16px; background: var(--primary); color: #fff; font-size: 1.3em; font-weight: bold; border: none; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 0 #0056b3; flex-shrink: 0; touch-action: none; }
 #log { height: 400px; font-size: 0.82em; background: #fafafa; border: 1px solid var(--border); padding: 10px; overflow-y: auto; border-radius: 8px; line-height: 1.4; }
 .log-set { border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px; }
-.vow-item { position: relative; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px 8px 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+.vow-list-container { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media(min-width: 600px) { .vow-list-container { grid-template-columns: 1fr 1fr; } }
+
+.vow-item { position: relative; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px 10px 10px 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; min-height: 100px; }
 .vow-item::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: gold; border-radius: 8px 0 0 8px; }
-.vow-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; padding-bottom: 2px; }
+.vow-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #f0f0f0; margin-bottom: 6px; padding-bottom: 4px; }
 .vow-name { font-weight: bold; font-size: 0.9em; color: #333; }
 .vow-lv { font-size: 0.75em; font-weight: bold; color: #888; }
 .vow-lv.max { color: var(--gold); text-shadow: 0 0 2px rgba(212,175,55,0.5); }
-.vow-highlight { font-weight: bold; font-size: 0.82em; display: block; line-height: 1.4; color: var(--primary); }
-.vow-sub { font-size: 0.72em; color: #888; display: block; margin-top: 2px; line-height: 1.3; }
+
+/* 再起スキルのハイライト表示調整 */
+.vow-highlight { font-weight: bold; font-size: 0.82em; display: block; line-height: 1.5; color: var(--primary); background: #f0f7ff; padding: 6px; border-radius: 4px; margin-bottom: 6px; word-break: normal; }
+.vow-tag { display: inline-block; white-space: nowrap; margin-right: 4px; } /* 各項目をひとかたまりで保持 */
+
+.vow-sub { font-size: 0.72em; color: #666; display: block; line-height: 1.4; }
 
 #clear-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; justify-content: center; align-items: center; padding: 20px; }
 .modal-content { background: #000; border: 2px solid var(--gold); border-radius: 20px; padding: 35px 25px; text-align: center; color: #fff; max-width: 450px; width: 95%; box-shadow: 0 0 30px rgba(212,175,55,0.4); }
@@ -134,7 +142,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Robot
 <div id="rare-drop-modal" onclick="closeRareModal()"><div id="rare-card-content" class="rare-card"><span id="rare-star-label" class="rare-star"></span><span id="rare-name-label" class="rare-name"></span><div id="rare-desc-label" class="rare-desc"></div><div style="margin-top:20px; font-size:0.7em; color:#888;">画面タップで閉じる</div></div></div>
 <div id="hado-awaken-modal"><div class="hado-content"><div class="hado-title" id="hado-modal-title">隠しスキル覚醒</div><div class="hado-msg" id="hado-modal-msg"></div><button class="story-btn" onclick="closeHadoModal()">その力を受け入れる</button></div></div>
 
-<div id="cosmic-awaken-modal"><div class="cosmic-content"><div class="cosmic-title" id="cosmic-modal-title">宇宙的覚醒</div><div class="cosmic-msg" id="cosmic-modal-msg"></div><button class="cosmic-btn" onclick="closeCosmicModal()">宇宙の理を識る</button></div></div>
+<div id="cosmic-awaken-modal"><div class="cosmic-content"><div class="cosmic-title" id="cosmic-modal-title">覚醒</div><div class="cosmic-msg" id="cosmic-modal-msg"></div><button class="cosmic-btn" onclick="closeCosmicModal()">宇宙の理を識る</button></div></div>
 
 <div id="story-modal"><div class="story-content"><div class="story-text"><span class="story-line" style="color:#888;">わたしはすべてをうばわれた</span><span class="story-line" style="color:#4b0082;">奴によって世界は終わりを告げ、すべては虚無に飲まれたはずだった</span><span class="story-line" style="color:#fff;">しかし、それでもまだ諦めることを知らない光がある</span><span class="story-line"><span class="story-vow">『再起の誓い』</span><span style="color:#d4af37;">が魂を激しく鼓動させる</span></span><span class="story-line" style="color:#ff0000; font-weight:bold;">奴を一撃で葬るその日まで、わたしは止まらない</span></div><button class="story-btn" onclick="closeStory()">魂に刻印する</button></div></div>
 
@@ -155,7 +163,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Robot
 <div class="nav"><button onclick="showTab('battle')" id="nav-battle" class="active">討伐</button><button onclick="showTab('vow')" id="nav-vow">再起</button><button onclick="showTab('relic')" id="nav-relic">遺物</button><button onclick="showTab('status')" id="nav-status">詳細</button></div>
 <div id="content-area">
 <div id="battle" class="tab active"><button class="btn-attack" id="attackBtn">こうげき</button><div id="log"></div></div>
-<div id="vow" class="tab"><div id="vow-list"></div></div>
+<div id="vow" class="tab"><div id="vow-list" class="vow-list-container"></div></div>
 <div id="relic" class="tab"><div class="relic-list-container" id="relic-list"></div></div>
 <div id="status" class="tab">
 <div class="rank-display" id="st-rank-area">
@@ -237,7 +245,7 @@ const RELIC_MASTER = [
 {id:601, star:6, name:"絶対統率レリック・オーバーロード", atk:1500000, hp:4500000, desc:"敵HPが自身のATKの100倍以上の時、与ダメージ+8%。"}, {id:602, star:6, name:"魂律解放レリ・クシア", atk:2500000, hp:3500000, desc:"100回攻撃ごとに次の一撃の最終ダメージ+200%。"}, {id:603, star:6, name:"原初核冠レリコア・レガリア", atk:2000000, hp:4000000, desc:"★1〜3遺物のステータス上昇効果を20%増加させる。"}, {id:604, star:6, name:"虚無終焉レリ・ノヴァ", atk:5555555, hp:0, desc:"攻撃時0.1%の確率で与ダメージ+500%。"},
 {id:605, star:6, name:"戦碑累功レリ・エンス", atk:3000000, hp:3000000, desc:"1つにつき獲得経験値+5。"},
 {id:701, star:7, name:"パンドラの箱", atk:155528931, hp:355528931, desc:"神を屠る唯一の条件。災厄の底に希望を宿す。"}, {id:702, star:7, name:"終焉の福音", atk:200000000, hp:450000000, desc:"敵HPが50%以下のとき、与ダメージ+30%。(重複不可)"}, {id:703, star:7, name:"神滅のアカシックレコード", atk:100000000, hp:550000000, desc:"与ダメージの最終倍率にさらに+20%。(重複不可)"},
-{id:704, star:7, name:"災厄の残滓", atk:500000000, hp:500000000, desc:"すべての遺物のステータス上昇値を10倍にする。(所持制限1)"},
+{id:704, star:7, name:"災厄の残滓", atk:500000000, hp:500000000, desc:"すべての遺物のステータス上昇値を10倍にする。(効果は重複しない)"},
 {id:801, star:999, name:"秩序のリバランス", atk:0, hp:0, desc:"【超越】低ダメージを敵最大HP割合の絶対ダメージに変換。討伐数に応じて威力が上昇。"}
 ];
 
@@ -339,7 +347,7 @@ function openRareModal(relic) {
 function calcFinalDmgMult() {
  const lv = Math.min(10, player.totalLevel); 
  const kamaFixed = (player.inventory[406] || 0) * 0.00004;
- let mult = (1.0 + (lv * 0.00004)) + kamaFixed; // 基礎倍率
+ let mult = (1.0 + (lv * 0.00004)) + kamaFixed; 
  if ((player.inventory[703] || 0) > 0) mult += 0.2;
  return mult;
 }
@@ -441,7 +449,7 @@ if(finalDmg >= currentBossHP) {
 
 if(currentBossHP > 0n) {
   const currentTotalHP = BigInt(Math.floor(Number(player.baseHP + bonus.hp) * bonus.mult));
-  let baseCut = Math.min(20, Math.floor(skillLv/5) * 5); // 因果の下限
+  let baseCut = Math.min(20, Math.floor(skillLv/5) * 5); 
   let ingaVal = Math.min(10, player.inventory[403] || 0);
   let minCut = baseCut + (ingaVal * 2);
   
@@ -487,13 +495,15 @@ function getDropLog(count) {
      if (star === 2 && player.hasDivineGuide && Math.random() < 0.1) { sel = RELIC_MASTER.find(m => m.id === 117); }
      else {
          let cands = RELIC_MASTER.filter(m => m.star === star && m.id !== 0 && m.star < 8 && m.id !== 117);
-         if (star === 7) {
-             const isZansaiLottery = player.inventory[704] > 0 && Math.random() < 0.001;
-             if (isZansaiLottery) { sel = RELIC_MASTER.find(m => m.id === 704); }
-             else { let cands7 = cands.filter(m => m.id !== 704); sel = cands7[Math.floor(Math.random() * cands7.length)]; }
-         } else {
-             if(cands.length === 0) cands = RELIC_MASTER.filter(m => m.star === 1);
-             sel = cands[Math.floor(Math.random() * cands.length)];
+         if(cands.length === 0) cands = RELIC_MASTER.filter(m => m.star === 1);
+         sel = cands[Math.floor(Math.random() * cands.length)];
+         
+         if(sel.id === 704) {
+             if(!player.inventory[704] && player.isCleared) {
+                 if(Math.random() > 0.001) { sel = RELIC_MASTER.find(m => m.star === 1); star = 1; }
+             } else if(!player.isCleared) {
+                 sel = RELIC_MASTER.find(m => m.star === 1); star = 1;
+             }
          }
      }
      if (sel.star >= 4 && !player.inventory[sel.id]) { if (!showRare || sel.star > showRare.star) showRare = sel; }
@@ -529,9 +539,9 @@ else if (rankIdx >= 6 && rankIdx <= 8) { area.classList.add("rank-glow-high"); t
 else if (rankIdx >= 9) { area.classList.add("rank-glow-max"); title.style.color = "gold"; title.style.textShadow = "0 0 10px #fff, 0 0 20px gold"; }
 
 let hadoText = "";
-if(player.hasMeta) hadoText = "宇宙的覚醒：全理の超克";
-else if(player.hasCrown) hadoText = "宇宙的覚醒：絶対的権威";
-else if(player.hasWorldOrder) hadoText = "宇宙的覚醒：秩序の法";
+if(player.hasMeta) hadoText = "メタ・アクシオム：全理の定義者";
+else if(player.hasCrown) hadoText = "クラウンルール：絶対的権威";
+else if(player.hasWorldOrder) hadoText = "ワールドオーダー：秩序の法";
 else if(player.hasDivineGuide) hadoText = "隠しスキル：天帝の導き";
 else if(player.hasGreatHado) hadoText = "隠しスキル：破軍の大号令";
 else if(player.hasHado) hadoText = "隠しスキル：破軍の号令";
@@ -556,36 +566,36 @@ const gouyokuCount = Math.min(50000, player.inventory[502] || 0);
 const skills = [{ id: "futaiten", nameJp: "不退転の力", desc: "戦闘を経験するたびにランダムな遺物を (1+所持数) つ獲得する。攻撃するたびに深淵に漂う遺物を魂に刻む。" },{ id: "setsuna", nameJp: "刹那の堆積", desc: "HP 1 ～ (戦闘経験値) の間でランダムに上昇。戦闘経験を積むたびにHP増加幅+1。確かな意思が核に宿る。" },{ id: "inga", nameJp: "因果の拒絶", desc: "稀に攻撃を無効化する。経験値が深まるごとに下限が向上。" },{ id: "hangeki", nameJp: "反撃の狼煙", desc: "生存時★3以上の遺物を確定で入手する。不屈の闘志を燃やし、新たな力を手に入れる。" },{ id: "konken", nameJp: "魂の研磨", desc: "遺物獲得数/経験値ボーナスが向上。蓄積した戦闘経験に応じて機能強化。" },{ id: "shikoku", nameJp: "死を刻む", desc: "経験を積むたびに最終ダメージを増加させる。" }];
 let html = "";
 skills.forEach(s => {
-let highlight = "";
+let hlContent = "";
 if(s.id === "futaiten") { 
-    highlight = `獲得遺物ボーナス：+${lv + bushinCount + (gouyokuCount * 5)} 【不退転：+${bushinCount}】【強欲：+${gouyokuCount * 5}】`; 
+    hlContent = `<span class="vow-tag">ボーナス：+${lv + bushinCount + (gouyokuCount * 5)}</span><span class="vow-tag">【不退転：+${bushinCount}】</span><span class="vow-tag">【強欲：+${gouyokuCount * 5}】</span>`; 
 }
 else if(s.id === "setsuna") { 
     const setsunaVal = Math.min(50000, player.inventory[402] || 0) * 5; 
-    highlight = `HP増加幅: +${lv + setsunaVal} / 上限：${formatV(player.deathCount || 100)} 【刹那：+${setsunaVal}】`; 
+    hlContent = `<span class="vow-tag">HP増加：+${lv + setsunaVal}</span><span class="vow-tag">/ 上限：${formatV(player.deathCount || 100)}</span><span class="vow-tag">【刹那：+${setsunaVal}】</span>`; 
 }
 else if(s.id === "inga") { 
     let baseCut = Math.min(20, Math.floor(lv/5) * 5); 
     let ingaVal = Math.min(10, player.inventory[403] || 0); 
-    highlight = `無効化範囲：${Math.min(95, baseCut + (ingaVal * 2))}% ～ 100% 【因果：+${ingaVal * 2}%】`; 
+    hlContent = `<span class="vow-tag">無効化：${Math.min(95, baseCut + (ingaVal * 2))}% ～ 100%</span><span class="vow-tag">【因果：+${ingaVal * 2}%】</span>`; 
 }
 else if(s.id === "hangeki") { 
     const zanko = (player.inventory[404] || 0) > 0; 
-    highlight = `確定獲得：1 ～ ${lv}個 (★2${zanko ? '/★3' : ''}) 【勇者の残光】`; 
+    hlContent = `<span class="vow-tag">確定：1 ～ ${lv}個</span><span class="vow-tag">(★2${zanko ? '/★3' : ''})</span><span class="vow-tag">【勇者の残光】</span>`; 
 }
 else if(s.id === "konken") { 
     const ensCount = (player.inventory[605] || 0) * 5; 
-    highlight = `経験値：+${lv + (player.inventory[405] || 0) + ensCount} 【賢者：+${player.inventory[405] || 0}】【戦碑：+${ensCount}】`; 
+    hlContent = `<span class="vow-tag">経験値：+${lv + (player.inventory[405] || 0) + ensCount}</span><span class="vow-tag">【賢者：+${player.inventory[405] || 0}】</span><span class="vow-tag">【戦碑：+${ensCount}】</span>`; 
 }
 else if(s.id === "shikoku") { 
     const kamaFixed = (player.inventory[406] || 0) * 0.00004;
     const totalBonus = (lv * 0.00004) + kamaFixed;
-    highlight = `最終ダメージ：+${(totalBonus * 100).toFixed(4)}% 【死神：+${(kamaFixed * 100).toFixed(4)}%】`; 
+    hlContent = `<span class="vow-tag">最終ダメ：+${(totalBonus * 100).toFixed(4)}%</span><span class="vow-tag">【死神：+${(kamaFixed * 100).toFixed(4)}%】</span>`; 
 }
 
 let lvClass = lv >= 10 ? "max" : "";
 let lvText = lv >= 10 ? "Lv.10 (MAX)" : `Lv.${lv}`;
-html += `<div class="vow-item"><div class="vow-header"><span class="vow-name">${s.nameJp}</span><span class="vow-lv ${lvClass}">${lvText}</span></div><span class="vow-highlight">${highlight}</span><span class="vow-sub">${s.desc}</span></div>`;
+html += `<div class="vow-item"><div class="vow-header"><span class="vow-name">${s.nameJp}</span><span class="vow-lv ${lvClass}">${lvText}</span></div><div><div class="vow-highlight">${hlContent}</div><span class="vow-sub">${s.desc}</span></div></div>`;
 });
 document.getElementById('vow-list').innerHTML = html;
 }
@@ -641,13 +651,8 @@ function closeClearModal() {
    document.getElementById("clear-modal").style.display = "none";
    isModalOpen = false;
    player.rebalanceSeen = true;
-   if(!player.isCleared) {
-       player.inventory[704] = 1;
-       openRareModal(RELIC_MASTER.find(m => m.id === 704));
-       handleBossDefeat();
-   }
-   saveGame();
-   triggerUIUpdate();
+   if(!player.isCleared) { handleBossDefeat(); }
+   saveGame(); triggerUIUpdate();
 }
 
 function resetData() { if(confirm("全リセットしますか？")) { localStorage.clear(); location.reload(); } }
