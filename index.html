@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RELICORE - v1.13</title>
+<title>RELICORE - v1.14</title>
 <style>
 :root { --bg: #ffffff; --panel: #f8f9fa; --border: #dee2e6; --primary: #007bff; --text: #212529; --hp: #dc3545; --dark: #1a1a1a; --gold: #d4af37; --growth: #ff69b4; --relic-purple: #6610f2; --relic-bg: #fcfaff; --relic-rainbow: linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); --cosmic-blue: #00d4ff; --cosmic-white: #ffffff; }
 * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; box-sizing: border-box; }
@@ -186,7 +186,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Robot
 <div class="privacy-link" onclick="openPolicy()">プライバシーポリシー</div>
 </div>
 </div>
-<div class="ver-footer">RELICORE v1.13</div>
+<div class="ver-footer">RELICORE v1.14</div>
 <script>
 const SAVE_KEY = "relicore_player_data";
 const BOSS_MAX_HP_BASE = 100000000000000000000n;
@@ -272,9 +272,10 @@ if(saved) {
 if(player.isCleared) {
    if(!player.inventory[801]) {
        player.inventory[801] = 1;
-       player.rebalanceSeen = false; // メッセージ表示を促す
+       player.rebalanceSeen = false; 
+       saveGame(); // 即座に所持フラグを保存
    }
-   if(!player.rebalanceSeen) {
+   if(player.rebalanceSeen === false || player.rebalanceSeen === undefined) {
        showClearStartMsg();
    }
 }
@@ -648,8 +649,25 @@ document.getElementById('vow-list').innerHTML = html;
 }
 
 function renderRelics() {
-const container = document.getElementById("relic-list"); if (!container) return;
-const sortedInventory = Object.entries(player.inventory).filter(([id, c]) => c > 0).sort((a, b) => { if (a[0] == "0") return -1; if (b[0] == "0") return 1; const rA = RELIC_MASTER.find(x=>x.id==a[0]); const rB = RELIC_MASTER.find(x=>x.id==b[0]); if(rA.star === 999) return -1; if(rB.star === 999) return 1; return rA.star - rB.star; });
+const container = document.getElementById("relic-list"); 
+if (!container) return;
+
+const sortedInventory = Object.entries(player.inventory)
+    .filter(([id, c]) => c > 0)
+    .sort((a, b) => { 
+        const idA = Number(a[0]);
+        const idB = Number(b[0]);
+        const rA = RELIC_MASTER.find(x => x.id === idA);
+        const rB = RELIC_MASTER.find(x => x.id === idB);
+
+        if (!rA || !rB) return 0;
+        if (rA.star === 999 && rB.star !== 999) return -1;
+        if (rA.star !== 999 && rB.star === 999) return 1;
+        if (rA.star === 999 && rB.star === 999) return idA - idB;
+        if (rA.star !== rB.star) return rA.star - rB.star;
+        return idA - idB;
+    });
+
 const hasRegalia = (player.inventory[603] || 0) > 0;
 const hasZansai = (player.inventory[704] || 0) > 0;
 
