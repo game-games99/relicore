@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RELICORE - v1.14</title>
+<title>RELICORE - v1.15</title>
 <style>
 :root { --bg: #ffffff; --panel: #f8f9fa; --border: #dee2e6; --primary: #007bff; --text: #212529; --hp: #dc3545; --dark: #1a1a1a; --gold: #d4af37; --growth: #ff69b4; --relic-purple: #6610f2; --relic-bg: #fcfaff; --relic-rainbow: linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); --cosmic-blue: #00d4ff; --cosmic-white: #ffffff; }
 * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; box-sizing: border-box; }
@@ -126,6 +126,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Robot
 .clickable-stat:active { background: var(--primary); color: #fff; transform: scale(0.95); }
 .st-title-flex { display: flex; justify-content: space-between; align-items: baseline; font-weight: bold; }
 .btn-reset { width: 100%; padding: 12px; background: #dc3545; color: #fff; border: none; border-radius: 8px; font-weight: bold; margin-bottom: 10px; }
+.btn-serial { width: 100%; padding: 12px; background: #212529; color: var(--gold); border: 1px solid var(--gold); border-radius: 8px; font-weight: bold; margin-bottom: 10px; cursor: pointer; }
 .privacy-link { display: block; text-align: center; font-size: 0.75em; color: #888; text-decoration: underline; cursor: pointer; padding: 10px; }
 
 #policy-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 60000; justify-content: center; align-items: center; padding: 20px; }
@@ -135,6 +136,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Robot
 .policy-divider { border: 0; border-top: 1px solid #ddd; margin: 15px 0; }
 .policy-footer { font-size: 0.75em; color: #777; text-align: right; margin-top: 20px; line-height: 1.4; }
 .ver-footer { position: fixed; bottom: 4px; right: 4px; color: #bbb; font-size: 0.65em; pointer-events: none; z-index: 50; }
+
+/* Serial Modal Specific */
+#serial-input-box { background: #1a1a1a; border: 1px solid var(--gold); color: #fff; padding: 10px; width: 100%; text-align: center; font-size: 1.2em; letter-spacing: 2px; margin-bottom: 20px; border-radius: 5px; }
 </style>
 </head>
 <body>
@@ -157,8 +161,26 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Robot
    <hr style="border:0; border-top:1px solid #444; margin:15px 0;">
    <span style="color:var(--growth);">ここからはエンドレスモードです。<br>遊んでくれてありがとうございます！</span>
 </div>
-<button class="story-btn" onclick="closeClearModal()">災厄に立ち向かう</button>
+<button id="clear-modal-btn" class="story-btn" onclick="closeClearModal()">災厄に立ち向かう</button>
 </div></div>
+
+<div id="serial-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:70000; justify-content:center; align-items:center; padding:20px;">
+    <div class="modal-content" id="serial-modal-content">
+        <h3 style="color:var(--gold); letter-spacing:2px;">シリアルコード入力</h3>
+        <div id="serial-input-area">
+            <p style="font-size:0.85em; color:#aaa; margin-bottom:15px;">有効なコードを入力してください</p>
+            <input type="text" id="serial-input-box" placeholder="CODE HERE" ontouchstart="event.stopPropagation()">
+            <div style="display:flex; gap:10px;">
+                <button class="story-btn" style="flex:1;" onclick="applySerialCode()">適用</button>
+                <button class="story-btn" style="flex:1; border-color:#666; color:#666;" onclick="closeSerialModal()">戻る</button>
+            </div>
+        </div>
+        <div id="serial-result-area" style="display:none;">
+            <p id="serial-result-msg" class="clear-main-msg" style="text-align:center;"></p>
+            <button class="story-btn" onclick="closeSerialModal()">閉じる</button>
+        </div>
+    </div>
+</div>
 
 <div id="header"><div class="boss-area"><div class="boss-name" id="boss-display-name">終末神アポカリス＝ティア</div><div class="hp-bar-container"><div id="hp-bar-fill"></div></div><div class="hp-val-display" id="bosshp-cur">0</div></div><div class="status-box"><div class="stat-card"><span class="stat-label">ATK</span><div class="stat-val" id="p-atk">0</div></div><div class="stat-card hp-card"><span class="stat-label">HP</span><div class="stat-val" id="p-hp">0</div></div></div></div>
 <div class="nav"><button onclick="showTab('battle')" id="nav-battle" class="active">討伐</button><button onclick="showTab('vow')" id="nav-vow">再起</button><button onclick="showTab('relic')" id="nav-relic">遺物</button><button onclick="showTab('status')" id="nav-status">詳細</button></div>
@@ -182,11 +204,12 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Robot
 </div>
 <div id="hado-box" class="st-box" style="display:none; border:none; border-left: 4px solid gold;"><span id="hado-status-text" style="color:gold; font-weight:bold;"></span><br><span id="hado-status-desc"></span></div>
 <div class="st-box"><div class="st-title-flex"><span>遺物出現率</span><span id="st-collection" style="color:#666; font-size:0.9em;">0/60</span></div><table style="width:100%; font-size:0.9em; margin-top:5px;" id="prob-list"></table></div>
+<button class="btn-serial" onclick="openSerialModal()">シリアルコード入力</button>
 <button class="btn-reset" onclick="resetData()">全データリセット</button>
 <div class="privacy-link" onclick="openPolicy()">プライバシーポリシー</div>
 </div>
 </div>
-<div class="ver-footer">RELICORE v1.14</div>
+<div class="ver-footer">RELICORE v1.15</div>
 <script>
 const SAVE_KEY = "relicore_player_data";
 const BOSS_MAX_HP_BASE = 100000000000000000000n;
@@ -273,7 +296,7 @@ if(player.isCleared) {
    if(!player.inventory[801]) {
        player.inventory[801] = 1;
        player.rebalanceSeen = false; 
-       saveGame(); // 即座に所持フラグを保存
+       saveGame();
    }
    if(player.rebalanceSeen === false || player.rebalanceSeen === undefined) {
        showClearStartMsg();
@@ -353,6 +376,44 @@ document.getElementById("rare-name-label").innerText = relic.name;
 let detail = (relic.atk ? `ATK +${formatFix(relic.atk)} ` : "") + (relic.hp ? `HP +${formatFix(relic.hp)} ` : "") + (relic.mult ? `(x${relic.mult})` : "");
 document.getElementById("rare-desc-label").innerHTML = detail + (relic.desc ? `<br><br>${relic.desc}` : "");
 modal.style.display = "flex";
+}
+
+/* Serial Code Functions */
+function openSerialModal() { stopAttack(); isModalOpen = true; document.getElementById("serial-input-area").style.display = "block"; document.getElementById("serial-result-area").style.display = "none"; document.getElementById("serial-input-box").value = ""; document.getElementById("serial-modal").style.display = "flex"; }
+function closeSerialModal() { document.getElementById("serial-modal").style.display = "none"; isModalOpen = false; }
+
+function applySerialCode() {
+    const code = document.getElementById("serial-input-box").value.trim().toUpperCase();
+    const resultMsg = document.getElementById("serial-result-msg");
+    const inputArea = document.getElementById("serial-input-area");
+    const resultArea = document.getElementById("serial-result-area");
+
+    let success = false;
+    let message = "";
+
+    if (code === "REBALANCE2026") {
+        if (player.isCleared) {
+            if (!player.inventory[801]) {
+                player.inventory[801] = 1;
+                player.rebalanceSeen = true;
+                success = true;
+                message = `シリアルコード承認。<br><br><span style="color:var(--gold); font-weight:bold;">【特別遺物付与】</span><br><span class="unique-relic-text">秩序のリバランス</span> を獲得しました。<br>理の崩壊を止める力としてお使いください。`;
+            } else {
+                message = "このコードはすでに適用されています。";
+            }
+        } else {
+            message = `<span style="color:#ff4444;">「まだその時ではない……」</span><br><br>このコードは神（アポカリス＝ティア）を討ちし者のみが使用可能です。`;
+        }
+    } else if (code === "") {
+        return;
+    } else {
+        message = "無効なシリアルコードです。";
+    }
+
+    resultMsg.innerHTML = message;
+    inputArea.style.display = "none";
+    resultArea.style.display = "block";
+    if(success) { saveGame(); triggerUIUpdate(); }
 }
 
 function calcFinalDmgMult() {
@@ -465,6 +526,8 @@ if(finalDmg >= currentBossHP) {
            player.killCount++;
            stopAttack();
            isModalOpen = true;
+           document.getElementById("clear-modal-title").innerText = "神話の終焉";
+           document.getElementById("clear-modal-msg").innerHTML = `終末神アポカリス＝ティアは、あなたの放った一撃の前に霧散した。<br><br>しかし、その瞬間に所持していた<span style="color:var(--gold); font-weight:bold;">『パンドラの箱』</span>が激しく震え、蓋が跳ね上がる。<br><br>中から溢れ出したのは希望ではなく、底知れぬ混沌。<br><span style="color:#ff4444; font-weight:bold;">「溢れし災厄」</span>が今、世界を再び塗り潰そうとしている。<br><br><hr style="border:0; border-top:1px solid #444; margin:15px 0;"><span style="color:var(--growth);">ここからはエンドレスモードです。<br>遊んでくれてありがとうございます！</span>`;
            document.getElementById("clear-modal").style.display = "flex";
        } else {
            currentBossHP = BigInt(player.bossMaxHP);
@@ -735,7 +798,7 @@ currentBossHP = BigInt(player.bossMaxHP);
 function closeClearModal() {
 document.getElementById("clear-modal").style.display = "none";
 isModalOpen = false;
-player.rebalanceSeen = true; // メッセージ表示済みフラグ
+player.rebalanceSeen = true;
 if(!player.isCleared) { handleBossDefeat(); }
 saveGame(); triggerUIUpdate();
 }
