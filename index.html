@@ -447,12 +447,12 @@ Object.entries(player.inventory).forEach(([id, count]) => {
     if(r.star === 999) return;
     let bA = (r.atk || 0) * count, bH = (r.hp || 0) * count;
 
-    if(r.star === 1 && player.hasHado) { bA *= 10; bH *= 10; }
-    else if(r.star === 2 && player.hasGreatHado) { bA *= 10; bH *= 10; }
-    else if(r.star === 3 && player.hasDivineGuide) { bA *= 10; bH *= 10; }
-    if(r.star === 4 && player.hasWorldOrder) { bA *= 10; bH *= 10; }
-    if(r.star === 5 && player.hasCrown) { bA *= 10; bH *= 10; }
-    if(r.star === 6 && player.hasMeta) { bA *= 10; bH *= 10; }
+    if(r.star === 1 && player.hasHado) { bA *= 100; bH *= 100; }
+    else if(r.star === 2 && player.hasGreatHado) { bA *= 100; bH *= 100; }
+    else if(r.star === 3 && player.hasDivineGuide) { bA *= 100; bH *= 100; }
+    if(r.star === 4 && player.hasWorldOrder) { bA *= 100; bH *= 100; }
+    if(r.star === 5 && player.hasCrown) { bA *= 100; bH *= 100; }
+    if(r.star === 6 && player.hasMeta) { bA *= 100; bH *= 100; }
 
     if(hasRegalia && r.star <= 3) { bA *= 1.2; bH *= 1.2; }
     if(hasZansai) { bA *= 10; bH *= 10; }
