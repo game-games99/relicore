@@ -274,11 +274,13 @@ return base.toString() + "." + remainder + units[unitIdx];
 function getExpThreshold(lv) { return Math.floor(500 * (Math.pow(1.1, lv))); }
 function checkLevelUp() {
 let leveled = false;
+let oldLv = player.totalLevel;
 while (player.deathCount >= getExpThreshold(player.totalLevel)) {
 player.deathCount -= getExpThreshold(player.totalLevel);
 player.totalLevel++;
 leveled = true;
 }
+if (leveled && player.totalLevel % 10 === 0) openRankUpModal(player.totalLevel);
 return leveled;
 }
 function getCurrentRankIndex() { return Math.min(RANK_NAMES.length - 1, Math.floor((player.totalLevel - 1) / 99)); }
@@ -659,7 +661,7 @@ totalUpHP += up;
 player.baseHP += totalUpHP; player.deathCount += gainedExp;
 logHtml += `<div><span style="color:#dc3545;">敵の攻撃！${formatV(finalMitigated)} ダメージ。</span><span style="color:#007bff; font-weight:bold;">再起の誓いによって新たなる力を得た </span>${repeatCount > 1 ? '<span style="color:gold; font-weight:bold;">【双重再起】</span>' : ''}<span style="color:var(--growth); font-weight:bold;">(基礎HP+${formatV(totalUpHP)})</span></div>`;
 }
-if(checkLevelUp()) openRankUpModal(player.totalLevel);
+if(checkLevelUp()) {}
 }
 addLog(logHtml); saveGame(); triggerUIUpdate();
 }
