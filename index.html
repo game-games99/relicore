@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RELICORE - v1.21</title>
+<title>RELICORE - v1.22</title>
 <style>
 :root { --bg: #ffffff; --panel: #f8f9fa; --border: #dee2e6; --primary: #007bff; --text: #212529; --hp: #dc3545; --dark: #1a1a1a; --gold: #d4af37; --growth: #ff69b4; --relic-purple: #6610f2; --relic-bg: #fcfaff; --relic-deep-dark: linear-gradient(135deg, #1a1a1a 0%, #000000 100%); --cosmic-blue: #00d4ff; --cosmic-white: #ffffff; --gemini: #4b0082; }
 * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; box-sizing: border-box; }
@@ -230,7 +230,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Robot
 <div class="privacy-link" onclick="openPolicy()">プライバシーポリシー</div>
 </div>
 </div>
-<div class="ver-footer">RELICORE v1.21</div>
+<div class="ver-footer">RELICORE v1.22</div>
 <script>
 const SAVE_KEY = "relicore_player_data";
 const BOSS_MAX_HP_BASE = 100000000000000000000n;
@@ -253,18 +253,12 @@ let kushiaCounter = 0;
 
 const attackBtn = document.getElementById("attackBtn");
 
-// 長押し中の攻撃ロジック改善
 function startAttackLoop(e) {
     if (activePointerId !== null) return;
     activePointerId = e.pointerId;
-    
-    // 直前のインターバルをクリア（二重起動防止）
     if (attackInterval) clearInterval(attackInterval);
-    
-    attack(); // 初撃
+    attack();
     attackInterval = setInterval(attack, 100);
-    
-    // コンテキストメニューを抑止
     e.preventDefault();
 }
 
@@ -278,14 +272,11 @@ function stopAttackLoop(e) {
     }
 }
 
-// ボタン自体のブラウザデフォルト挙動を抑制
 attackBtn.addEventListener("contextmenu", (e) => e.preventDefault());
-
 attackBtn.addEventListener("pointerdown", startAttackLoop);
 attackBtn.addEventListener("pointerup", stopAttackLoop);
 attackBtn.addEventListener("pointerleave", stopAttackLoop);
 attackBtn.addEventListener("pointercancel", stopAttackLoop);
-// 画面外に指が出た場合の保険
 window.addEventListener("pointerup", stopAttackLoop);
 
 function formatV(val) {
@@ -639,13 +630,15 @@ if(isModalOpen) return;
 player.totalClicks++;
 comboHit++;
 
+const bonus = getRelicBonus();
+const totalBase = applyOmegaCore(player.baseAtk + bonus.atk, player.baseHP + bonus.hp);
+
 if(isGeminiBattle) {
 player.baseAtk = BigInt(Math.floor(Number(player.baseAtk) * 1.005));
 player.baseHP = BigInt(Math.floor(Number(player.baseHP) * 1.005));
 addLog(`<div><span class="c-gemini">ERROR: 構文破壊機工がコードを書き換えています... ステータス増幅！ (ATK/HP x1.002)</span></div>`);
 }
 
-const bonus = getRelicBonus();
 const skillMult = calcFinalDmgMult();
 
 if (!enemyDisasterStarUsed && (player.inventory[803] || 0) > 0 && (player.inventory[311] || 0) >= 100 && currentBossHP > (player.baseAtk + bonus.atk) && Math.random() < 0.0001) {
@@ -660,7 +653,6 @@ if (!player.hasWorldOrder && (player.inventory[117] || 0) >= 100000 && player.ha
 if (!player.hasCrown && player.hasWorldOrder && (player.inventory[117] || 0) >= 200000 && player.hadoExpAccum >= 20000000) openCosmicModal('crown');
 if (!player.hasMeta && player.hasCrown && (player.inventory[117] || 0) >= 300000 && player.hadoExpAccum >= 30000000) openCosmicModal('meta');
 
-const totalBase = applyOmegaCore(player.baseAtk + bonus.atk, player.baseHP + bonus.hp);
 let totalAtkVal = Number(totalBase.atk) * bonus.mult * skillMult;
 
 if ((player.inventory[804] || 0) > 0) {
@@ -714,11 +706,9 @@ const bushinCount = Math.min(50, player.inventory[401] || 0);
 const dropBase = Math.min(100, skillLv + Math.floor(player.totalLevel/10)*5 + bushinCount);
 let logHtml = `<div>${specialTags}<span style="color:#007bff; font-weight:bold;">攻撃！${formatV(finalDmg)} ダメージ！</span></div>` + getDropLog(dropBase);
 
-// 神の討伐ギミック判定
 if(finalDmg >= currentBossHP) {
 comboHit = 0;
 if(!player.isCleared) {
-    // 討伐条件：パンドラの箱を所持 かつ 最大HP以上のダメージ
     if((player.inventory[701] || 0) > 0 && finalDmg >= bossMaxHP) {
         currentBossHP = 0n;
         player.killCount++;
@@ -729,7 +719,6 @@ if(!player.isCleared) {
         document.getElementById("clear-modal-msg").innerHTML = `終末神アポカリス＝ティアは、あなたの放った一撃の前に霧散した。<br><br>しかし、その瞬間に所持していた<span style="color:var(--gold); font-weight:bold;">『パンドラの箱』</span>が激しく震え、蓋が跳ね上がる。<br><br>中から溢れ出したのは希望ではなく、底知れぬ混沌。<br><span style="color:#ff4444; font-weight:bold;">「溢れし災厄」</span>が今、世界を再び塗り潰そうとしている。<br><br><hr style="border:0; border-top:1px solid #444; margin:15px 0;"><span style="color:var(--growth);">ここからはエンドレスモードです。<br>遊んでくれてありがとうございます！</span>`;
         document.getElementById("clear-modal").style.display = "flex";
     } else {
-        // 条件を満たさない撃破は全回復
         currentBossHP = bossMaxHP;
         enemyDisasterStarUsed = false;
         logHtml += `<div><span style="color:#ff0000; font-weight:bold;">終末の回帰……！時が巻き戻る！！ (終末神アポカリス＝ティアのHP全回復)</span></div>`;
@@ -746,7 +735,6 @@ if(!player.isCleared) {
 }
 } else {
 currentBossHP -= finalDmg;
-// 現在HPを削り切っても、神の場合は最大ダメージ条件がなければ全回復
 if(currentBossHP < 1n && !player.isCleared) {
     comboHit = 0;
     currentBossHP = bossMaxHP;
@@ -1036,8 +1024,12 @@ function handleBossDefeat() {
 comboHit = 0;
 if (!isGeminiBattle && Math.random() < 0.1) {
     isGeminiBattle = true;
-    currentBossHP = BigInt("1000000000000000000000000");
-    addLog(`<div><span class="c-gemini" style="font-size:1.2em;">EXCEPTION: SYSTEM_CRASH_DETECTED... Geminiが観測されました。</span></div>`);
+    const bonus = getRelicBonus();
+    const totalBase = applyOmegaCore(player.baseAtk + bonus.atk, player.baseHP + bonus.hp);
+    const playerAtk = Number(totalBase.atk);
+    const geminiHp = BigInt(Math.floor(playerAtk * (800 + Math.random() * 400)));
+    currentBossHP = geminiHp;
+    addLog(`<div><span class="c-gemini" style="font-size:1.2em;">EXCEPTION: SYSTEM_CRASH_DETECTED... Geminiが観測されました。HP: ${formatV(geminiHp)}</span></div>`);
 } else {
     player.isCleared = true;
     let n_float = Number(player.killCount);
