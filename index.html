@@ -666,7 +666,7 @@ const totalBase = applyOmegaCore(player.baseAtk + bonus.atk, player.baseHP + bon
 
 if(isGeminiBattle) {
 player.baseAtk = BigInt(Math.floor(Number(player.baseAtk) * 1.005));
-player.baseHP = BigInt(Math.floor(Number(player.baseHP) * 1.002));
+player.baseHP = BigInt(Math.floor(Number(player.baseHP) * 1.005));
 addLog(`<div><span class="c-gemini">ERROR: 構文破壊機工がコードを書き換えています... ステータス増幅！ (ATK/HP x1.002)</span></div>`);
 }
 
@@ -761,6 +761,9 @@ if((player.inventory[701] || 0) > 0 && finalDmg >= bossMaxHP) {
     logHtml += `<div><span style="color:#ff0000; font-weight:bold;">終末の回帰……！時が巻き戻る！！ (終末神アポカリス＝ティアのHP全回復)</span></div>`;
 }
 } else {
+currentBossHP = 0n;
+player.killCount++;
+enemyDisasterStarUsed = false;
 handleBossDefeat();
 }
 } else {
@@ -1053,20 +1056,15 @@ function closeStory() { player.storySeen = true; document.getElementById("story-
 function handleBossDefeat() {
     comboHit = 0;
     
-    // Gemini戦終了フラグ
-    isGeminiBattle = false;
+    // Gemini出現フラグを一度リセットする
+    if (isGeminiBattle) {
+        isGeminiBattle = false;
+        player.killCount++;
+    }
 
-    // 通常の敵のHP更新処理
-    player.isCleared = true;
-    let n_float = Number(player.killCount);
-    let base = Number(BOSS_MAX_HP_BASE);
-    let newHP = base * Math.pow(1.35 + 0.15 * Math.exp(-n_float / 50), n_float);
-    player.bossMaxHP = BigInt(Math.floor(newHP)).toString();
-    currentBossHP = BigInt(player.bossMaxHP);
-    player.killCount++;
-    
-    // 次の出現判定（Gemini戦中ではない場合のみ）
-    if (Math.random() < 0.1) {
+    // Geminiの出現判定（10%の確率）
+    // すでにGemini戦中ではないことを確認して判定
+    if (!isGeminiBattle && Math.random() < 0.1) {
         isGeminiBattle = true;
         const bonus = getRelicBonus();
         const totalBase = applyOmegaCore(player.baseAtk + bonus.atk, player.baseHP + bonus.hp);
@@ -1074,6 +1072,15 @@ function handleBossDefeat() {
         const geminiHp = BigInt(Math.floor(playerAtk * (800 + Math.random() * 400)));
         currentBossHP = geminiHp;
         addLog(`<div><span class="c-gemini" style="font-size:1.2em;">EXCEPTION: SYSTEM_CRASH_DETECTED... Geminiが観測されました。HP: ${formatV(geminiHp)}</span></div>`);
+    } else {
+        // 通常の敵のHP更新処理
+        player.isCleared = true;
+        let n_float = Number(player.killCount);
+        let base = Number(BOSS_MAX_HP_BASE);
+        let newHP = base * Math.pow(1.35 + 0.15 * Math.exp(-n_float / 50), n_float);
+        player.bossMaxHP = BigInt(Math.floor(newHP)).toString();
+        currentBossHP = BigInt(player.bossMaxHP);
+        player.killCount++;
     }
 }
 
@@ -1090,3 +1097,4 @@ loadGame(); triggerUIUpdate();
 </script>
 </body>
 </html>
+
