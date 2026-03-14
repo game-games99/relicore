@@ -279,44 +279,74 @@ attackBtn.addEventListener("pointerleave", stopAttackLoop);
 attackBtn.addEventListener("pointercancel", stopAttackLoop);
 window.addEventListener("pointerup", stopAttackLoop);
 
-function formatV(val) {
-   let n = BigInt(val);
-   const LIMIT = 1000000000000000n; // 1000兆
-   if (n < LIMIT) return n.toLocaleString();
-   const units = ["aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "aj", "ak", "al", "am", "an", "ao", "ap", "aq", "ar", "as", "at", "au", "av", "aw", "ax", "ay", "az"];
-   let unitIdx = 0;
-   let base = n;
-   // 単位を繰り上げる
-   while (base >= 1000n * LIMIT && unitIdx < units.length - 1) {
-       base /= 1000n;
-       unitIdx++;}
-   let whole = base / LIMIT;
-   let remainder = (base % LIMIT).toString().padStart(15, '0').substring(0, 2);
-   return whole.toString() + "." + remainder + units[unitIdx];}
-
-function formatFix(val) {let v = BigInt(Math.floor(Number(val)));
-   const LIMIT = 1000000000000000n;
-   if (v < LIMIT) return v.toLocaleString();
-   const units = ["aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "aj", "ak", "al", "am", "an", "ao", "ap", "aq", "ar", "as", "at", "au", "av", "aw", "ax", "ay", "az"];let unitIdx = 0;let base = v;
-
-   while (base >= 1000n * LIMIT && unitIdx < units.length - 1) {base /= 1000n;unitIdx++;}
-   let whole = base / LIMIT;
-   let remainder = (base % LIMIT).toString().padStart(15, '0').substring(0, 2);
-   return whole.toString() + "." + remainder + units[unitIdx];
+function getUnit(n){
+    let s="";
+    n+=26;
+    while(n>=0){
+        s=String.fromCharCode(97+(n%26))+s;
+        n=Math.floor(n/26)-1;
+    }
+    return s;
 }
-function formatMaxDmg(val) {
-   let v = BigInt(val);
-   const LIMIT = 1000000000000000n;
-   if (v < LIMIT) return v.toLocaleString();
-   const units = ["aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "aj", "ak", "al", "am", "an", "ao", "ap", "aq", "ar", "as", "at", "au", "av", "aw", "ax", "ay", "az"];
-   let unitIdx = 0;
-   let base = v;
-   while (base >= 1000n * LIMIT && unitIdx < units.length - 1) {
-       base /= 1000n;
-       unitIdx++;}
-   let whole = base / LIMIT;
-   let remainder = (base % LIMIT).toString().padStart(15, '0').substring(0, 5);
-   return whole.toString() + "." + remainder + units[unitIdx];
+
+function formatV(val){
+    let n=BigInt(val);
+    const LIMIT=1000000000000000n;
+
+    if(n<LIMIT) return n.toLocaleString();
+
+    let unitIdx=0;
+    let base=n;
+
+    while(base>=1000n*LIMIT){
+        base/=1000n;
+        unitIdx++;
+    }
+
+    let whole=base/LIMIT;
+    let remainder=(base%LIMIT).toString().padStart(15,"0").substring(0,2);
+
+    return whole.toString()+"."+remainder+getUnit(unitIdx);
+}
+
+function formatFix(val){
+    let v=BigInt(Math.floor(Number(val)));
+    const LIMIT=1000000000000000n;
+
+    if(v<LIMIT) return v.toLocaleString();
+
+    let unitIdx=0;
+    let base=v;
+
+    while(base>=1000n*LIMIT){
+        base/=1000n;
+        unitIdx++;
+    }
+
+    let whole=base/LIMIT;
+    let remainder=(base%LIMIT).toString().padStart(15,"0").substring(0,2);
+
+    return whole.toString()+"."+remainder+getUnit(unitIdx);
+}
+
+function formatMaxDmg(val){
+    let v=BigInt(val);
+    const LIMIT=1000000000000000n;
+
+    if(v<LIMIT) return v.toLocaleString();
+
+    let unitIdx=0;
+    let base=v;
+
+    while(base>=1000n*LIMIT){
+        base/=1000n;
+        unitIdx++;
+    }
+
+    let whole=base/LIMIT;
+    let remainder=(base%LIMIT).toString().padStart(15,"0").substring(0,5);
+
+    return whole.toString()+"."+remainder+getUnit(unitIdx);
 }
 
 function getExpThreshold(lv) { return Math.floor(500 * (Math.pow(1.1, lv))); }
