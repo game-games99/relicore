@@ -320,6 +320,24 @@ function formatMaxDmg(val) {
         return s;
     }
 
+    let base = v;
+    let unitIdx = 0;
+
+    while (base >= 1000n * LIMIT) {
+        base /= 1000n;
+        unitIdx++;
+    }
+
+    let whole = base / LIMIT;
+
+    let remainder = (base % LIMIT)
+        .toString()
+        .padStart(15, "0")
+        .substring(0, 5);
+
+    return whole.toString() + "." + remainder + getUnit(unitIdx);
+}
+
     let s = v.toString();
     let digits = s.length;
 
