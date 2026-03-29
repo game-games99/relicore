@@ -235,8 +235,8 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.82em;margin-bottom:10px;">
       <div style="background:rgba(0,255,204,.08);padding:6px 8px;border-radius:6px;border-left:3px solid #00ffcc;"><div style="color:#aaa;font-size:.8em;">圧縮倍率</div><div id="comp-mult" style="font-weight:bold;color:#00ffcc;font-size:1.1em;">×1.000</div></div>
       <div style="background:rgba(0,255,204,.08);padding:6px 8px;border-radius:6px;border-left:3px solid #00ffcc;"><div style="color:#aaa;font-size:.8em;">圧縮可能回数</div><div id="comp-times" style="font-weight:bold;color:#fff;">0回</div></div>
-      <div style="background:rgba(0,255,204,.08);padding:6px 8px;border-radius:6px;border-left:3px solid #007bff;"><div style="color:#aaa;font-size:.8em;">蓄積ATK</div><div id="comp-catk" style="font-weight:bold;color:#7af;">0</div></div>
-      <div style="background:rgba(0,255,204,.08);padding:6px 8px;border-radius:6px;border-left:3px solid #dc3545;"><div style="color:#aaa;font-size:.8em;">蓄積HP</div><div id="comp-chp" style="font-weight:bold;color:#f88;">0</div></div>
+      <div style="background:rgba(0,255,204,.08);padding:6px 8px;border-radius:6px;border-left:3px solid #007bff;"><div style="color:#aaa;font-size:.8em;">蓄積ATK(実効値)</div><div id="comp-catk" style="font-weight:bold;color:#7af;">0</div></div>
+      <div style="background:rgba(0,255,204,.08);padding:6px 8px;border-radius:6px;border-left:3px solid #dc3545;"><div style="color:#aaa;font-size:.8em;">蓄積HP(実効値)</div><div id="comp-chp" style="font-weight:bold;color:#f88;">0</div></div>
     </div>
     <div style="font-size:.7em;color:#888;margin-bottom:8px;">★1〜3の遺物10,000個を1回分として圧縮。メモリー系は30万個を保護。圧縮した遺物の能力値は蓄積されます。</div>
     <button id="comp-btn" onclick="doCompress()" style="width:100%;padding:10px;background:#00ffcc;color:#000;border:none;border-radius:8px;font-weight:bold;font-size:1em;cursor:pointer;letter-spacing:2px;">収束圧縮</button>
@@ -457,7 +457,10 @@ const cAtk=player.compressedAtkBig?BigInt(player.compressedAtkBig):safeBigInt(pl
 const cHp=player.compressedHpBig?BigInt(player.compressedHpBig):safeBigInt(player.compressedHp||0);
 // キャップ
 if(atkBig>BIG_CAP)atkBig=BIG_CAP;if(hpBig>BIG_CAP)hpBig=BIG_CAP;
-return{atk:atkBig+cAtk,hp:hpBig+cHp,mult,compCount:comp,compBonus:cb};
+// 圧縮蓄積分にもcomp倍率・greedMultを適用
+const cAtkBoosted=cAtk*cbBig*gmBig/10000n;
+const cHpBoosted=cHp*cbBig*gmBig/10000n;
+return{atk:atkBig+cAtkBoosted,hp:hpBig+cHpBoosted,mult,compCount:comp,compBonus:cb};
 }
 function getCurrentDropRates(){if(player.hasDivineGuide)return DIVINE_DD;if(player.hasGreatHado)return GHADO_DD;if(player.hasHado)return HADO_DD;return BASE_DD;}
 
@@ -710,13 +713,15 @@ if(bossType==="kousa_gemini"){
   addLog(`<div><span class="c-gemini">ERROR: 構文破壊機工がコードを書き換えています... (ATK/HP x1.002)</span></div>`);
 }
 
-// 覚醒チェック
-if(!player.hasHado&&(player.inventory[116]||0)>=100000&&player.hadoExpAccum>=1000000)openHadoModal("hado");
-if(!player.hasGreatHado&&(player.inventory[116]||0)>=200000&&player.hadoExpAccum>=2000000)openHadoModal("great");
-if(!player.hasDivineGuide&&(player.inventory[116]||0)>=300000&&player.hadoExpAccum>=3000000)openHadoModal("divine");
-if(!player.hasWorldOrder&&(player.inventory[117]||0)>=100000&&player.hadoExpAccum>=10000000)openCosmicModal("world");
-if(!player.hasCrown&&player.hasWorldOrder&&(player.inventory[117]||0)>=200000&&player.hadoExpAccum>=20000000)openCosmicModal("crown");
-if(!player.hasMeta&&player.hasCrown&&(player.inventory[117]||0)>=300000&&player.hadoExpAccum>=30000000)openCosmicModal("meta");
+// 覚醒チェック（段階的前提フラグ付き・モーダル未表示時のみ）
+if(!isModalOpen){
+  if(!player.hasHado&&(player.inventory[116]||0)>=100000&&player.hadoExpAccum>=1000000)openHadoModal("hado");
+  else if(player.hasHado&&!player.hasGreatHado&&(player.inventory[116]||0)>=200000&&player.hadoExpAccum>=2000000)openHadoModal("great");
+  else if(player.hasGreatHado&&!player.hasDivineGuide&&(player.inventory[116]||0)>=300000&&player.hadoExpAccum>=3000000)openHadoModal("divine");
+  else if(player.hasDivineGuide&&!player.hasWorldOrder&&(player.inventory[117]||0)>=100000&&player.hadoExpAccum>=10000000)openCosmicModal("world");
+  else if(player.hasWorldOrder&&!player.hasCrown&&(player.inventory[117]||0)>=200000&&player.hadoExpAccum>=20000000)openCosmicModal("crown");
+  else if(player.hasCrown&&!player.hasMeta&&(player.inventory[117]||0)>=300000&&player.hadoExpAccum>=30000000)openCosmicModal("meta");
+}
 
 // 災禍殲星（メイン戦のみ）
 if(!isKousa&&!enemyDisasterStarUsed&&(player.inventory[803]||0)>0&&(player.inventory[311]||0)>=100&&currentBossHP>(player.baseAtk+bonus.atk)&&Math.random()<0.0001)activateDisasterStar(bonus);
@@ -856,7 +861,7 @@ if(isKousa&&currentBossHP>0n&&kousaBossData){
   const cutPct=BigInt(Math.floor(Math.random()*(101-Math.min(95,minCut)))+Math.min(95,minCut));
   const mitig=kousaAtk*(100n-cutPct)/100n>0n?kousaAtk*(100n-cutPct)/100n:0n;
   if(curHP>mitig){
-    logH+=`<div><span style="color:${kousaBossData.colorVar};font-weight:bold;">${kousaBossData.name}の反撃！${fmtV(mitig)} ダメージ。障壁展開！</span></div>`;
+    logH+=`<div><span style="color:${kousaBossData.colorVar};font-weight:bold;">${kousaBossData.name}の反撃！${fmtV(mitig)} ダメージ。障壁展開！</span></div>`+getGuaranteedDrop();
   }else{
     let rep=1;if((player.inventory[505]||0)>0&&Math.random()<0.1)rep=2;
     let upHP=0n;for(let i=0;i<rep;i++)upHP+=BigInt(Math.floor(Math.random()*Math.max(1,Number(player.deathCount||100))+1+lv+(Math.min(50000,player.inventory[402]||0)*5)));
@@ -1020,8 +1025,16 @@ document.getElementById("comp-mult").textContent="×"+(1+player.compressionPower
 document.getElementById("comp-times").textContent=times.toLocaleString()+"回";
 const cAtk=player.compressedAtkBig?BigInt(player.compressedAtkBig):safeBigInt(player.compressedAtk||0);
 const cHp=player.compressedHpBig?BigInt(player.compressedHpBig):safeBigInt(player.compressedHp||0);
-document.getElementById("comp-catk").textContent=fmtV(cAtk);
-document.getElementById("comp-chp").textContent=fmtV(cHp);
+// comp倍率・greedMult込みの実効値を表示
+const b4disp=getRelicBonus();
+// 実際のATK/HP増加への貢献分 = bonus全体 - 在庫遺物のみのボーナス
+// 簡易的に cAtk*cb*gm を計算
+let compForDisp=0;
+for(let s=1;s<=8;s++){const at3=RELIC_MASTER.filter(m=>m.star===s&&![117,0,999,311,803].includes(m.id)&&m.star!==9);if(at3.length>0&&at3.every(m=>(player.inventory[m.id]||0)>0))compForDisp++;}
+const cbDisp=BigInt(Math.round(Math.pow(2,compForDisp)));
+const gmDisp=BigInt(Math.round(greedMult()*10000));
+document.getElementById("comp-catk").textContent=fmtV(cAtk*cbDisp*gmDisp/10000n);
+document.getElementById("comp-chp").textContent=fmtV(cHp*cbDisp*gmDisp/10000n);
 const btn=document.getElementById("comp-btn");btn.disabled=times<=0;btn.style.opacity=times<=0?"0.4":"1";
 }
 function doCompress(){
