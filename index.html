@@ -336,6 +336,7 @@ hasAutoPrivilege:false,autoSpeed:1,
 omegaAtkBig:"0",omegaHpBig:"0",
 residue:{total:0,edel:0,neria:0,nox:0,lilith:0,valka:0,igna:0,lux:0,magmel:0},
 hasFusionCore:false,
+mainBossMaxHP:null,
 lv100AtkBonus:"0",lv100HpBonus:"0",lv100ExpBonus:0,lv100MilestonesApplied:0
 };
 
@@ -453,6 +454,7 @@ player.hasAutoPrivilege=p.hasAutoPrivilege||false;
 player.autoSpeed=p.autoSpeed||1;
 player.residue=p.residue||{total:0,edel:0,neria:0,nox:0,lilith:0,valka:0,igna:0,lux:0,magmel:0};
 player.hasFusionCore=p.hasFusionCore||false;
+player.mainBossMaxHP=p.mainBossMaxHP||null;
 player.lv100AtkBonus=p.lv100AtkBonus||"0";
 player.lv100HpBonus=p.lv100HpBonus||"0";
 player.lv100ExpBonus=p.lv100ExpBonus||0;
@@ -619,10 +621,12 @@ kousaBossData=selectKousaBoss();
 // 虹災HP = 現在の溢れし災厄MaxHP × (hpMulMin〜hpMulMax) / 100
 // 例: edel(500〜800) → メインボスHPの5〜8倍、magmel(2000〜3000) → 20〜30倍
 const mainHPBig=BigInt(player.bossMaxHP||BOSS_MAX_HP_BASE.toString());
+// メインボスHPを別途保存（ジェネシスコード・虹災終了後の復元に使用）
+player.mainBossMaxHP=mainHPBig.toString();
 const mul=kousaBossData.hpMulMin+Math.random()*(kousaBossData.hpMulMax-kousaBossData.hpMulMin);
 currentBossHP=mainHPBig*BigInt(Math.round(mul))/100n;
 if(currentBossHP>BIG_CAP)currentBossHP=BIG_CAP;
-// 虹災戦用に bossMaxHP を一時保存（HPバー用）
+// 虹災戦用に bossMaxHP を一時上書き（HPバー用のみ）
 player.bossMaxHP=currentBossHP.toString();
 bossType="kousa_"+kousaBossData.id;
 erosionStack=0;waterAccumDmg=0n;comboHit=0;
@@ -947,16 +951,23 @@ const killMult=BigInt(Math.round((1+Math.log10(player.killCount+1)*0.06)*100000)
 atvBig=atvBig*killMult/100000n;
 }
 // 802 ジェネシスコード：敵が強すぎる場合（ダメージの100倍以上）、自己進化
-if((player.inventory[802]||0)>0&&bossMaxHP>atvBig*100n){
+// 虹災中は bossMaxHP が虹災HP（異常に大きい）になるため発動禁止
+if((player.inventory[802]||0)>0&&!isKousa&&bossMaxHP>atvBig*100n){
 player.evolutionStack++;
 const evoMult=BigInt(Math.min(player.evolutionStack,10000));
 atvBig=atvBig*(100000n+evoMult*100n)/100000n;
 if(player.evolutionStack%100===0){
 const logScale=BigInt(Math.max(1,Math.floor(Math.log10(player.evolutionStack+1))));
-const g=BigInt(player.bossMaxHP||"1")/200000n*logScale;
+// bossMaxHPは虹災時に汚染されるため、killCountから正しいメインHP相当を再計算
+const _kn=Number(player.killCount||0);
+const _mainHPRef=_kn>0?safeBigInt(Math.min(1e300,Math.pow(1.002,_kn)*Number(BOSS_MAX_HP_BASE))):BOSS_MAX_HP_BASE;
+// 成長値は正しいメインHPの0.0005%に制限（虹災HP参照による異常インフレを防止）
+const _rawG=_mainHPRef/200000n*logScale;
+const _capG=player.baseAtk>0n?player.baseAtk/100n:1n; // baseAtkの1%を上限
+const g=_rawG<_capG?_rawG:_capG;
 player.baseAtk+=g;player.baseHP+=g;
 const pct=(Number(logScale)/1000).toFixed(3);
-addLog(`<div><span style="color:var(--cosmic-blue);font-weight:bold;">【ジェネシスコード】自己進化 Stack:${player.evolutionStack.toLocaleString()} → baseATK/HP +${fmtV(g)}（ボスHP×${pct}%）</span></div>`);
+addLog(`<div><span style="color:var(--cosmic-blue);font-weight:bold;">【ジェネシスコード】自己進化 Stack:${player.evolutionStack.toLocaleString()} → baseATK/HP +${fmtV(g)}</span></div>`);
 }
 }
 let fd=atvBig*(randBig>0n?randBig:100000n)/100000n;
@@ -1107,12 +1118,12 @@ comboHit=0;erosionStack=0;waterAccumDmg=0n;
 
 // メイン戦に戻す
 bossType="main";kousaBossData=null;
-// bossMaxHP を元に戻す（BIG_CAP安全付き）
-const n=Number(player.killCount);
-let newHP=n>0?Number(BOSS_MAX_HP_BASE)*Math.pow(1.35+0.15*Math.exp(-n/50),n):Number(BOSS_MAX_HP_BASE);
-if(!isFinite(newHP)||newHP<=0)newHP=Number(BOSS_MAX_HP_BASE);
-const newHPBig=safeBigInt(newHP)>0n?safeBigInt(newHP):BOSS_MAX_HP_BASE;
+// bossMaxHP を元に戻す：保存されていたmainBossMaxHPを使用（虹災HP汚染を排除）
+// player.mainBossMaxHP が存在すればそれを優先使用
+const _restoredHP=player.mainBossMaxHP?BigInt(player.mainBossMaxHP):safeBigInt(player.bossMaxHP||BOSS_MAX_HP_BASE.toString());
+const newHPBig=_restoredHP>0n&&_restoredHP<=BIG_CAP?_restoredHP:BOSS_MAX_HP_BASE;
 player.bossMaxHP=newHPBig.toString();
+player.mainBossMaxHP=null; // リセット
 currentBossHP=newHPBig;
 
 logH+=`<div><span style="color:var(--nox);font-weight:bold;">【虹災討伐】${def.name}を撃破！(累計${player.kousaKillCount}体)</span></div>`;
@@ -1148,9 +1159,13 @@ function handleBossDefeat(){
 comboHit=0;
 player.killCount++;enemyDisasterStarUsed=false;
 const n=Number(player.killCount);
-let newHP=Number(BOSS_MAX_HP_BASE)*Math.pow(1.35+0.15*Math.exp(-n/50),n);
-if(!isFinite(newHP)||newHP<=0)newHP=Number(BOSS_MAX_HP_BASE);
-const newHPBig=safeBigInt(newHP)>0n?safeBigInt(newHP):BOSS_MAX_HP_BASE;
+// Number+Math.powはInfinityになるためBigInt対数スケール成長に変更
+// 1〜50体: ×1.35/体相当、以降は対数で緩やか、上限BIG_CAP
+const _growthMul=BigInt(Math.round(Math.min(1.35+0.15*Math.exp(-n/50),1.50)*100000));
+const _prevHP=safeBigInt(player.bossMaxHP||BOSS_MAX_HP_BASE.toString());
+let newHPBig=_prevHP>0n?_prevHP*_growthMul/100000n:BOSS_MAX_HP_BASE;
+if(newHPBig>BIG_CAP)newHPBig=BIG_CAP;
+if(newHPBig<=0n)newHPBig=BOSS_MAX_HP_BASE;
 player.bossMaxHP=newHPBig.toString();
 currentBossHP=newHPBig;
 addLog(`<div><span style="color:var(--gold);font-weight:bold;">【溢れし災厄 討伐】第${player.killCount}体目を撃破！</span></div>`);
