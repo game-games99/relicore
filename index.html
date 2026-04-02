@@ -625,6 +625,10 @@ const mainHPBig=BigInt(player.bossMaxHP||BOSS_MAX_HP_BASE.toString());
 player.mainBossMaxHP=mainHPBig.toString();
 const mul=kousaBossData.hpMulMin+Math.random()*(kousaBossData.hpMulMax-kousaBossData.hpMulMin);
 currentBossHP=mainHPBig*BigInt(Math.round(mul))/100n;
+// 虹災HPもATKベースでキャップ（magmel30倍でも暴走しない）
+const _b2=getRelicBonus();
+const _kousaAtkCap=(_b2.atk+player.baseAtk)*5000000n;
+if(currentBossHP>_kousaAtkCap)currentBossHP=_kousaAtkCap;
 if(currentBossHP>BIG_CAP)currentBossHP=BIG_CAP;
 // 虹災戦用に bossMaxHP を一時上書き（HPバー用のみ）
 player.bossMaxHP=currentBossHP.toString();
@@ -1162,14 +1166,16 @@ saveGame();triggerUIUpdate();
 function handleBossDefeat(){
 comboHit=0;
 player.killCount++;enemyDisasterStarUsed=false;
-const n=Number(player.killCount);
-// Number+Math.powはInfinityになるためBigInt対数スケール成長に変更
-// 1〜50体: ×1.35/体相当、以降は対数で緩やか、上限BIG_CAP
-const _growthMul=BigInt(Math.round(Math.min(1.35+0.15*Math.exp(-n/50),1.50)*100000));
+// 次の敵HP = プレイヤー現在ATKの100000倍を上限に設定
+// 下限：前回HPの×1.05（毎回少しずつ硬くなる）
+const _b=getRelicBonus();
+const _curAtk=player.baseAtk+_b.atk;
+const _atkCap=_curAtk*100000n; // ATK×100000が上限
 const _prevHP=safeBigInt(player.bossMaxHP||BOSS_MAX_HP_BASE.toString());
-let newHPBig=_prevHP>0n?_prevHP*_growthMul/100000n:BOSS_MAX_HP_BASE;
+const _minHP=_prevHP*105n/100n; // 前回の×1.05を下限
+let newHPBig=_atkCap>_minHP?_minHP:_atkCap; // 上限と下限の小さい方
+if(newHPBig<BOSS_MAX_HP_BASE)newHPBig=BOSS_MAX_HP_BASE;
 if(newHPBig>BIG_CAP)newHPBig=BIG_CAP;
-if(newHPBig<=0n)newHPBig=BOSS_MAX_HP_BASE;
 player.bossMaxHP=newHPBig.toString();
 currentBossHP=newHPBig;
 addLog(`<div><span style="color:var(--gold);font-weight:bold;">【溢れし災厄 討伐】第${player.killCount}体目を撃破！</span></div>`);
