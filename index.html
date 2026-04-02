@@ -625,10 +625,10 @@ const mainHPBig=BigInt(player.bossMaxHP||BOSS_MAX_HP_BASE.toString());
 player.mainBossMaxHP=mainHPBig.toString();
 const mul=kousaBossData.hpMulMin+Math.random()*(kousaBossData.hpMulMax-kousaBossData.hpMulMin);
 currentBossHP=mainHPBig*BigInt(Math.round(mul))/100n;
-// 虹災HPもATKベースでキャップ（magmel30倍でも暴走しない）
-const _b2=getRelicBonus();
-const _kousaAtkCap=(_b2.atk+player.baseAtk)*5000000n;
-if(currentBossHP>_kousaAtkCap)currentBossHP=_kousaAtkCap;
+// 虹災HPも与ダメージ基準でキャップ（magmel30倍でも暴走しない）
+const _refDmg2=player.maxDmg>0n?player.maxDmg:(()=>{const _b2=getRelicBonus();return player.baseAtk+_b2.atk;})();
+const _kousaDmgCap=_refDmg2*5000000n;
+if(currentBossHP>_kousaDmgCap)currentBossHP=_kousaDmgCap;
 if(currentBossHP>BIG_CAP)currentBossHP=BIG_CAP;
 // 虹災戦用に bossMaxHP を一時上書き（HPバー用のみ）
 player.bossMaxHP=currentBossHP.toString();
@@ -1166,14 +1166,13 @@ saveGame();triggerUIUpdate();
 function handleBossDefeat(){
 comboHit=0;
 player.killCount++;enemyDisasterStarUsed=false;
-// 次の敵HP = プレイヤー現在ATKの100000倍を上限に設定
-// 下限：前回HPの×1.05（毎回少しずつ硬くなる）
-const _b=getRelicBonus();
-const _curAtk=player.baseAtk+_b.atk;
-const _atkCap=_curAtk*100000n; // ATK×100000が上限
+// 次の敵HP = 現在与ダメージ（maxDmg）の100000倍を上限に設定
+// maxDmg未計測時はATK×100000にフォールバック
+const _refDmg=player.maxDmg>0n?player.maxDmg:(()=>{const _b=getRelicBonus();return player.baseAtk+_b.atk;})();
+const _dmgCap=_refDmg*100000n; // 与ダメージ×100000が上限
 const _prevHP=safeBigInt(player.bossMaxHP||BOSS_MAX_HP_BASE.toString());
 const _minHP=_prevHP*105n/100n; // 前回の×1.05を下限
-let newHPBig=_atkCap>_minHP?_minHP:_atkCap; // 上限と下限の小さい方
+let newHPBig=_dmgCap>_minHP?_minHP:_dmgCap; // 上限と下限の小さい方
 if(newHPBig<BOSS_MAX_HP_BASE)newHPBig=BOSS_MAX_HP_BASE;
 if(newHPBig>BIG_CAP)newHPBig=BIG_CAP;
 player.bossMaxHP=newHPBig.toString();
