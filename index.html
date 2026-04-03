@@ -324,7 +324,7 @@ const RELIC_MASTER=[
 {id:501,star:5,name:"連撃の権能",atk:382660,hp:916330,desc:"攻撃回数に応じてダメージが増加する。1HITごとに+0.05%、最大+30%。撃破でリセット。"},{id:502,star:5,name:"強欲の権能",atk:649800,hp:812400,desc:"パッシブ：総遺物数に応じてATK/HPが倍率強化される。"},{id:503,star:5,name:"超越の権能",atk:524180,hp:689450,desc:"1%の確率で、その一撃のダメージを1.5倍にする。"},{id:504,star:5,name:"破壊の権能",atk:999999,hp:0,desc:"1%の確率で、総ATK分のダメージを最終ダメージに直接加算する。"},{id:505,star:5,name:"再生の権能",atk:222222,hp:1528931,desc:"被弾時10%の確率でHP増加(再起)が2回発生。(重複不可)"},{id:506,star:5,name:"双刃の権能",atk:454649,hp:519700,desc:"150回攻撃ごとに次の一撃のダメージ+100%。(重複不可)"},
 {id:601,star:6,name:"絶対統率レリック・オーバーロード",atk:1500000,hp:4500000,desc:"敵HPが自身のATKの100倍以上の時、与ダメージ+80%。【還元】現在のHPに応じてATKが微増。"},{id:602,star:6,name:"魂律解放レリ・クシア",atk:2500000,hp:3500000,desc:"100回攻撃ごとに次の一撃の最終ダメージ+200%。"},{id:603,star:6,name:"原初核冠レリコア・レガリア",atk:2000000,hp:4000000,desc:"★1〜6遺物のステータス上昇効果を50%増加させる。"},{id:604,star:6,name:"虚無終焉レリ・ノヴァ",atk:5555555,hp:0,desc:"攻撃時1%の確率で与ダメージ+500%。"},{id:605,star:6,name:"戦碑累功レリ・エンス",atk:3000000,hp:3000000,desc:"獲得経験値に討伐数ボーナスを乗算。(溢れ＋虹災合計, 1万討伐で×5, 対数成長)"},
 {id:701,star:7,name:"パンドラの箱",atk:0,hp:0,desc:"神を屠る唯一の条件。災厄の底に希望を宿す。"},{id:702,star:7,name:"終焉の福音",atk:0,hp:0,desc:"敵HPが50%以下のとき、与ダメージ+400%。(重複不可)"},{id:703,star:7,name:"神滅のアカシックレコード",atk:0,hp:0,desc:"与ダメージの最終倍率にさらに+400%。(重複不可)"},
-{id:804,star:8,name:"災厄の残滓",atk:0,hp:0,desc:"★1〜★6遺物の能力を1000倍に引き上げる。最終ダメージ × (1 + log10(総討伐数 + 1) × 0.06)"},{id:801,star:8,name:"天律崩壊オメガ・コア",atk:0,hp:0,desc:"【蓄積】一度の攻撃で遺物100個以上獲得時、その遺物のATK・HPに蓄積回数ボーナスを乗算して永続蓄積する。乗算倍率は蓄積回数・総攻撃回数に応じて微増する。"},{id:802,star:8,name:"特異演算機関：ジェネシスコード",atk:0,hp:0,desc:"敵HPがダメージの100倍以上の時、演算機関が自己進化する。"},{id:803,star:8,name:"記憶の遺産",atk:0,hp:0,desc:"攻撃のたびにメモリークリスタル10000個を消費して確定発動。baseATK+1%・baseHP+10%を永続成長させる。クリスタル不足時は発動しない。"},
+{id:804,star:8,name:"災厄の残滓",atk:0,hp:0,desc:"★1〜★6遺物の能力を1000倍に引き上げる。最終ダメージ × (1 + log10(総討伐数 + 1) × 0.06)"},{id:801,star:8,name:"天律崩壊オメガ・コア",atk:0,hp:0,desc:"【蓄積】一度の攻撃で遺物100個以上獲得時、その遺物のATK・HPに蓄積回数ボーナスを乗算して永続蓄積する。乗算倍率は蓄積回数・総攻撃回数に応じて微増する。"},{id:802,star:8,name:"特異演算機関：ジェネシスコード",atk:0,hp:0,desc:"敵HPがダメージの100倍以上の時、演算機関が自己進化する。"},{id:803,star:8,name:"記憶の遺産",atk:0,hp:0,desc:"攻撃のたびにメモリークリスタル100個を消費して確定発動。baseATK+1%・baseHP+10%を永続成長させる。クリスタル不足時は発動しない。"},
 ...STAR9
 ];
 
@@ -691,12 +691,16 @@ function fusionRate(count,cap){
   return Math.min(1,Math.log10(count+1)/Math.log10(cap+1));
 }
 // 基礎共鳴倍率：全討伐数に応じた乗算（★1〜6 & オメガコア向け）
+// ソフトキャップ：×50 上限（対数スケールで漸近）
 function getBaseResonance(){
   if(!player.hasFusionCore)return 1;
   const t=player.residue.total;
   if(t<=0)return 1;
-  // 1討伐目で×2、以後 log10(t+1)^2 で急成長
-  return 1+Math.pow(Math.log10(t+1),2)*2;
+  const raw=1+Math.pow(Math.log10(t+1),2)*2;
+  // ソフトキャップ50：超過分は sqrt で圧縮
+  const CAP=50;
+  if(raw<=CAP)return raw;
+  return CAP+Math.sqrt(raw-CAP);
 }
 // getRelicBonus内で使う：対象遺物かどうか
 function isFusionTarget(star){
@@ -898,12 +902,15 @@ return{log:fe.length?`<div style="font-size:.82em;">獲得：${fe.join("、")}</
 
 // ============ メイン攻撃 ============
 // 記憶の遺産：メモリークリスタル100個消費で確定発動
-// ATK +1%、HP +10% 成長
+// ATK +1%、HP +10% 成長（HPはbaseHPの上限キャップ付き）
 function activateMemoryLegacy(){
-if((player.inventory[311]||0)<10000)return false;
-player.inventory[311]-=10000;
+if((player.inventory[311]||0)<100)return false;
+player.inventory[311]-=100;
 const atkGain=player.baseAtk/100n+1n;       // ATK +1%
-const hpGain=player.baseHP*10n/100n+1n;     // HP  +10%
+// HP成長：+10%だが、baseHPが baseAtk の100倍を超えたらソフトキャップ（+1%に圧縮）
+let hpPct=10n;
+if(player.baseHP>player.baseAtk*100n)hpPct=1n;
+const hpGain=player.baseHP*hpPct/100n+1n;   // HP +10% or +1%
 player.baseAtk+=atkGain;
 player.baseHP+=hpGain;
 return{atkGain,hpGain};
@@ -934,8 +941,12 @@ if(geminiShieldHP>0){
   // シールド破壊チェック
   if(geminiShieldHP<=0){
     geminiBuffStack++;
-    // シールド破壊時に強力なバフ付与（バフ蓄積数に応じて倍率増加）
-    const buffMult=1n+BigInt(geminiBuffStack)*5n; // 1回目×6、2回目×11...
+    // シールド破壊時バフ：蓄積回数に応じて増加、ただし×10を超えたらソフトキャップ
+    // 1回目×6, 2回目×11... → 上限は×50程度に圧縮
+    const _rawBuff=1+geminiBuffStack*5;
+    const _capBuff=50;
+    const _softBuff=_rawBuff<=_capBuff?_rawBuff:_capBuff+Math.sqrt(_rawBuff-_capBuff);
+    const buffMult=BigInt(Math.round(_softBuff));
     player.baseAtk=player.baseAtk*buffMult;
     player.baseHP=player.baseHP*buffMult;
     addLog(`<div><span class="c-gemini">SHIELD_BROKEN: Geminiシールド撃破！バフ蓄積×${geminiBuffStack} → baseATK/HP ×${Number(buffMult)} 強化！</span></div>`);
@@ -955,8 +966,9 @@ if(geminiShieldHP>0){
     // 魂の研磨・経験値蓄積
     const _skm=player.inventory[405]||0;
     const _sensTK=(player.killCount||0)+(player.kousaKillCount||0);
-    const _sens=(player.inventory[605]||0)>=1?(1+Math.log10(_sensTK+1)):1.0;
-    const _slv100Mult=1+(player.lv100ExpBonus||0)/100;
+    const _sensRaw=(player.inventory[605]||0)>=1?(1+Math.log10(_sensTK+1)):1.0;
+    const _sens=_sensRaw<=20?_sensRaw:20+Math.sqrt(_sensRaw-20)*0.5;
+    const _slv100Mult=1+Math.min((player.lv100ExpBonus||0),500)/100;
     const _sexp=Math.floor((Number(player.totalClicks)+player.totalLevel+_skm*100000+player.attackExpBonus)*_sens*_slv100Mult);
     player.hadoExpAccum+=_sexp;player.deathCount+=_sexp;
     // オメガコア蓄積
@@ -1012,8 +1024,12 @@ const randBig=BigInt(Math.round((0.8+Math.random()*0.4)*100000));
 // multBigが0になるのを防ぐ（最低1n）
 let atvBig=tb.atk*(multBig>0n?multBig:1n)/100000n*(skillBig>0n?skillBig:100000n)/100000n;
 // 804 災厄の残滓：メイン・虹災両方に適用
+// ソフトキャップ：×5 上限（1万討伐で約×1.36、以後 sqrt で圧縮）
 if((player.inventory[804]||0)>0){
-const killMult=BigInt(Math.round((1+Math.log10(player.killCount+1)*0.06)*100000));
+const _rawKM=1+Math.log10(player.killCount+1)*0.06;
+const _capKM=5;
+const _softKM=_rawKM<=_capKM?_rawKM:_capKM+Math.sqrt(_rawKM-_capKM)*0.2;
+const killMult=BigInt(Math.round(_softKM*100000));
 atvBig=atvBig*killMult/100000n;
 }
 // 802 ジェネシスコード：敵が強すぎる場合（ダメージの100倍以上）、自己進化
@@ -1035,7 +1051,12 @@ if(fd>BIG_CAP)fd=BIG_CAP;
 let tags="";
 
 // 救済（メイン戦のみ）
-if(!isKousa&&(player.inventory[999]||0)>0){const thr=bossMaxHP/10000n;if(fd<thr){const smBig=BigInt(Math.round((Math.log10(player.killCount+1)+1)*100000));fd=bossMaxHP*2n/10000n*smBig/100000n;tags+=`<span class="c-order">【救済】</span>`;}}
+if(!isKousa&&(player.inventory[999]||0)>0){const thr=bossMaxHP/10000n;if(fd<thr){
+// 救済倍率：ソフトキャップ×10
+const _rawSM=Math.log10(player.killCount+1)+1;
+const _softSM=_rawSM<=10?_rawSM:10+Math.sqrt(_rawSM-10)*0.3;
+const smBig=BigInt(Math.round(_softSM*100000));
+fd=bossMaxHP*2n/10000n*smBig/100000n;tags+=`<span class="c-order">【救済】</span>`;}}
 
 // ★5権能：全て独立発動（applyAuthSkill廃止・各所持チェックに変更）
 if(!tags.includes("【救済】")){
@@ -1141,8 +1162,12 @@ const minCut=baseCut+ingaV*2;
 const eatk=curHP*3n;
 const cutPct=BigInt(Math.floor(Math.random()*(101-Math.min(95,minCut)))+Math.min(95,minCut));
 const mitig=eatk*(100n-cutPct)/100n>0n?eatk*(100n-cutPct)/100n:0n;
-const km=player.inventory[405]||0;const _ensTK=(player.killCount||0)+(player.kousaKillCount||0);const ens=(player.inventory[605]||0)>=1?(1+Math.log10(_ensTK+1)):1.0;
-const lv100ExpMult=1+(player.lv100ExpBonus||0)/100;
+const km=player.inventory[405]||0;const _ensTK=(player.killCount||0)+(player.kousaKillCount||0);
+// 605 レリ・エンス：ソフトキャップ×20（1万討伐で約×5.3、以後 sqrt 圧縮）
+const _ensRaw=(player.inventory[605]||0)>=1?(1+Math.log10(_ensTK+1)):1.0;
+const _ensCap=20;
+const ens=_ensRaw<=_ensCap?_ensRaw:_ensCap+Math.sqrt(_ensRaw-_ensCap)*0.5;
+const lv100ExpMult=1+Math.min((player.lv100ExpBonus||0),500)/100; // lv100ボーナス上限+500%
 const exp=Math.floor((Number(player.totalClicks)+player.totalLevel+km*100000+player.attackExpBonus)*ens*lv100ExpMult);
 player.hadoExpAccum+=exp;
 if(curHP>mitig){
@@ -1157,8 +1182,11 @@ checkLevelUp();
 }
 // 虹災反撃（虹災戦のみ）
 if(isKousa&&currentBossHP>0n&&kousaBossData){
-const km=player.inventory[405]||0;const _ensTK=(player.killCount||0)+(player.kousaKillCount||0);const ens=(player.inventory[605]||0)>=1?(1+Math.log10(_ensTK+1)):1.0;
-const lv100ExpMult2=1+(player.lv100ExpBonus||0)/100;
+const km=player.inventory[405]||0;const _ensTK=(player.killCount||0)+(player.kousaKillCount||0);
+const _ensRaw2=(player.inventory[605]||0)>=1?(1+Math.log10(_ensTK+1)):1.0;
+const _ensCap2=20;
+const ens=((_ensRaw2<=_ensCap2)?_ensRaw2:_ensCap2+Math.sqrt(_ensRaw2-_ensCap2)*0.5);
+const lv100ExpMult2=1+Math.min((player.lv100ExpBonus||0),500)/100;
 const exp=Math.floor((Number(player.totalClicks)+player.totalLevel+km*100000+player.attackExpBonus)*ens*lv100ExpMult2);
 player.hadoExpAccum+=exp;player.deathCount+=exp;
 // 虹災の攻撃力：ボスHPの0.1%相当
@@ -1321,10 +1349,12 @@ const skills=[
 {name:"反撃の狼煙",capLv10:true,desc:"生存時★2〜3の遺物を確定で入手する。",hl:`<span class="vow-tag">確定：1〜${lv}個</span><span class="vow-tag">(★2${(player.inventory[404]||0)>0?"/★3":""})</span>`},
 {name:"魂の研磨",capLv10:false,desc:"経験値ボーナスが向上。攻撃のたびに基礎値+1で永続蓄積。攻撃のたびに核レベル×100の経験値を追加獲得（核レベルは表記上限なし）。",hl:(()=>{
 const km=player.inventory[405]||0;
-const _hlTK=(player.killCount||0)+(player.kousaKillCount||0);const ens=(player.inventory[605]||0)>=1?(1+Math.log10(_hlTK+1)):1.0;
+const _hlTK=(player.killCount||0)+(player.kousaKillCount||0);
+const _ensRawD=(player.inventory[605]||0)>=1?(1+Math.log10(_hlTK+1)):1.0;
+const ens=_ensRawD<=20?_ensRawD:20+Math.sqrt(_ensRawD-20)*0.5;
 const nbBonus=(player.totalLevel||1)*100;
 const total=Math.floor((Number(player.totalClicks)+player.totalLevel+km*100000+player.attackExpBonus)*ens);
-return`<span class="vow-tag">経験値：+${rlv+km*100000}</span><span class="vow-tag">【賢者：+${km*100000}】</span><span class="vow-tag" style="color:var(--growth);">【攻撃蓄積：+${(player.attackExpBonus||0).toLocaleString()}】</span><span class="vow-tag" style="color:#00d4ff;">【核Lv×100：+${nbBonus}/回】</span><span class="vow-tag" style="color:var(--gold);">現在1回: ${total.toLocaleString()}</span><span class="vow-tag" style="color:#f97316;">【レリ・エンス×${ens.toFixed(2)}】</span>`;
+return`<span class="vow-tag">経験値：+${rlv+km*100000}</span><span class="vow-tag">【賢者：+${km*100000}】</span><span class="vow-tag" style="color:var(--growth);">【攻撃蓄積：+${(player.attackExpBonus||0).toLocaleString()}】</span><span class="vow-tag" style="color:#00d4ff;">【核Lv×100：+${nbBonus}/回】</span><span class="vow-tag" style="color:var(--gold);">現在1回: ${total.toLocaleString()}</span><span class="vow-tag" style="color:#f97316;">【レリ・エンス×${ens.toFixed(2)}(上限×20)】</span>`;
 })()},
 {name:"死を刻む",capLv10:false,desc:"経験を積むたびに最終ダメージを増加させる。再起Lvが高いほどさらに増加。",hl:(()=>{const kf=(player.inventory[406]||0)*0.00004;const lvB=Math.log10((player.totalLevel||1)+1)*0.01;const total=calcFinalDmgMult()*_vowBonus.mult;return`<span class="vow-tag">最終ダメ倍率：x${total.toFixed(4)}</span><span class="vow-tag">【死神：+${(kf*100).toFixed(4)}%】</span><span class="vow-tag" style="color:var(--gold);">【再起Lv：+${(lvB*100).toFixed(4)}%】</span>`})()}
 ,{name:"共鳴＝災核融合",capLv10:false,fusion:true,desc:"溢れし災厄の討伐により解放。各災厄の残滓を蓄積・融合し、★1〜6遺物とオメガコアに圧倒的補正を付与する。",
