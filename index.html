@@ -1217,7 +1217,7 @@ player.mainBossMaxHP=null; // リセット
 currentBossHP=newHPBig;
 
 logH+=`<div><span style="color:var(--nox);font-weight:bold;">【虹災討伐】${def.name}を撃破！(累計${player.kousaKillCount}体)</span></div>`;
-// Gemini撃破ボーナス：撃破時1回のみbaseAtk/HPを×1.002（上限10^60でキャップ）
+// Gemini撃破ボーナス：撃破時1回のみbaseAtk/HPを×1.020（上限10^60でキャップ）
 if(def.id==="gemini"){
 const _gemCap=10n**60n;
 if(player.baseAtk<_gemCap){
