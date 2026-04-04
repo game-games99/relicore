@@ -1217,16 +1217,13 @@ player.mainBossMaxHP=null; // リセット
 currentBossHP=newHPBig;
 
 logH+=`<div><span style="color:var(--nox);font-weight:bold;">【虹災討伐】${def.name}を撃破！(累計${player.kousaKillCount}体)</span></div>`;
-// Gemini撃破ボーナス：撃破時1回のみbaseAtk/HPを×1.020（上限10^60でキャップ）
+// Gemini撃破ボーナス：撃破時baseAtk/HPを×1.020（永続、上限なし）
 if(def.id==="gemini"){
-const _gemCap=10n**60n;
-if(player.baseAtk<_gemCap){
   player.baseAtk=(player.baseAtk*1020n)/1000n;
   player.baseHP=(player.baseHP*1020n)/1000n;
-  if(player.baseAtk>_gemCap)player.baseAtk=_gemCap;
-  if(player.baseHP>_gemCap)player.baseHP=_gemCap;
-  logH+=`<div><span class="c-gemini">ERROR: 構文破壊機工を撃滅。コード残滓を吸収... (ATK/HP ×1.020)</span></div>`;
-}
+  if(player.baseAtk>BIG_CAP)player.baseAtk=BIG_CAP;
+  if(player.baseHP>BIG_CAP)player.baseHP=BIG_CAP;
+  logH+=`<div><span class="c-gemini">ERROR: 構文破壊機工を撃滅。コード残滓を吸収... baseATK/HP ×1.020 → ${fmtV(player.baseAtk)}</span></div>`;
 }
 // 残滓加算（虹災種別ごと）
 if(player.hasFusionCore&&def&&def.id){
