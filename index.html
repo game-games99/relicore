@@ -1216,15 +1216,14 @@ currentBossHP=newHPBig;
 
 logH+=`<div><span style="color:var(--nox);font-weight:bold;">【虹災討伐】${def.name}を撃破！(累計${player.kousaKillCount}体)</span></div>`;
 
-// Gemini撃破ボーナス：撃破時baseAtk/HPを×3.0〜8.0（永続）
+// Gemini撃破ボーナス：撃破時baseAtk/HPを×2.0〜4.0（永続）
 if(def.id==="gemini"){
-  // 3.0〜8.0の倍率（小数あり）
-const multiplier = 3 + Math.random() * 5; // 3.0〜8.0
+  // 2.0〜4.0の倍率
+  const multiplier = 2 + Math.random() * 2; // 2.0〜4.0
 
   // BigInt対応のため1000倍して整数化
 const multiInt = BigInt(Math.floor(multiplier * 1000));
-player.baseAtk = (player.baseAtk * multiInt) / 1000n;
-player.baseHP  = (player.baseHP  * multiInt) / 1000n;
+player.baseAtk = (player.baseAtk * multiInt) / 1000n;player.baseHP  = (player.baseHP  * multiInt) / 1000n;
 if(player.baseAtk > BIG_CAP) player.baseAtk = BIG_CAP;
 if(player.baseHP  > BIG_CAP) player.baseHP  = BIG_CAP;
 logH+=`<div><span class="c-gemini">ERROR: 構文破壊機工を撃滅。コード残滓を吸収... baseATK/HP ×${multiplier.toFixed(3)} → ${fmtV(player.baseAtk)}</span></div>`;
