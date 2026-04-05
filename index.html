@@ -480,8 +480,6 @@ erosionStack=p.erosionStack||0;waterAccumDmg=BigInt(p.waterAccumDmg||"0");luxHit
 enemyDisasterStarUsed=p.enemyDisasterStarUsed||false;
 // ボス状態復元
 bossType=p.bossType||"main";
-try{currentBossHP=p.currentBossHP?BigInt(p.currentBossHP):BigInt(player.bossMaxHP||BOSS_MAX_HP_BASE.toString());}catch(e){currentBossHP=BOSS_MAX_HP_BASE;}
-if(currentBossHP<=0n)currentBossHP=BigInt(player.bossMaxHP||BOSS_MAX_HP_BASE.toString());
 if(bossType!=="main"&&p.kousaBossId){
 kousaBossData=KOUSA_BOSSES.find(b=>b.id===p.kousaBossId)||null;
 if(!kousaBossData){bossType="main";currentBossHP=BigInt(player.bossMaxHP);}
@@ -955,7 +953,7 @@ return{log:fe.length?`<div style="font-size:.82em;">獲得：${fe.join("、")}</
 // ============ メイン攻撃 ============
 function activateDisasterStar(bonus){
 player.inventory[311]-=100; // 100個消費
-// ATK +10%、HP +50% を baseAtk/baseHP に永続加算
+// ATK +10%、HP +20% を baseAtk/baseHP に永続加算
 const atkGain=player.baseAtk/10n>0n?player.baseAtk/10n:1n;
 const hpGain=player.baseHP/2n>0n?player.baseHP/2n:1n;
 player.baseAtk+=atkGain;
@@ -963,7 +961,7 @@ player.baseHP+=hpGain;
 if(player.baseAtk>BIG_CAP)player.baseAtk=BIG_CAP;
 if(player.baseHP>BIG_CAP)player.baseHP=BIG_CAP;
 enemyDisasterStarUsed=true;
-addLog(`<div><span style="color:#d4af37;font-weight:bold;">★星の記憶発動！メモリークリスタル100個を消費。baseATK+${fmtV(atkGain)}（+10%）/ baseHP+${fmtV(hpGain)}（+50%）</span></div>`);
+addLog(`<div><span style="color:#d4af37;font-weight:bold;">★星の記憶発動！メモリークリスタル100個を消費。baseATK+${fmtV(atkGain)}（+10%）/ baseHP+${fmtV(hpGain)}（+20%）</span></div>`);
 }
 function attack(){
 if(isModalOpen)return;
