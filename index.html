@@ -667,9 +667,8 @@ let atkBig=0n,hpBig=0n,mult=1;
 const hasReg=(player.inventory[603]||0)>0,hasZan=(player.inventory[804]||0)>0;
 let comp=0;
 for(let s=1;s<=8;s++){const at=RELIC_MASTER.filter(m=>m.star===s&&![117,0,999,311,803].includes(m.id)&&m.star!==9&&!m.gem);if(at.length>0&&at.every(m=>player.everOwned[m.id]))comp++;}
-// ★9（虹災遺物8種）コンプリートで9段階目
-const _star9list=RELIC_MASTER.filter(m=>m.star===9);
-if(_star9list.length>0&&_star9list.every(m=>player.everOwned[m.id]))comp++;
+// ★9（虹災遺物8種）コンプリートで9段階目 ※STAR9配列を参照
+if(STAR9.length>0&&STAR9.every(m=>player.everOwned[m.id]))comp++;
 const cb=Math.pow(2,comp);
 const cbBig=BigInt(Math.round(cb));
 Object.entries(player.inventory).forEach(([id,c])=>{
@@ -1140,8 +1139,8 @@ const hasR=(player.inventory[603]||0)>0,hasZ=(player.inventory[804]||0)>0;
 let _omegaCompCount=0;
 for(let s=1;s<=8;s++){const at=RELIC_MASTER.filter(m=>m.star===s&&![117,0,999,311,803].includes(m.id)&&m.star!==9&&!m.gem);if(at.length>0&&at.every(m=>player.everOwned[m.id]))_omegaCompCount++;}
 // ★9（虹災遺物8種）コンプリートで9段階目
-const _omega9=RELIC_MASTER.filter(m=>m.star===9);
-if(_omega9.length>0&&_omega9.every(m=>player.everOwned[m.id]))_omegaCompCount++;
+// ★9（虹災遺物8種）コンプリートで9段階目 ※STAR9配列を参照
+if(STAR9.length>0&&STAR9.every(m=>player.everOwned[m.id]))_omegaCompCount++;
 const _omegaCbBig=BigInt(Math.round(Math.pow(2,_omegaCompCount)));
 const _omegaGmBig=BigInt(Math.round(greedMult()*10000));
 for(let i=0;i<count;i++){
@@ -1766,6 +1765,7 @@ const b4disp=getRelicBonus();
 // 簡易的に cAtk*cb*gm を計算
 let compForDisp=0;
 for(let s=1;s<=8;s++){const at3=RELIC_MASTER.filter(m=>m.star===s&&![117,0,999,311,803].includes(m.id)&&m.star!==9&&!m.gem);if(at3.length>0&&at3.every(m=>player.everOwned[m.id]))compForDisp++;}
+if(STAR9.length>0&&STAR9.every(m=>player.everOwned[m.id]))compForDisp++;
 const cbDisp=BigInt(Math.round(Math.pow(2,compForDisp)));
 const gmDisp=BigInt(Math.round(greedMult()*10000));
 document.getElementById("comp-catk").textContent=fmtV(cAtk*cbDisp*gmDisp/10000n);
