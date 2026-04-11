@@ -272,7 +272,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
 <div class="privacy-link" onclick="openPolicy()">プライバシーポリシー</div>
 </div>
 </div>
-<div class="ver-footer">RELICORE v1.33</div>
+<div class="ver-footer">RELICORE v1.32</div>
 
 <script>
 const SAVE_KEY="relicore_player_data";
@@ -1271,8 +1271,8 @@ else if(player.hasWorldOrder&&!player.hasCrown&&(player.inventory[117]||0)>=2000
 else if(player.hasCrown&&!player.hasMeta&&(player.inventory[117]||0)>=300000&&player.hadoExpAccum>=30000000)openCosmicModal("meta");
 }
 
-// 星の記憶（メイン戦のみ・確定発動・100個必要）
-if(!isKousa&&(player.inventory[803]||0)>0&&(player.inventory[311]||0)>=100&&bossMaxHP>(player.baseAtk+bonus.atk))activateDisasterStar(bonus);
+// 星の記憶（メイン戦＋kousa戦で発動・Geminiは除く）
+if(bossType!=="kousa_gemini"&&(player.inventory[803]||0)>0&&(player.inventory[311]||0)>=100&&bossMaxHP>(player.baseAtk+bonus.atk))activateDisasterStar(bonus);
 
 // ダメージ計算：全てBigInt演算でNumber()オーバーフロー回避
 // bonus.mult と skillM をスケール整数化してBigInt乗算
