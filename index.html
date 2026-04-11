@@ -1166,7 +1166,7 @@ continue; // ★9枠は通常sel処理をスキップ
 let sel;
 if(star===2&&player.hasDivineGuide&&Math.random()<0.1)sel=RELIC_MASTER.find(m=>m.id===117);
 else{
-let cands=RELIC_MASTER.filter(m=>m.star===star&&m.id!==0&&m.id!==999&&m.star<9&&m.id!==117&&m.id!==311&&m.id!==803&&!m.gem);
+let cands=RELIC_MASTER.filter(m=>m.star===star&&m.id!==0&&m.id!==999&&m.star<9&&m.id!==117&&m.id!==311&&!m.gem);
 if(star===3)cands.push(RELIC_MASTER.find(m=>m.id===311));
 // ★6〜8は獲得済み遺物をドロップ候補から除外
 if(star>=6)cands=cands.filter(m=>!(player.inventory[m.id]>0));
