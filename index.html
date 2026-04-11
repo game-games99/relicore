@@ -494,10 +494,10 @@ player.baseAtk=_loadBig(p.baseAtk,"10");player.baseHP=_loadBig(p.baseHP,"100");p
 if(!p.gameVersion||p.gameVersion<"1.30"){player.maxDmg=0n;}
 // v1.31未満のセーブ: 旧BIG_CAP(50600桁)汚染の蓄積値を全リセット
 if(!p.gameVersion||p.gameVersion<"1.31"){
- player.maxDmg=0n;
- player.compressedAtkBig="0";player.compressedHpBig="0";
- player.compressedAtk=0;player.compressedHp=0;
- player.omegaAtkBig="0";player.omegaHpBig="0";
+player.maxDmg=0n;
+player.compressedAtkBig="0";player.compressedHpBig="0";
+player.compressedAtk=0;player.compressedHp=0;
+player.omegaAtkBig="0";player.omegaHpBig="0";
 }
 player.totalRelics=p.totalRelics||0;player.killCount=p.killCount||0;player.soujinCounter=p.soujinCounter||0;
 player.totalLevel=p.totalLevel||1;player.hadoExpAccum=p.hadoExpAccum||0;player.evolutionStack=p.evolutionStack||0;
@@ -550,7 +550,7 @@ if(!kousaBossData){bossType="main";currentBossHP=BigInt(player.bossMaxHP);}
 ensureOrderRelic();
 // ボスHPをセーブデータから復元（中途HPを正しく引き継ぐ）
 if(p.currentBossHP){
- currentBossHP=_loadBig(p.currentBossHP,BOSS_MAX_HP_BASE.toString());
+currentBossHP=_loadBig(p.currentBossHP,BOSS_MAX_HP_BASE.toString());
 }else{currentBossHP=_loadBig(player.bossMaxHP,BOSS_MAX_HP_BASE.toString());}
 // bossMaxHP復元
 {const bm=_loadBig(player.bossMaxHP,BOSS_MAX_HP_BASE.toString());player.bossMaxHP=bm.toString();}
@@ -583,15 +583,15 @@ let leveled=false;
 const prevRank=getRankIdx();
 const prevStars=getRankStars();
 while(player.totalLevel<MAX_LEVEL&&player.deathCount>=getExpThreshold(player.totalLevel)){
- player.deathCount-=getExpThreshold(player.totalLevel);
- player.totalLevel++;
- leveled=true;
- if(player.totalLevel%100===0)applyLv100Bonus(player.totalLevel);
+player.deathCount-=getExpThreshold(player.totalLevel);
+player.totalLevel++;
+leveled=true;
+if(player.totalLevel%100===0)applyLv100Bonus(player.totalLevel);
 }
 if(leveled){
- const newRank=getRankIdx();
- const newStars=getRankStars();
- if(newRank>prevRank||newStars>prevStars)openRankUpModal(player.totalLevel);
+const newRank=getRankIdx();
+const newStars=getRankStars();
+if(newRank>prevRank||newStars>prevStars)openRankUpModal(player.totalLevel);
 }
 return leveled;
 }
@@ -615,14 +615,14 @@ player.lv100ExpBonus+=2;
 player.lv100MilestonesApplied=(player.lv100MilestonesApplied||0)+1;
 if(silent)return;
 const msg=`<div><span style="color:var(--gold);font-weight:bold;font-size:1.05em;">【Lv${lv} 覚醒】`
- +`baseATK +${fmtV(atkGain)} / baseHP +${fmtV(hpGain)}</span>`
- +`<span style="color:var(--primary);"> 経験値ボーナス+2%（累積×${(1+player.lv100ExpBonus/100).toFixed(2)}）</span></div>`;
++`baseATK +${fmtV(atkGain)} / baseHP +${fmtV(hpGain)}</span>`
++`<span style="color:var(--primary);"> 経験値ボーナス+2%（累積×${(1+player.lv100ExpBonus/100).toFixed(2)}）</span></div>`;
 addLog(msg);
 isModalOpen=true;
 document.getElementById("rank-up-msg-text").innerHTML=
- `<span style="color:var(--gold);font-size:1.3em;font-weight:bold;">Lv.${lv} 覚醒</span><br><br>`
- +`<span style="color:#fff;">baseATK / baseHP が永続強化された！</span><br>`
- +`<span style="color:var(--primary);">経験値ボーナスが永続増加した！(累積×${(1+player.lv100ExpBonus/100).toFixed(2)})</span>`;
+`<span style="color:var(--gold);font-size:1.3em;font-weight:bold;">Lv.${lv} 覚醒</span><br><br>`
++`<span style="color:#fff;">baseATK / baseHP が永続強化された！</span><br>`
++`<span style="color:var(--primary);">経験値ボーナスが永続増加した！(累積×${(1+player.lv100ExpBonus/100).toFixed(2)})</span>`;
 document.getElementById("rank-up-modal").style.display="flex";
 saveGame();
 triggerUIUpdate();
@@ -630,41 +630,41 @@ triggerUIUpdate();
 
 // ランク閾値（30段階対応）
 const RANK_THRESHOLDS=[
- 0,100,200,400,700,1000,1500,2500,5000,8000,       // 0〜9  (唯一神まで)
- 15000,30000,60000,100000,200000,                   // 10〜14
- 400000,700000,1200000,2000000,4000000,             // 15〜19
- 8000000,15000000,30000000,60000000,120000000,      // 20〜24
- 250000000,500000000,1000000000,2000000000,5000000000 // 25〜29
+0,100,200,400,700,1000,1500,2500,5000,8000,       // 0〜9  (唯一神まで)
+15000,30000,60000,100000,200000,                   // 10〜14
+400000,700000,1200000,2000000,4000000,             // 15〜19
+8000000,15000000,30000000,60000000,120000000,      // 20〜24
+250000000,500000000,1000000000,2000000000,5000000000 // 25〜29
 ];
 function getRankIdx(){const lv=player.totalLevel;for(let i=RANK_THRESHOLDS.length-1;i>=0;i--){if(lv>=RANK_THRESHOLDS[i])return i;}return 0;}
 
 // ============ 星記号システム ============
 // Lv1000ごとに星カウント+1、記号と色が段階的に変化
 function getRankSymbolData(){
- const star=Math.floor(player.totalLevel/1000);
- if(star===0)return null; // 星なし
- if(star<10)     return{symbol:"★",color:"#ffffff",count:star};
- if(star<100)    return{symbol:"★",color:"#c084fc",count:star}; // 紫
- if(star<1000)   return{symbol:"☆",color:"#a855f7",count:star}; // 紫☆
- if(star<10000)  return{symbol:"✦",color:"#d4af37",count:star}; // 金✦
- if(star<100000) return{symbol:"✪",color:"rainbow",count:star}; // 虹✪
- return{symbol:"✪",color:"rainbow",count:star};
+const star=Math.floor(player.totalLevel/1000);
+if(star===0)return null; // 星なし
+if(star<10)     return{symbol:"★",color:"#ffffff",count:star};
+if(star<100)    return{symbol:"★",color:"#c084fc",count:star}; // 紫
+if(star<1000)   return{symbol:"☆",color:"#a855f7",count:star}; // 紫☆
+if(star<10000)  return{symbol:"✦",color:"#d4af37",count:star}; // 金✦
+if(star<100000) return{symbol:"✪",color:"rainbow",count:star}; // 虹✪
+return{symbol:"✪",color:"rainbow",count:star};
 }
 function getStarStr(){
- const d=getRankSymbolData();
- if(!d)return"";
- // 9個以下は記号を繰り返し、10以上は「記号+数字」
- if(d.count<=9)return d.symbol.repeat(d.count);
- return`${d.symbol}${d.count}`;
+const d=getRankSymbolData();
+if(!d)return"";
+// 9個以下は記号を繰り返し、10以上は「記号+数字」
+if(d.count<=9)return d.symbol.repeat(d.count);
+return`${d.symbol}${d.count}`;
 }
 function getStarHTML(){
- const d=getRankSymbolData();
- if(!d)return"";
- const txt=d.count<=9?d.symbol.repeat(d.count):`${d.symbol}${d.count.toLocaleString()}`;
- if(d.color==="rainbow"){
-   return`<span style="background:var(--magmel);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:bold;">${txt}</span>`;
- }
- return`<span style="color:${d.color};font-weight:bold;">${txt}</span>`;
+const d=getRankSymbolData();
+if(!d)return"";
+const txt=d.count<=9?d.symbol.repeat(d.count):`${d.symbol}${d.count.toLocaleString()}`;
+if(d.color==="rainbow"){
+  return`<span style="background:var(--magmel);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:bold;">${txt}</span>`;
+}
+return`<span style="color:${d.color};font-weight:bold;">${txt}</span>`;
 }
 function getFullRankTitle(){return getStarStr()+RANK_NAMES[getRankIdx()];}
 function getRankStars(){return Math.floor(player.totalLevel/1000);} // 後方互換
@@ -785,11 +785,11 @@ bossType="kousa_"+kousaBossData.id;
 erosionStack=0;waterAccumDmg=0n;comboHit=0;kushiaCounter=0;luxHitCounter=0;player.soujinCounter=0;
 // Geminiシールド初期化
 if(kousaBossData.id==="gemini"){
- geminiShield=Math.floor(Math.random()*51)+50; // 50〜100
- geminiAtkCap=player.baseAtk*10n>0n?player.baseAtk*10n:10n; // バフ上限: 開始時baseAtk×10
- addLog(`<div><span class="c-gemini">【Geminiシールド展開】耐久値：${geminiShield} — 全攻撃ダメージを無効化！</span></div>`);
+geminiShield=Math.floor(Math.random()*51)+50; // 50〜100
+geminiAtkCap=player.baseAtk*10n>0n?player.baseAtk*10n:10n; // バフ上限: 開始時baseAtk×10
+addLog(`<div><span class="c-gemini">【Geminiシールド展開】耐久値：${geminiShield} — 全攻撃ダメージを無効化！</span></div>`);
 }else{
- geminiShield=0;
+geminiShield=0;
 }
 addLog(`<div><span style="color:var(--nox);font-weight:bold;font-size:1.1em;">【虹災割り込み】${kousaBossData.intro}</span></div>`);
 updateBossHeaderStyle();
@@ -1078,9 +1078,9 @@ const fullTitle=getFullRankTitle();
 const stars=getRankStars();
 const starMsg=stars>0?`<br><span style="color:gold;font-size:1.1em;font-weight:bold;">【${getStarStr()}】の輝きが称号に宿った！</span>`:'';
 document.getElementById("rank-up-msg-text").innerHTML=
- `魂の核が激しく鼓動する……！<br><br>`
- +`<span style="font-size:1.4em;color:var(--growth);font-weight:bold;">再起Lv.${lv.toLocaleString()} 到達</span><br>`
- +`称号が【${starHTML}${RANK_NAMES[getRankIdx()]}】に昇格した。${starMsg}`;
+`魂の核が激しく鼓動する……！<br><br>`
++`<span style="font-size:1.4em;color:var(--growth);font-weight:bold;">再起Lv.${lv.toLocaleString()} 到達</span><br>`
++`称号が【${starHTML}${RANK_NAMES[getRankIdx()]}】に昇格した。${starMsg}`;
 document.getElementById("rank-up-modal").style.display="flex";
 }
 function closeRankUpModal(){document.getElementById("rank-up-modal").style.display="none";isModalOpen=false;}
@@ -1171,13 +1171,13 @@ const _omegaGmBig=BigInt(Math.round(greedMult()*10000));
 const hasOmega=(player.inventory[801]||0)>0&&count>=100;
 // 星別乗算フラグをループ外で確定
 const _starMult=[0,
-  player.hasHado?100:1,
-  player.hasGreatHado?100:1,
-  player.hasDivineGuide?100:1,
-  player.hasWorldOrder?100:1,
-  player.hasCrown?100:1,
-  player.hasMeta?100:1,
-  1,1
+ player.hasHado?100:1,
+ player.hasGreatHado?100:1,
+ player.hasDivineGuide?100:1,
+ player.hasWorldOrder?100:1,
+ player.hasCrown?100:1,
+ player.hasMeta?100:1,
+ 1,1
 ];
 const _rMult=hasR?1.5:1;const _zMult=hasZ?1000:1;
 const maxDmg=player.maxDmg;
@@ -1263,18 +1263,18 @@ player.attackExpBonus+=(player.totalLevel||1)*100;
 // === Geminiバフ：bonus/tb計算より前に適用してATK・HP両方を即時反映 ===
 let geminiBuffTag="";
 if(bossType==="kousa_gemini"){
- // baseAtkがキャップ未満の時のみバフを付与（指数爆発防止）
- if(geminiAtkCap>0n&&player.baseAtk<geminiAtkCap){
-   const gemAtkGain=player.baseAtk*20n/1000n>0n?player.baseAtk*20n/1000n:1n; // ×1.020相当
-   const gemHpGain=player.baseHP*40n/1000n>0n?player.baseHP*40n/1000n:1n;   // ×1.040相当
-   // キャップを超えないよう加算量を調整
-   const actualAtkGain=player.baseAtk+gemAtkGain>geminiAtkCap?geminiAtkCap-player.baseAtk:gemAtkGain;
-   player.baseAtk+=actualAtkGain;
-   player.baseHP+=gemHpGain;
-   geminiBuffTag=`<span class="c-gemini">【構文侵食】ATK+${fmtV(actualAtkGain)} HP+${fmtV(gemHpGain)}</span>`;
- }else if(geminiAtkCap>0n){
-   geminiBuffTag=`<span class="c-gemini">【構文侵食：上限到達】</span>`;
- }
+// baseAtkがキャップ未満の時のみバフを付与（指数爆発防止）
+if(geminiAtkCap>0n&&player.baseAtk<geminiAtkCap){
+  const gemAtkGain=player.baseAtk*20n/1000n>0n?player.baseAtk*20n/1000n:1n; // ×1.020相当
+  const gemHpGain=player.baseHP*40n/1000n>0n?player.baseHP*40n/1000n:1n;   // ×1.040相当
+  // キャップを超えないよう加算量を調整
+  const actualAtkGain=player.baseAtk+gemAtkGain>geminiAtkCap?geminiAtkCap-player.baseAtk:gemAtkGain;
+  player.baseAtk+=actualAtkGain;
+  player.baseHP+=gemHpGain;
+  geminiBuffTag=`<span class="c-gemini">【構文侵食】ATK+${fmtV(actualAtkGain)} HP+${fmtV(gemHpGain)}</span>`;
+}else if(geminiAtkCap>0n){
+  geminiBuffTag=`<span class="c-gemini">【構文侵食：上限到達】</span>`;
+}
 }
 
 const bonus=getRelicBonus();
@@ -1427,13 +1427,13 @@ isRescue=true;
 // === Geminiシールド処理 ===
 let shieldBlocked=false;
 if(bossType==="kousa_gemini"&&geminiShield>0){
- geminiShield--;
- shieldBlocked=true;
- const shieldTag=`<span class="c-gemini">【Geminiシールド】ダメージ無効！残耐久：${geminiShield}</span>`;
- tags=shieldTag+(geminiShield===0?`<span class="c-gemini"> → シールド崩壊！</span>`:"")+geminiBuffTag;
- fd=0n; // ダメージ無効
+geminiShield--;
+shieldBlocked=true;
+const shieldTag=`<span class="c-gemini">【Geminiシールド】ダメージ無効！残耐久：${geminiShield}</span>`;
+tags=shieldTag+(geminiShield===0?`<span class="c-gemini"> → シールド崩壊！</span>`:"")+geminiBuffTag;
+fd=0n; // ダメージ無効
 }else if(geminiBuffTag){
- tags+=geminiBuffTag;
+tags+=geminiBuffTag;
 }
 const lv=Math.min(10,player.totalLevel);
 // 夢幻宝玉(911): 1個につきドロップ上限+1
@@ -1443,19 +1443,19 @@ const dropN=Math.min(_dropCap,lv+Math.floor(player.totalLevel/10)*5+Math.min(50,
 const _dropResult=getDropLog(dropN);
 let logH;
 if(shieldBlocked){
- // シールド中：ダメージ表示なし、シールド情報のみ
- logH=`<div>${tags}</div>`+_dropResult.log;
+// シールド中：ダメージ表示なし、シールド情報のみ
+logH=`<div>${tags}</div>`+_dropResult.log;
 }else{
- // 発動スキルをランダム5件に絞って表示（総ダメージは常に表示）
- const _allTagsArr=(tags.match(/<span[^>]*>[\s\S]*?<\/span>/g)||[]);
- let _dispTags;
- if(_allTagsArr.length<=5){
-   _dispTags=tags;
- }else{
-   const _shuffled=_allTagsArr.slice().sort(()=>Math.random()-.5);
-   _dispTags=_shuffled.slice(0,5).join('')+`<span style="color:#888;font-size:.82em;">（他${_allTagsArr.length-5}スキル発動）</span>`;
- }
- logH=`<div>${_dispTags}<span style="color:#07f;font-weight:bold;">攻撃！${fmtV(isRescue?rescueFd:fd)} ダメージ！</span>${isRescue?`<span style="font-size:.8em;color:#aaa;">（実効値：救済込み）</span>`:""}</div>`+_dropResult.log;
+// 発動スキルをランダム5件に絞って表示（総ダメージは常に表示）
+const _allTagsArr=(tags.match(/<span[^>]*>[\s\S]*?<\/span>/g)||[]);
+let _dispTags;
+if(_allTagsArr.length<=5){
+  _dispTags=tags;
+}else{
+  const _shuffled=_allTagsArr.slice().sort(()=>Math.random()-.5);
+  _dispTags=_shuffled.slice(0,5).join('')+`<span style="color:#888;font-size:.82em;">（他${_allTagsArr.length-5}スキル発動）</span>`;
+}
+logH=`<div>${_dispTags}<span style="color:#07f;font-weight:bold;">攻撃！${fmtV(isRescue?rescueFd:fd)} ダメージ！</span>${isRescue?`<span style="font-size:.8em;color:#aaa;">（実効値：救済込み）</span>`:""}</div>`+_dropResult.log;
 }
 
 // オメガコア：獲得遺物のATK/HPを蓄積（メイン・虹災共通）
@@ -1488,11 +1488,11 @@ return;
 // メインボス撃破
 if(!player.isCleared){
 if((player.inventory[701]||0)>0&&fd>=bossMaxHP){
- currentBossHP=0n;player.killCount++;player.isCleared=true;enemyDisasterStarUsed=false;
- player.hasCompressionCore=true;isModalOpen=true;
- document.getElementById("clear-modal-title").innerText="神話の終焉";
- document.getElementById("clear-modal-msg").innerHTML=`終末神アポカリス＝ティアは、あなたの放った一撃の前に霧散した。<br><br>しかし、その瞬間に所持していた<span style="color:var(--gold);font-weight:bold;">『パンドラの箱』</span>が激しく震え、蓋が跳ね上がる。<br><br>中から溢れ出したのは希望ではなく、底知れぬ混沌。<span style="color:#f44;font-weight:bold;">「溢れし災厄」</span>が今、世界を再び塗り潰そうとしている。<br><br><hr style="border:0;border-top:1px solid #444;margin:15px 0"><span style="color:var(--growth);">ここからはエンドレスモードです。遊んでくれてありがとうございます！</span>`;
- document.getElementById("clear-modal").style.display="flex";
+currentBossHP=0n;player.killCount++;player.isCleared=true;enemyDisasterStarUsed=false;
+player.hasCompressionCore=true;isModalOpen=true;
+document.getElementById("clear-modal-title").innerText="神話の終焉";
+document.getElementById("clear-modal-msg").innerHTML=`終末神アポカリス＝ティアは、あなたの放った一撃の前に霧散した。<br><br>しかし、その瞬間に所持していた<span style="color:var(--gold);font-weight:bold;">『パンドラの箱』</span>が激しく震え、蓋が跳ね上がる。<br><br>中から溢れ出したのは希望ではなく、底知れぬ混沌。<span style="color:#f44;font-weight:bold;">「溢れし災厄」</span>が今、世界を再び塗り潰そうとしている。<br><br><hr style="border:0;border-top:1px solid #444;margin:15px 0"><span style="color:var(--growth);">ここからはエンドレスモードです。遊んでくれてありがとうございます！</span>`;
+document.getElementById("clear-modal").style.display="flex";
 }else{currentBossHP=bossMaxHP;enemyDisasterStarUsed=false;logH+=`<div><span style="color:#f00;font-weight:bold;">終末の回帰……！時が巻き戻る！！</span></div>`;}
 }else{handleBossDefeat();}
 }
@@ -1501,22 +1501,22 @@ currentBossHP-=rescueFd;
 if(!isKousa&&currentBossHP<1n&&!player.isCleared){comboHit=0;currentBossHP=bossMaxHP;enemyDisasterStarUsed=false;logH+=`<div><span style="color:#f00;font-weight:bold;">終末の回帰……！時が巻き戻る！！</span></div>`;}
 // 天輪（lux）割合ダメをrescueFd適用後に追加で削る（maxDmg非反映）
 if(luxDmg>0n&&currentBossHP>0n){
- if(luxDmg>=currentBossHP){
-   // luxDmgで撃破 → 撃破処理を呼ぶ
-   currentBossHP=0n;
-   comboHit=0;
-   if(isKousa){onKousaDefeat(logH);return;}
-   else if(player.isCleared){handleBossDefeat();}
-   else if((player.inventory[701]||0)>0){
-     player.killCount++;player.isCleared=true;enemyDisasterStarUsed=false;
-     player.hasCompressionCore=true;isModalOpen=true;
-     document.getElementById("clear-modal-title").innerText="神話の終焉";
-     document.getElementById("clear-modal-msg").innerHTML=`終末神アポカリス＝ティアは、あなたの放った一撃の前に霧散した。<br><br>しかし、その瞬間に所持していた<span style="color:var(--gold);font-weight:bold;">『パンドラの箱』</span>が激しく震え、蓋が跳ね上がる。<br><br>中から溢れ出したのは希望ではなく、底知れぬ混沌。<span style="color:#f44;font-weight:bold;">「溢れし災厄」</span>が今、世界を再び塗り潰そうとしている。<br><br><hr style="border:0;border-top:1px solid #444;margin:15px 0"><span style="color:var(--growth);">ここからはエンドレスモードです。遊んでくれてありがとうございます！</span>`;
-     document.getElementById("clear-modal").style.display="flex";
-   }else{currentBossHP=bossMaxHP;enemyDisasterStarUsed=false;}
- }else{
-   currentBossHP-=luxDmg;
- }
+if(luxDmg>=currentBossHP){
+  // luxDmgで撃破 → 撃破処理を呼ぶ
+  currentBossHP=0n;
+  comboHit=0;
+  if(isKousa){onKousaDefeat(logH);return;}
+  else if(player.isCleared){handleBossDefeat();}
+  else if((player.inventory[701]||0)>0){
+    player.killCount++;player.isCleared=true;enemyDisasterStarUsed=false;
+    player.hasCompressionCore=true;isModalOpen=true;
+    document.getElementById("clear-modal-title").innerText="神話の終焉";
+    document.getElementById("clear-modal-msg").innerHTML=`終末神アポカリス＝ティアは、あなたの放った一撃の前に霧散した。<br><br>しかし、その瞬間に所持していた<span style="color:var(--gold);font-weight:bold;">『パンドラの箱』</span>が激しく震え、蓋が跳ね上がる。<br><br>中から溢れ出したのは希望ではなく、底知れぬ混沌。<span style="color:#f44;font-weight:bold;">「溢れし災厄」</span>が今、世界を再び塗り潰そうとしている。<br><br><hr style="border:0;border-top:1px solid #444;margin:15px 0"><span style="color:var(--growth);">ここからはエンドレスモードです。遊んでくれてありがとうございます！</span>`;
+    document.getElementById("clear-modal").style.display="flex";
+  }else{currentBossHP=bossMaxHP;enemyDisasterStarUsed=false;}
+}else{
+  currentBossHP-=luxDmg;
+}
 }
 }
 } // end !shieldBlocked
@@ -1853,8 +1853,8 @@ const hasR=(player.inventory[603]||0)>0,hasZ=(player.inventory[804]||0)>0;
 const curOmegaAtk=player.omegaAtkBig||"0",curOmegaHp=player.omegaHpBig||"0",curEvo=player.evolutionStack||0;
 // グローバルフラグ変化（hasR/hasZ/omegaAtk等）→フルリビルド
 const globalChanged=hasR!==_relicRenderCache.hasR||hasZ!==_relicRenderCache.hasZ
-  ||curOmegaAtk!==_relicRenderCache.omegaAtk||curOmegaHp!==_relicRenderCache.omegaHp
-  ||curEvo!==_relicRenderCache.evoStack;
+ ||curOmegaAtk!==_relicRenderCache.omegaAtk||curOmegaHp!==_relicRenderCache.omegaHp
+ ||curEvo!==_relicRenderCache.evoStack;
 // ソート順取得
 const sorted=Object.entries(player.inventory).filter(([,v])=>v>0).sort(([a],[b])=>{
 const ra=RELIC_MAP.get(parseInt(a)),rb=RELIC_MAP.get(parseInt(b));
@@ -1946,8 +1946,8 @@ function resetData(){if(confirm("全リセットしますか？")){localStorage.
 
 
 function resetMaxDmg(){if(confirm("最高ダメージをリセットしますか？\n（ボスHPはリセットされません）")){
- player.maxDmg=0n;lastDmg=0n;
- saveGame();triggerUIUpdate();}}
+player.maxDmg=0n;lastDmg=0n;
+saveGame();triggerUIUpdate();}}
 
 loadGame();triggerUIUpdate();
 </script>
