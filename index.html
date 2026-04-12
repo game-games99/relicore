@@ -350,7 +350,7 @@ const RELIC_MASTER=[
 {id:611,star:6,name:"共鳴宝玉",atk:0,hp:0,gem:true,desc:"所持数に応じて全遺物効果を増幅。倍率＝×(1＋0.01×所持数)。収集数上限なし。"},
 {id:701,star:7,name:"パンドラの箱",atk:0,hp:0,desc:"神を屠る唯一の条件。災厄の底に希望を宿す。"},{id:702,star:7,name:"終焉の福音",atk:0,hp:0,desc:"敵HPが50%以下のとき、与ダメージ+400%。(重複不可)"},{id:703,star:7,name:"神滅のアカシックレコード",atk:0,hp:0,desc:"与ダメージの最終倍率にさらに+400%。(重複不可)"},
 {id:711,star:7,name:"神核宝玉",atk:0,hp:0,gem:true,gemBase:0.50,desc:"所持数に応じてATK・HPを乗算強化。倍率＝1＋0.50×(所持数^0.6)。収集数上限なし。"},
-{id:804,star:8,name:"災厄の残滓",atk:0,hp:0,desc:"★1〜★6遺物の能力を1000倍に引き上げる。最終ダメージ × (1 + log10(総討伐数 + 1) × 0.06)"},{id:801,star:8,name:"天律崩壊オメガ・コア",atk:0,hp:0,desc:"【蓄積】一度の攻撃で遺物100個以上獲得時、その遺物のATK・HPに蓄積回数ボーナスを乗算して永続蓄積する。乗算倍率は蓄積回数・総攻撃回数に応じて微増する。"},{id:802,star:8,name:"特異演算機関：ジェネシスコード",atk:0,hp:0,desc:"敵HPが自ATKの100倍以上の時、差分比に応じた乗算（最大×8）で火力を補正。Stack蓄積でさらに底上げ。攻撃のたびにbaseATK/HP永続成長（0.001%/回）。"},{id:803,star:8,name:"記憶の遺産",atk:0,hp:0,desc:"敵最大HPが自ATKを上回る時、メモリークリスタル100個消費で「星の記憶」確定発動。ATK+10%・HP+50%を永続加算。"},
+{id:804,star:8,name:"災厄の残滓",atk:0,hp:0,desc:"★1〜★6遺物の能力を1000倍に引き上げる。最終ダメージ × (1 + log10(総討伐数 + 1) × 0.06)"},{id:801,star:8,name:"天律崩壊オメガ・コア",atk:0,hp:0,desc:"【蓄積】一度の攻撃で遺物100個以上獲得時、その遺物のATK・HPに蓄積回数ボーナスを乗算して永続蓄積する。乗算倍率は蓄積回数・総攻撃回数に応じて微増する。"},{id:802,star:8,name:"特異演算機関：ジェネシスコード",atk:0,hp:0,desc:"敵HPが自ATKの100倍以上の時、差分比に応じた乗算（最大×8）で火力を補正。Stack蓄積でさらに底上げ。攻撃のたびにbaseATK/HP永続成長（0.001%/回）。"},{id:803,star:8,name:"記憶の遺産",atk:0,hp:0,desc:"敵最大HPが自ATKのを上回る時、メモリークリスタル100個消費で「星の記憶」確定発動。ATK+1%・HP+5%を永続加算。"},
 {id:811,star:8,name:"災禍宝玉",atk:0,hp:0,gem:true,desc:"ダメージ上限を突破する。1個につき上限+1%。収集数上限なし。"},
 {id:911,star:9,name:"夢幻宝玉",atk:0,hp:0,gem:true,desc:"攻撃時の遺物ドロップ上限を突破する。1個につき+1。収集数上限なし。"},
 ...STAR9
@@ -1245,14 +1245,15 @@ return{log:fe.length?`<div style="font-size:.82em;">獲得：${fe.join("、")}</
 
 // ============ メイン攻撃 ============
 function activateDisasterStar(bonus){
-player.inventory[311]-=100; // 100個消費
-// ATK +10%、HP +20% を baseAtk/baseHP に永続加算
-const atkGain=player.baseAtk/10n>0n?player.baseAtk/10n:1n;
-const hpGain=player.baseHP/2n>0n?player.baseHP/2n:1n;
-player.baseAtk+=atkGain;
-player.baseHP+=hpGain;
-enemyDisasterStarUsed=true;
-addLog(`<div><span style="color:#d4af37;font-weight:bold;">★星の記憶発動！メモリークリスタル100個を消費。baseATK+${fmtV(atkGain)}（+10%）/ baseHP+${fmtV(hpGain)}（+20%）</span></div>`);
+  player.inventory[311]-=100; // 100個消費
+  // 分母を直接変更（= 上昇量を1/10に）
+  const atkGain = player.baseAtk/100n > 0n ? player.baseAtk/100n : 1n; // 1%
+  const hpGain  = player.baseHP/20n  > 0n ? player.baseHP/20n  : 1n;  // 5%
+  player.baseAtk += atkGain;
+  player.baseHP  += hpGain;
+enemyDisasterStarUsed = true;
+addLog(`<div><span style="color:#d4af37;font-weight:bold;">★星の記憶発動！メモリークリスタル100個を消費。
+baseATK+${fmtV(atkGain)}（+1%）/ baseHP+${fmtV(hpGain)}（+5%）</span></div>`);
 }
 function attack(){
 if(isModalOpen)return;
