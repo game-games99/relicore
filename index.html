@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RELICORE - v1.35</title>
+<title>RELICORE - v1.36</title>
 <style>
 :root{--bg:#fff;--panel:#f8f9fa;--border:#dee2e6;--primary:#007bff;--text:#212529;--hp:#dc3545;--dark:#1a1a1a;--gold:#d4af37;--growth:#ff69b4;--relic-purple:#6610f2;--relic-bg:#fcfaff;--cosmic-blue:#00d4ff;--gemini:#4b0082;--edel:#22c55e;--neria:#3b82f6;--nox:#a855f7;--lilith:#ec4899;--valka:#f97316;--igna:#ef4444;--lux:#eab308;--magmel:linear-gradient(135deg,#ef4444,#f97316,#eab308,#22c55e,#3b82f6,#a855f7,#ec4899)}
 *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;box-sizing:border-box}
@@ -1265,9 +1265,22 @@ let cands;
 if(star===3)cands=CANDS3_WITH311;
 else cands=CANDS_BASE[star]||CANDS1_FALLBACK;
 // ★6〜8: 所持済みを除外（スライス不要なfilter）
-if(star>=6){
+if(star>=6&&star<=8){
 const uc=[];for(let ci=0;ci<cands.length;ci++){if(!(player.inventory[cands[ci].id]>0))uc.push(cands[ci]);}
-cands=uc.length?uc:CANDS1_FALLBACK;
+if(uc.length===0){
+// 全種コンプ済み → gemUnlocked なら対応宝玉に変換、未コンプなら★1フォールバック
+if(player.gemUnlocked){
+const gemId=GEM_MAP[star];
+const isFirstGem=(player.inventory[gemId]||0)===0;
+player.inventory[gemId]=(player.inventory[gemId]||0)+1;
+player.totalRelics++;
+const gm=RELIC_MAP.get(gemId);
+sc[gm.star]=(sc[gm.star]||0)+1;sg[gm.star][gemId]=(sg[gm.star][gemId]||0)+1;
+if(isFirstGem&&(!showR||gm.star>showR.star))showR=gm;
+player.everOwned[gemId]=true;
+continue;
+}else{cands=CANDS1_FALLBACK;}
+}else{cands=uc;}
 }
 sel=cands[Math.floor(Math.random()*cands.length)];
 }
