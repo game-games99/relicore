@@ -449,26 +449,60 @@ let n;
 try{n=typeof val==="bigint"?val:BigInt(Math.floor(Number(val)));}catch(e){return "???";}
 if(n<0n)n=0n;
 const L=1000000000000000n;if(n<L)return n.toLocaleString();
-let u=0,b=n;while(b>=1000n*L){b/=1000n;u++;}
-return(b/L).toString()+"."+(b%L).toString().padStart(15,"0").substring(0,2)+getUnit(u);
+// float fast path（<10^308）
+const approx=Number(n);
+if(isFinite(approx)&&approx>0){
+const log=Math.log10(approx);const u=Math.max(0,Math.floor((log-15)/3));
+const m=approx/Math.pow(10,15+u*3);const i=Math.floor(m);
+const d=Math.floor((m-i)*100).toString().padStart(2,"0").substring(0,2);
+return i+"."+d+getUnit(u);
+}
+// fallback: 文字列ベース（10^308超の極大数）
+const s=n.toString();const digits=s.length;
+const u=Math.max(0,Math.floor((digits-16)/3));const head=Math.max(1,digits-u*3-15);
+return s.substring(0,head)+"."+s.substring(head,head+2)+getUnit(u);
 }
 function fmtF(val){
 let v;try{v=safeBigInt(val);}catch(e){return "???";}
 const L=1000000000000000n;if(v<L)return v.toLocaleString();
-let u=0,b=v;while(b>=1000n*L){b/=1000n;u++;}
-return(b/L).toString()+"."+(b%L).toString().padStart(15,"0").substring(0,2)+getUnit(u);
+const approx=Number(v);
+if(isFinite(approx)&&approx>0){
+const log=Math.log10(approx);const u=Math.max(0,Math.floor((log-15)/3));
+const m=approx/Math.pow(10,15+u*3);const i=Math.floor(m);
+const d=Math.floor((m-i)*100).toString().padStart(2,"0").substring(0,2);
+return i+"."+d+getUnit(u);
+}
+const s=v.toString();const digits=s.length;
+const u=Math.max(0,Math.floor((digits-16)/3));const head=Math.max(1,digits-u*3-15);
+return s.substring(0,head)+"."+s.substring(head,head+2)+getUnit(u);
 }
 function fmtStat(val){
 let v;try{v=typeof val==="bigint"?val:safeBigInt(val);}catch(e){return "???";}
 const L=1000000000000000n;if(v<L)return v.toLocaleString();
-let u=0,b=v;while(b>=1000n*L){b/=1000n;u++;}
-return(b/L).toString()+"."+(b%L).toString().padStart(15,"0").substring(0,4)+getUnit(u);
+const approx=Number(v);
+if(isFinite(approx)&&approx>0){
+const log=Math.log10(approx);const u=Math.max(0,Math.floor((log-15)/3));
+const m=approx/Math.pow(10,15+u*3);const i=Math.floor(m);
+const d=Math.floor((m-i)*10000).toString().padStart(4,"0").substring(0,4);
+return i+"."+d+getUnit(u);
+}
+const s=v.toString();const digits=s.length;
+const u=Math.max(0,Math.floor((digits-16)/3));const head=Math.max(1,digits-u*3-15);
+return s.substring(0,head)+"."+s.substring(head,head+4)+getUnit(u);
 }
 function fmtMD(val){
 let v;try{v=typeof val==="bigint"?val:safeBigInt(val);}catch(e){return "???";}
 const L=1000000000000000n;if(v<L)return v.toLocaleString();
-let u=0,b=v;while(b>=1000n*L){b/=1000n;u++;}
-return(b/L).toString()+"."+(b%L).toString().padStart(15,"0").substring(0,5)+getUnit(u);
+const approx=Number(v);
+if(isFinite(approx)&&approx>0){
+const log=Math.log10(approx);const u=Math.max(0,Math.floor((log-15)/3));
+const m=approx/Math.pow(10,15+u*3);const i=Math.floor(m);
+const d=Math.floor((m-i)*100000).toString().padStart(5,"0").substring(0,5);
+return i+"."+d+getUnit(u);
+}
+const s=v.toString();const digits=s.length;
+const u=Math.max(0,Math.floor((digits-16)/3));const head=Math.max(1,digits-u*3-15);
+return s.substring(0,head)+"."+s.substring(head,head+5)+getUnit(u);
 }
 
 // ============ セーブ/ロード ============
@@ -1267,6 +1301,20 @@ return{log:fe.length?`<div style="font-size:.82em;">獲得：${fe.join("、")}</
 
 // ============ メイン攻撃 ============
 function activateDisasterStar(bonus){
+// === 発動前チェック: 消費100個の遺物ボーナスより上昇量が少ない場合はスキップ ===
+const _r311=RELIC_MAP.get(311);
+if(_r311){
+  let _cAtk=(_r311.atk||0)*100,_cHp=(_r311.hp||0)*100;
+  if(player.hasDivineGuide){_cAtk*=100;_cHp*=100;}
+  const _hasReg=(player.inventory[603]||0)>0,_hasZan=(player.inventory[804]||0)>0;
+  if(_hasReg){_cAtk*=1.5;_cHp*=1.5;}
+  if(_hasZan){_cAtk*=1000;_cHp*=1000;}
+  const _cb=Math.pow(2,bonus.compCount||0),_gm=greedMult();
+  const _crystalTotal=safeBigInt(_cAtk*_cb*_gm)+safeBigInt(_cHp*_cb*_gm);
+  const _atkGainPreview=player.baseAtk/100n>0n?player.baseAtk/100n:1n;
+  const _hpGainPreview=player.baseHP/20n>0n?player.baseHP/20n:1n;
+  if(_atkGainPreview+_hpGainPreview<_crystalTotal)return; // 損になるので発動しない
+}
 player.inventory[311]-=100; // 100個消費
 // ATK +1%、HP +5% を baseAtk/baseHP に永続加算
 const atkGain=player.baseAtk/100n>0n?player.baseAtk/100n:1n;
@@ -1697,9 +1745,9 @@ const hd=document.getElementById("bosshp-cur");
 {let _bhStr;
 if(bossType==="main"&&!player.isCleared){
 const _bmx=(_bossMaxHPBigLive!==null&&_bossMaxHPBigLive>0n)?_bossMaxHPBigLive:BOSS_MAX_HP_BASE;
-// BigInt演算で精度保持（Number変換すると大きな値で差分が消える）
-const _ratio=_bmx>0n?currentBossHP*100000000000000000000n/_bmx:0n;
-_bhStr=(_ratio>0n?_ratio:0n).toLocaleString();
+// float近似（精度よりパフォーマンス優先: 表示用なので問題なし）
+const _ratio=_bmx>0n?(Number(currentBossHP)/Number(_bmx))*100:0;
+_bhStr=Math.max(0,Math.floor(isFinite(_ratio)?_ratio*Math.pow(10,18):0)).toLocaleString();
 }else{_bhStr=fmtV(currentBossHP);}
 if(_bhStr!==_dispCache.bossHp){hd.textContent=_bhStr;_dispCache.bossHp=_bhStr;}
 }
@@ -1720,8 +1768,9 @@ nameEl.style.color="#888";
 }
 
 // HPバー
-const pct=bmaxHP>0n?Number(currentBossHP*100n/bmaxHP):0;
-const _pctRnd=Math.max(0,Math.min(100,pct));
+// float近似で十分（バー表示用なのでBigInt精度不要）
+const pct=bmaxHP>0n?(Number(currentBossHP)/Number(bmaxHP))*100:0;
+const _pctRnd=Math.max(0,Math.min(100,isFinite(pct)?pct:0));
 if(Math.abs(_pctRnd-_dispCache_hpBarPct)>0.05){document.getElementById("hp-bar-fill").style.width=_pctRnd+"%";_dispCache_hpBarPct=_pctRnd;}
 updateBossHeaderStyle();
 
