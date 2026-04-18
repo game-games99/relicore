@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RELICORE - v1.36</title>
+<title>RELICORE - v1.37</title>
 <style>
 :root{--bg:#fff;--panel:#f8f9fa;--border:#dee2e6;--primary:#007bff;--text:#212529;--hp:#dc3545;--dark:#1a1a1a;--gold:#d4af37;--growth:#ff69b4;--relic-purple:#6610f2;--relic-bg:#fcfaff;--cosmic-blue:#00d4ff;--gemini:#4b0082;--edel:#22c55e;--neria:#3b82f6;--nox:#a855f7;--lilith:#ec4899;--valka:#f97316;--igna:#ef4444;--lux:#eab308;--magmel:linear-gradient(135deg,#ef4444,#f97316,#eab308,#22c55e,#3b82f6,#a855f7,#ec4899)}
 *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;box-sizing:border-box}
@@ -174,6 +174,18 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
 .btn-auto-off{background:#2a2a2a;color:#666;box-shadow:0 3px 0 #111;border:2px solid #444}
 .btn-auto-on{background:#ff4444;color:#fff;box-shadow:0 3px 0 #991111;border:2px solid #ff6666;animation:auto-pulse .8s infinite alternate}
 @keyframes auto-pulse{from{box-shadow:0 3px 0 #991111,0 0 0 rgba(255,68,68,0)}to{box-shadow:0 3px 0 #991111,0 0 12px rgba(255,68,68,0.6)}}
+/* ===== 終極のエク＝ゼウス ===== */
+:root{--zeus-gold:#f5c518;--zeus-white:#ffffff;}
+@keyframes zeus-pulse{0%{box-shadow:0 0 20px rgba(245,197,24,.5),0 0 40px rgba(255,255,255,.2);border-color:#f5c518}50%{box-shadow:0 0 60px rgba(245,197,24,.9),0 0 80px rgba(255,255,255,.6);border-color:#fff}100%{box-shadow:0 0 20px rgba(245,197,24,.5),0 0 40px rgba(255,255,255,.2);border-color:#f5c518}}
+@keyframes zeus-thunder{0%,90%,100%{opacity:1}92%{opacity:.3}94%{opacity:1}96%{opacity:.1}98%{opacity:1}}
+@keyframes zeus-text-glow{from{text-shadow:0 0 10px #f5c518,0 0 20px #f5c518}to{text-shadow:0 0 25px #fff,0 0 50px #f5c518,0 0 80px #f5c518}}
+.hpfill-zeus{background:linear-gradient(90deg,#7a6000,#f5c518)!important;animation:zeus-thunder 3s infinite!important}
+.attack-zeus{background:linear-gradient(135deg,#2a2000,#7a6000)!important;box-shadow:0 4px 0 #1a1000!important;border:2px solid #f5c518!important;color:#f5c518!important;animation:zeus-pulse 2s infinite!important}
+.zeus-modal-content{background:radial-gradient(circle at 50% 30%,#1a1400,#000);border:3px solid #f5c518;border-radius:20px;padding:40px 20px;text-align:center;color:#fff;max-width:460px;width:95%;animation:zeus-pulse 2s infinite}
+.zeus-defeat-content{background:radial-gradient(circle,#0d0d0d,#000);border:3px solid #f5c518;border-radius:20px;padding:40px 20px;text-align:center;color:#fff;max-width:460px;width:95%;animation:zeus-thunder 4s infinite}
+.zeus-relic-card{background:radial-gradient(135deg,#1a1400,#0a0a00);border:3px solid transparent;background-clip:padding-box;border-radius:15px;padding:20px;margin:20px 0;animation:zeus-pulse 2s infinite}
+.zeus-relic-name{font-size:1.6em;font-weight:bold;background:linear-gradient(135deg,#f5c518,#fff,#f5c518);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:zeus-text-glow 1.5s infinite alternate;letter-spacing:4px}
+.c-zeus{color:#f5c518;font-weight:bold;text-shadow:0 0 8px rgba(245,197,24,.6)}
 </style>
 
 </head>
@@ -209,6 +221,79 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
 <div class="star9-name" id="kousa-relic-name"></div>
 <div class="star9-desc" id="kousa-relic-desc"></div>
 <div style="font-size:.75em;color:#aaa;">画面タップで閉じる</div>
+</div>
+</div>
+
+<!-- 終極のエク＝ゼウス：初討伐エンディング -->
+
+<div id="zeus-ending-modal" class="modal-overlay" style="z-index:76000;">
+<div class="zeus-modal-content" style="max-width:480px;">
+<div style="font-size:.7em;color:#aaa;letter-spacing:4px;margin-bottom:14px;">— T R U E  E N D I N G —</div>
+<div style="font-size:2em;font-weight:bold;background:linear-gradient(135deg,#f5c518,#fff,#f5c518);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:4px;margin-bottom:6px;animation:zeus-text-glow 1.5s infinite alternate;">終極制覇</div>
+<div style="font-size:.75em;color:#888;letter-spacing:2px;margin-bottom:24px;">Ek=Zeus, Defeated</div>
+
+<div style="background:rgba(245,197,24,.06);border:1px solid rgba(245,197,24,.25);border-radius:12px;padding:20px;margin-bottom:20px;text-align:left;">
+<div style="font-size:1.05em;color:#f5c518;font-weight:bold;margin-bottom:14px;text-align:center;letter-spacing:2px;text-shadow:0 0 10px rgba(245,197,24,.5);">よくぞここまで到達しました</div>
+<div style="font-size:.9em;color:#eee;line-height:2.2;">
+数えきれないほどの死と再起を繰り返し、<br>
+無数の遺物を集め、無限の強さを積み重ね——<br><br>
+ついにあなたは宇宙の頂点に立った。<br><br>
+<span style="color:#f5c518;font-weight:bold;">RELICORE はここまでとなります。</span><br><br>
+<span style="color:#ccc;font-size:.9em;">沢山プレイしてくれてありがとう。</span>
+</div>
+</div>
+
+<div class="zeus-relic-card" style="margin:0 0 20px 0;">
+<div style="font-size:.75em;color:#aaa;margin-bottom:6px;letter-spacing:2px;">★ UNIQUE TROPHY ★</div>
+<div class="zeus-relic-name">全知全能</div>
+<div style="font-size:.8em;color:#ccc;margin-top:8px;line-height:1.7;">万物の理を超え、終極に到達した者の証明。<br><span style="color:#888;font-size:.9em;">この遺物は強さを与えない。ただ——お前が成し遂げたことを、永遠に刻む。</span></div>
+</div>
+
+<div style="font-size:.78em;color:#888;margin-bottom:16px;">※ ゲームはこのまま続けることができます。<br>次のエク＝ゼウスは更なる強さで降臨します。</div>
+<button class="story-btn" style="border-color:#f5c518;color:#f5c518;" onclick="closeZeusEndingModal()">伝説へ――</button>
+</div>
+</div>
+
+<!-- 終極のエク＝ゼウス：出現モーダル -->
+
+<div id="zeus-appear-modal" class="modal-overlay" style="z-index:75000;">
+<div class="zeus-modal-content">
+<div style="font-size:.75em;color:#aaa;letter-spacing:3px;margin-bottom:10px;">— ABSOLUTE BEING —</div>
+<div style="font-size:1.8em;font-weight:bold;background:linear-gradient(135deg,#f5c518,#fff,#f5c518);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:4px;margin-bottom:6px;animation:zeus-text-glow 1.5s infinite alternate;">終極のエク＝ゼウス</div>
+<div id="zeus-appear-sub" style="font-size:.8em;color:#aaa;letter-spacing:2px;margin-bottom:20px;">Ek=Zeus, The Absolute Pinnacle</div>
+<div style="background:rgba(245,197,24,.05);border:1px solid rgba(245,197,24,.3);border-radius:10px;padding:16px;margin-bottom:20px;font-size:.88em;line-height:2;color:#eee;text-align:left;">
+強くなりすぎた者への<span style="color:#f5c518;font-weight:bold;">懲罰</span>として、宇宙の頂点より降臨した。<br>
+この存在を<span style="color:#ff4444;font-weight:bold;">「倒す」</span>ことは想定されていない。<br><br>
+<span style="color:#f5c518;font-weight:bold;">【警告】</span>再起の誓いは<span style="color:#ff4444;font-weight:bold;">通用しない。</span><br>
+やられると、この戦いは<span style="color:#ff4444;font-weight:bold;">即座に終了</span>する。
+</div>
+<button class="story-btn" style="border-color:#f5c518;color:#f5c518;" onclick="closeZeusAppearModal()">その力を受け入れる</button>
+</div>
+</div>
+
+<!-- 終極のエク＝ゼウス：撃退モーダル（プレイヤーがやられた） -->
+
+<div id="zeus-defeat-modal" class="modal-overlay" style="z-index:75000;">
+<div class="zeus-defeat-content">
+<div style="font-size:2em;margin-bottom:10px;">⚡</div>
+<div style="font-size:1.4em;font-weight:bold;color:#f5c518;letter-spacing:3px;margin-bottom:15px;">撃退された</div>
+<div style="font-size:.9em;color:#ccc;line-height:1.9;margin-bottom:20px;text-align:left;background:rgba(255,255,255,.04);padding:14px;border-radius:8px;">
+エク＝ゼウスの一撃が全てを消し飛ばした。<br>
+<span style="color:#aaa;font-size:.9em;">再起の誓いは彼の前では無力である。</span><br><br>
+<span style="color:#f5c518;">——「まだ足りない」——</span>
+</div>
+<button class="story-btn" style="border-color:#f5c518;color:#f5c518;" onclick="closeZeusDefeatModal()">敗北を認める</button>
+</div>
+</div>
+
+<!-- 終極のエク＝ゼウス：撃破モーダル -->
+
+<div id="zeus-clear-modal" class="modal-overlay" style="z-index:75000;">
+<div class="zeus-modal-content">
+<div style="font-size:.75em;color:#f5c518;letter-spacing:4px;margin-bottom:8px;animation:zeus-text-glow 1s infinite alternate;">— ABSOLUTE TRANSCENDENCE —</div>
+<div style="font-size:1.8em;font-weight:bold;background:linear-gradient(135deg,#f5c518,#fff,#f5c518);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:4px;margin-bottom:14px;animation:zeus-text-glow 1.5s infinite alternate;">終極制覇</div>
+<div id="zeus-clear-msg" style="font-size:.88em;color:#ccc;line-height:1.9;margin-bottom:16px;background:rgba(245,197,24,.05);border:1px solid rgba(245,197,24,.2);border-radius:8px;padding:14px;text-align:left;"></div>
+<button class="story-btn" style="border-color:#f5c518;color:#f5c518;" onclick="closeZeusClearModal()">伝説へ</button>
 </div>
 </div>
 
@@ -263,7 +348,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
 </div>
 <div id="status" class="tab">
 <div class="rank-display" id="st-rank-area"><div class="rank-lv" id="st-rank-lv">Lv.1</div><div class="rank-title" id="st-rank-title">初心者</div></div>
-<div class="st-box" id="st-lv100bonus" style="border-left-color:var(--gold);display:none;"></div><div class="st-box">総攻撃数: <span id="st-totalclicks">0</span><br>戦闘経験値: <span id="v-death">0</span><br>累計遺物獲得数: <span id="st-totalrelics" style="font-weight:bold;color:var(--relic-purple);">0</span><br>最高ダメージ: <span id="st-maxdmg">0</span> <button onclick="resetMaxDmg()" style="font-size:.7em;padding:2px 8px;background:#dc3545;color:#fff;border:none;border-radius:8px;cursor:pointer;vertical-align:middle;">リセット</button><br>最終ダメージ倍率: <span id="st-dmgmult" style="font-weight:bold;color:var(--primary);">x1.00</span><br>獲得資格: <span id="st-rank" class="clickable-stat" onclick="checkDropEligibility()">★1まで</span><br>コンプリート数: <span id="st-comp-count" style="font-weight:bold;color:var(--gold);">0</span> (倍率: <span id="st-comp-bonus" style="font-weight:bold;color:var(--growth);">x1.00</span>)<br><span id="kill-count-box" style="display:none;">溢れし討伐数: <span id="st-kill-count" style="font-weight:bold;color:var(--gold);">0</span><br>虹災討伐数: <span id="st-kousa-kill" style="font-weight:bold;color:var(--nox);">0</span></span></div>
+<div class="st-box" id="st-lv100bonus" style="border-left-color:var(--gold);display:none;"></div><div class="st-box">総攻撃数: <span id="st-totalclicks">0</span><br>戦闘経験値: <span id="v-death">0</span><br>累計遺物獲得数: <span id="st-totalrelics" style="font-weight:bold;color:var(--relic-purple);">0</span><br>最高ダメージ: <span id="st-maxdmg">0</span> <button onclick="resetMaxDmg()" style="font-size:.7em;padding:2px 8px;background:#dc3545;color:#fff;border:none;border-radius:8px;cursor:pointer;vertical-align:middle;">リセット</button><br>最終ダメージ倍率: <span id="st-dmgmult" style="font-weight:bold;color:var(--primary);">x1.00</span><br>獲得資格: <span id="st-rank" class="clickable-stat" onclick="checkDropEligibility()">★1まで</span><br>コンプリート数: <span id="st-comp-count" style="font-weight:bold;color:var(--gold);">0</span> (倍率: <span id="st-comp-bonus" style="font-weight:bold;color:var(--growth);">x1.00</span>)<br><span id="kill-count-box" style="display:none;">溢れし討伐数: <span id="st-kill-count" style="font-weight:bold;color:var(--gold);">0</span><br>虹災討伐数: <span id="st-kousa-kill" style="font-weight:bold;color:var(--nox);">0</span></span><br id="zeus-kill-count-br"><span id="zeus-kill-count-box" style="display:none;"><span style="color:var(--zeus-gold);font-weight:bold;text-shadow:0 0 6px rgba(245,197,24,.5);">⚡ エク＝ゼウス討伐数: <span id="st-zeus-kill" style="font-weight:bold;">0</span></span></span></div>
 <div id="hado-box" class="st-box" style="display:none;border:none;border-left:4px solid gold;"><span id="hado-status-text" style="color:gold;font-weight:bold;"></span><br><span id="hado-status-desc"></span></div>
 <div class="st-box" id="gem-box" style="display:none;border-left-color:#22d3ee;"><div class="st-title-flex"><span style="color:#22d3ee;font-weight:bold;">✦ 宝玉シリーズ</span></div><div id="gem-status" style="font-size:.85em;line-height:1.8;margin-top:4px;"></div></div>
 <div class="st-box"><div class="st-title-flex"><span>遺物出現率</span><span id="st-collection" style="color:#666;font-size:.9em;">0/72</span></div><table style="width:100%;font-size:.9em;margin-top:5px;" id="prob-list"></table></div>
@@ -272,12 +357,11 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
 <div class="privacy-link" onclick="openPolicy()">プライバシーポリシー</div>
 </div>
 </div>
-<div class="ver-footer">RELICORE v1.36</div>
+<div class="ver-footer">RELICORE v1.38</div>
 
 <script>
 const SAVE_KEY="relicore_player_data";
-const BOSS_MAX_HP_BASE=100000000000000000000n;
-let enemyDisasterStarUsed=false,comboHit=0,attackInterval=null,activePointerId=null;
+const BOSS_MAX_HP_BASE=100000000000000000000n;let enemyDisasterStarUsed=false,comboHit=0,attackInterval=null,activePointerId=null;
 let autoAttackInterval=null,isAutoAttack=false,_currentAutoInterval=33;
 let _attackSaveCounter=0; // saveGame間引き用（10回に1回保存）
 let erosionStack=0,waterAccumDmg=0n,luxHitCounter=0,kushiaCounter=0;
@@ -291,6 +375,7 @@ let kousaBossData=null; // 現在の虹災ボス定義オブジェクト
 let currentBossHP=BOSS_MAX_HP_BASE; // BigInt
 let geminiShield=0; // Geminiシールド耐久値（0=無効）
 let geminiAtkCap=0n; // Gemini戦開始時のbaseAtk×10（バフ上限）
+let zeusPreBossHP=null; // ゼウス出現前のメインボスHP（BigInt文字列）
 
 const RANK_NAMES=[
 "初心者","修練者","熟練者","探求者","到達者","解放者","支配者","超越者","救世主","極致：唯一神",
@@ -366,6 +451,11 @@ const CANDS1_FALLBACK=RELIC_MASTER.filter(m=>m.star===1);
 const RELIC_117=RELIC_MASTER.find(m=>m.id===117);
 const RELIC_911=RELIC_MASTER.find(m=>m.id===911);
 const GEM_MAP={8:811,7:711,6:611};
+// ===== 終極のエク＝ゼウス定数 =====
+const ZEUS_BASE_HP=BigInt("99999"+"0".repeat(313));
+const ZEUS_RELIC={id:1000,star:999,name:"全知全能",atk:0,hp:0,desc:"万物の理を超え、終極に到達した者の証明。効果：なし。"};
+RELIC_MAP.set(1000,ZEUS_RELIC);
+const ZEUS_LEVEL_REQ=1000000; // 再起Lv100万で攻撃解禁
 // =====
 
 let player={
@@ -382,7 +472,8 @@ residue:{total:0,edel:0,neria:0,nox:0,lilith:0,valka:0,igna:0,lux:0,magmel:0},
 hasFusionCore:false,
 mainBossMaxHP:null,
 gemUnlocked:false,
-lv100AtkBonus:"0",lv100HpBonus:"0",lv100ExpBonus:0,lv100MilestonesApplied:0
+lv100AtkBonus:"0",lv100HpBonus:"0",lv100ExpBonus:0,lv100MilestonesApplied:0,
+zeusKillCount:0
 };
 
 // ============ 攻撃ボタン ============
@@ -513,7 +604,8 @@ omegaAtkBig:player.omegaAtkBig||"0",omegaHpBig:player.omegaHpBig||"0",
 erosionStack,waterAccumDmg:waterAccumDmg.toString(),luxHitCounter,
 kousaBossId:kousaBossData?kousaBossData.id:null,
 compressedAtkBig:player.compressedAtkBig||"0",compressedHpBig:player.compressedHpBig||"0",
-gameVersion:"1.32"};
+zeusPreBossHP:zeusPreBossHP||null,
+gameVersion:"1.38"};
 // BigIntはJSON非対応なのでstring保存
 localStorage.setItem(SAVE_KEY,JSON.stringify(d));
 }
@@ -528,10 +620,10 @@ player.baseAtk=_loadBig(p.baseAtk,"10");player.baseHP=_loadBig(p.baseHP,"100");p
 if(!p.gameVersion||p.gameVersion<"1.30"){player.maxDmg=0n;}
 // v1.31未満のセーブ: 旧BIG_CAP(50600桁)汚染の蓄積値を全リセット
 if(!p.gameVersion||p.gameVersion<"1.31"){
- player.maxDmg=0n;
- player.compressedAtkBig="0";player.compressedHpBig="0";
- player.compressedAtk=0;player.compressedHp=0;
- player.omegaAtkBig="0";player.omegaHpBig="0";
+player.maxDmg=0n;
+player.compressedAtkBig="0";player.compressedHpBig="0";
+player.compressedAtk=0;player.compressedHp=0;
+player.omegaAtkBig="0";player.omegaHpBig="0";
 }
 player.totalRelics=p.totalRelics||0;player.killCount=p.killCount||0;player.soujinCounter=p.soujinCounter||0;
 player.totalLevel=p.totalLevel||1;player.hadoExpAccum=p.hadoExpAccum||0;player.evolutionStack=p.evolutionStack||0;
@@ -559,6 +651,8 @@ player.lv100AtkBonus=p.lv100AtkBonus||"0";
 player.lv100HpBonus=p.lv100HpBonus||"0";
 player.lv100ExpBonus=p.lv100ExpBonus||0;
 player.lv100MilestonesApplied=p.lv100MilestonesApplied||0;
+player.zeusKillCount=p.zeusKillCount||0;
+zeusPreBossHP=p.zeusPreBossHP||null;
 // lv100AtkBonus/HpBonus 異常値補正：累積値がbaseAtk/baseHPを超える場合はN回複利から逆算して再設定
 {const _la=BigInt(player.lv100AtkBonus||"0"),_lh=BigInt(player.lv100HpBonus||"0");
 if(_la>player.baseAtk||_lh>player.baseHP){
@@ -577,6 +671,8 @@ erosionStack=p.erosionStack||0;waterAccumDmg=BigInt(p.waterAccumDmg||"0");luxHit
 enemyDisasterStarUsed=p.enemyDisasterStarUsed||false;
 // ボス状態復元
 bossType=p.bossType||"main";
+// ゼウス戦中にセーブされた場合はメインに戻す（ゼウスは逃げた）
+if(bossType==="zeus"){bossType="main";zeusPreBossHP=null;}
 if(bossType!=="main"&&p.kousaBossId){
 kousaBossData=KOUSA_BOSSES.find(b=>b.id===p.kousaBossId)||null;
 if(!kousaBossData){bossType="main";currentBossHP=BigInt(player.bossMaxHP);}
@@ -584,7 +680,7 @@ if(!kousaBossData){bossType="main";currentBossHP=BigInt(player.bossMaxHP);}
 ensureOrderRelic();
 // ボスHPをセーブデータから復元（中途HPを正しく引き継ぐ）
 if(p.currentBossHP){
- currentBossHP=_loadBig(p.currentBossHP,BOSS_MAX_HP_BASE.toString());
+currentBossHP=_loadBig(p.currentBossHP,BOSS_MAX_HP_BASE.toString());
 }else{currentBossHP=_loadBig(player.bossMaxHP,BOSS_MAX_HP_BASE.toString());}
 // bossMaxHP復元
 {const bm=_loadBig(player.bossMaxHP,BOSS_MAX_HP_BASE.toString());player.bossMaxHP=bm.toString();}
@@ -621,15 +717,15 @@ let leveled=false;
 const prevRank=getRankIdx();
 const prevStars=getRankStars();
 while(player.totalLevel<MAX_LEVEL&&player.deathCount>=getExpThreshold(player.totalLevel)){
- player.deathCount-=getExpThreshold(player.totalLevel);
- player.totalLevel++;
- leveled=true;
- if(player.totalLevel%100===0)applyLv100Bonus(player.totalLevel);
+player.deathCount-=getExpThreshold(player.totalLevel);
+player.totalLevel++;
+leveled=true;
+if(player.totalLevel%100===0)applyLv100Bonus(player.totalLevel);
 }
 if(leveled){
- const newRank=getRankIdx();
- const newStars=getRankStars();
- if(newRank>prevRank||newStars>prevStars)openRankUpModal(player.totalLevel);
+const newRank=getRankIdx();
+const newStars=getRankStars();
+if(newRank>prevRank||newStars>prevStars)openRankUpModal(player.totalLevel);
 }
 return leveled;
 }
@@ -653,14 +749,14 @@ player.lv100ExpBonus+=2;
 player.lv100MilestonesApplied=(player.lv100MilestonesApplied||0)+1;
 if(silent)return;
 const msg=`<div><span style="color:var(--gold);font-weight:bold;font-size:1.05em;">【Lv${lv} 覚醒】`
- +`baseATK +${fmtV(atkGain)} / baseHP +${fmtV(hpGain)}</span>`
- +`<span style="color:var(--primary);"> 経験値ボーナス+2%（累積×${(1+player.lv100ExpBonus/100).toFixed(2)}）</span></div>`;
++`baseATK +${fmtV(atkGain)} / baseHP +${fmtV(hpGain)}</span>`
++`<span style="color:var(--primary);"> 経験値ボーナス+2%（累積×${(1+player.lv100ExpBonus/100).toFixed(2)}）</span></div>`;
 addLog(msg);
 isModalOpen=true;
 document.getElementById("rank-up-msg-text").innerHTML=
- `<span style="color:var(--gold);font-size:1.3em;font-weight:bold;">Lv.${lv} 覚醒</span><br><br>`
- +`<span style="color:#fff;">baseATK / baseHP が永続強化された！</span><br>`
- +`<span style="color:var(--primary);">経験値ボーナスが永続増加した！(累積×${(1+player.lv100ExpBonus/100).toFixed(2)})</span>`;
+`<span style="color:var(--gold);font-size:1.3em;font-weight:bold;">Lv.${lv} 覚醒</span><br><br>`
++`<span style="color:#fff;">baseATK / baseHP が永続強化された！</span><br>`
++`<span style="color:var(--primary);">経験値ボーナスが永続増加した！(累積×${(1+player.lv100ExpBonus/100).toFixed(2)})</span>`;
 document.getElementById("rank-up-modal").style.display="flex";
 saveGame();
 triggerUIUpdate();
@@ -668,41 +764,41 @@ triggerUIUpdate();
 
 // ランク閾値（30段階対応）
 const RANK_THRESHOLDS=[
- 0,100,200,400,700,1000,1500,2500,5000,8000,       // 0〜9  (唯一神まで)
- 15000,30000,60000,100000,200000,                   // 10〜14
- 400000,700000,1200000,2000000,4000000,             // 15〜19
- 8000000,15000000,30000000,60000000,120000000,      // 20〜24
- 250000000,500000000,1000000000,2000000000,5000000000 // 25〜29
+0,100,200,400,700,1000,1500,2500,5000,8000,       // 0〜9  (唯一神まで)
+15000,30000,60000,100000,200000,                   // 10〜14
+400000,700000,1200000,2000000,4000000,             // 15〜19
+8000000,15000000,30000000,60000000,120000000,      // 20〜24
+250000000,500000000,1000000000,2000000000,5000000000 // 25〜29
 ];
 function getRankIdx(){const lv=player.totalLevel;for(let i=RANK_THRESHOLDS.length-1;i>=0;i--){if(lv>=RANK_THRESHOLDS[i])return i;}return 0;}
 
 // ============ 星記号システム ============
 // Lv1000ごとに星カウント+1、記号と色が段階的に変化
 function getRankSymbolData(){
- const star=Math.floor(player.totalLevel/1000);
- if(star===0)return null; // 星なし
- if(star<10)     return{symbol:"★",color:"#ffffff",count:star};
- if(star<100)    return{symbol:"★",color:"#c084fc",count:star}; // 紫
- if(star<1000)   return{symbol:"☆",color:"#a855f7",count:star}; // 紫☆
- if(star<10000)  return{symbol:"✦",color:"#d4af37",count:star}; // 金✦
- if(star<100000) return{symbol:"✪",color:"rainbow",count:star}; // 虹✪
- return{symbol:"✪",color:"rainbow",count:star};
+const star=Math.floor(player.totalLevel/1000);
+if(star===0)return null; // 星なし
+if(star<10)     return{symbol:"★",color:"#ffffff",count:star};
+if(star<100)    return{symbol:"★",color:"#c084fc",count:star}; // 紫
+if(star<1000)   return{symbol:"☆",color:"#a855f7",count:star}; // 紫☆
+if(star<10000)  return{symbol:"✦",color:"#d4af37",count:star}; // 金✦
+if(star<100000) return{symbol:"✪",color:"rainbow",count:star}; // 虹✪
+return{symbol:"✪",color:"rainbow",count:star};
 }
 function getStarStr(){
- const d=getRankSymbolData();
- if(!d)return"";
- // 9個以下は記号を繰り返し、10以上は「記号+数字」
- if(d.count<=9)return d.symbol.repeat(d.count);
- return`${d.symbol}${d.count}`;
+const d=getRankSymbolData();
+if(!d)return"";
+// 9個以下は記号を繰り返し、10以上は「記号+数字」
+if(d.count<=9)return d.symbol.repeat(d.count);
+return`${d.symbol}${d.count}`;
 }
 function getStarHTML(){
- const d=getRankSymbolData();
- if(!d)return"";
- const txt=d.count<=9?d.symbol.repeat(d.count):`${d.symbol}${d.count.toLocaleString()}`;
- if(d.color==="rainbow"){
-   return`<span style="background:var(--magmel);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:bold;">${txt}</span>`;
- }
- return`<span style="color:${d.color};font-weight:bold;">${txt}</span>`;
+const d=getRankSymbolData();
+if(!d)return"";
+const txt=d.count<=9?d.symbol.repeat(d.count):`${d.symbol}${d.count.toLocaleString()}`;
+if(d.color==="rainbow"){
+ return`<span style="background:var(--magmel);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:bold;">${txt}</span>`;
+}
+return`<span style="color:${d.color};font-weight:bold;">${txt}</span>`;
 }
 function getFullRankTitle(){return getStarStr()+RANK_NAMES[getRankIdx()];}
 function getRankStars(){return Math.floor(player.totalLevel/1000);} // 後方互換
@@ -747,11 +843,11 @@ let _relicBonusCache=null;
 let _relicBonusCacheKey="";
 function _getRelicBonusCacheKey(){
 return player.totalRelics+"|"+player.omegaAtkBig+"|"+player.omegaHpBig+
-  "|"+(player.compressedAtkBig||"0")+"|"+(player.compressedHpBig||"0")+
-  "|"+(player.inventory[611]||0)+"|"+(player.inventory[711]||0)+
-  "|"+(player.inventory[603]||0)+"|"+(player.inventory[804]||0)+
-  "|"+(+player.hasHado)+(+player.hasGreatHado)+(+player.hasDivineGuide)+
-  +(+player.hasWorldOrder)+(+player.hasCrown)+(+player.hasMeta);
+"|"+(player.compressedAtkBig||"0")+"|"+(player.compressedHpBig||"0")+
+"|"+(player.inventory[611]||0)+"|"+(player.inventory[711]||0)+
+"|"+(player.inventory[603]||0)+"|"+(player.inventory[804]||0)+
+"|"+(+player.hasHado)+(+player.hasGreatHado)+(+player.hasDivineGuide)+
++(+player.hasWorldOrder)+(+player.hasCrown)+(+player.hasMeta);
 }
 function invalidateRelicBonusCache(){_relicBonusCache=null;_relicBonusCacheKey="";}
 function getRelicBonus(){
@@ -859,11 +955,11 @@ bossType="kousa_"+kousaBossData.id;
 erosionStack=0;waterAccumDmg=0n;comboHit=0;kushiaCounter=0;luxHitCounter=0;player.soujinCounter=0;
 // Geminiシールド初期化
 if(kousaBossData.id==="gemini"){
- geminiShield=Math.floor(Math.random()*51)+50; // 50〜100
- geminiAtkCap=player.baseAtk*10n>0n?player.baseAtk*10n:10n; // バフ上限: 開始時baseAtk×10
- addLog(`<div><span class="c-gemini">【Geminiシールド展開】耐久値：${geminiShield} — 全攻撃ダメージを無効化！</span></div>`);
+geminiShield=Math.floor(Math.random()*51)+50; // 50〜100
+geminiAtkCap=player.baseAtk*10n>0n?player.baseAtk*10n:10n; // バフ上限: 開始時baseAtk×10
+addLog(`<div><span class="c-gemini">【Geminiシールド展開】耐久値：${geminiShield} — 全攻撃ダメージを無効化！</span></div>`);
 }else{
- geminiShield=0;
+geminiShield=0;
 }
 addLog(`<div><span style="color:var(--nox);font-weight:bold;font-size:1.1em;">【虹災割り込み】${kousaBossData.intro}</span></div>`);
 // 聖閃の理：虹災ボス出現時に発動
@@ -872,7 +968,97 @@ updateBossHeaderStyle();
 saveGame();triggerUIUpdate();
 }
 
-// ============ ヘッダー演出 ============
+// ============ エク＝ゼウス スポーン ============
+function trySpawnZeus(){
+// 出現率0.001%、クリア後のみ、ゼウス・虹災戦中は出現しない
+if(!player.isCleared)return;
+if(bossType!=="main")return;
+if(Math.random()>=0.00001)return; // 0.001% = 1/100000
+spawnZeus();
+}
+function spawnZeus(){
+// 現在のメインボスHPを保存
+zeusPreBossHP=currentBossHP.toString();
+// 討伐数に応じてHP強化：2体目以降は1000^N倍（桁が3N桁増加）
+const kills=player.zeusKillCount||0;
+const zeusHP=kills===0?ZEUS_BASE_HP:ZEUS_BASE_HP*(1000n**BigInt(kills));
+// ゼウス出現
+bossType="zeus";
+currentBossHP=zeusHP;
+player.bossMaxHP=zeusHP.toString();
+_bossMaxHPBigLive=zeusHP;
+comboHit=0;erosionStack=0;waterAccumDmg=0n;kushiaCounter=0;luxHitCounter=0;player.soujinCounter=0;
+const killsLabel=kills===0?"":`（第${kills+1}体目 / HP×${('1000^'+kills)}）`;
+addLog(`<div><span class="c-zeus" style="font-size:1.15em;">【終極降臨】宇宙の頂点より裁定者が現れた——終極のエク＝ゼウス！！${killsLabel}</span></div>`);
+updateBossHeaderStyle();
+isModalOpen=true;
+// 出現モーダルのサブテキストを討伐数に応じて更新
+const _subEl=document.getElementById("zeus-appear-sub");
+if(_subEl){
+if(kills===0){
+  _subEl.textContent="Ek=Zeus, The Absolute Pinnacle";
+}else{
+  _subEl.innerHTML=`<span style="color:#ff4444;font-weight:bold;">第${kills+1}体目 — HP ×1000<sup>${kills}</sup> の強化体</span>`;
+}
+}
+document.getElementById("zeus-appear-modal").style.display="flex";
+saveGame();triggerUIUpdate();
+}
+function closeZeusAppearModal(){document.getElementById("zeus-appear-modal").style.display="none";isModalOpen=false;triggerUIUpdate();}
+function closeZeusEndingModal(){document.getElementById("zeus-ending-modal").style.display="none";isModalOpen=false;triggerUIUpdate();}
+function closeZeusDefeatModal(){document.getElementById("zeus-defeat-modal").style.display="none";isModalOpen=false;triggerUIUpdate();}
+function closeZeusClearModal(){document.getElementById("zeus-clear-modal").style.display="none";isModalOpen=false;triggerUIUpdate();}
+// ゼウスにやられた（戦闘終了、再起なし）
+function onZeusVictory(logH){
+logH+=`<div><span class="c-zeus" style="font-size:1.1em;">⚡ エク＝ゼウスの一撃！再起の誓いは通用しなかった。撤退を余儀なくされた……</span></div>`;
+addLog(logH);
+// メインボス戦に戻す
+bossType="main";
+if(zeusPreBossHP){
+const _restoredHP=BigInt(zeusPreBossHP);
+currentBossHP=_restoredHP;
+player.bossMaxHP=_restoredHP.toString();
+_bossMaxHPBigLive=_restoredHP;
+zeusPreBossHP=null;
+}
+updateBossHeaderStyle();
+saveGame();triggerUIUpdate();
+isModalOpen=true;
+document.getElementById("zeus-defeat-modal").style.display="flex";
+}
+// ゼウス撃破
+function onZeusDefeat(logH){
+const isFirstKill=(player.zeusKillCount||0)===0;
+player.zeusKillCount=(player.zeusKillCount||0)+1;
+logH+=`<div><span class="c-zeus" style="font-size:1.15em;animation:zeus-text-glow 1s infinite alternate;display:inline-block;">【終極制覇】エク＝ゼウスを打ち倒した！！ (累計${player.zeusKillCount}体)</span></div>`;
+addLog(logH);
+// 全知全能遺物付与（初討伐時のみ）
+if(!(player.inventory[1000]>0)){
+player.inventory[1000]=1;
+player.everOwned[1000]=true;
+}
+// メインボス戦に戻す
+bossType="main";
+if(zeusPreBossHP){
+const _restoredHP=BigInt(zeusPreBossHP);
+currentBossHP=_restoredHP;
+player.bossMaxHP=_restoredHP.toString();
+_bossMaxHPBigLive=_restoredHP;
+zeusPreBossHP=null;
+}
+updateBossHeaderStyle();
+saveGame();triggerUIUpdate();
+isModalOpen=true;
+if(isFirstKill){
+// 初討伐：エンディングモーダル
+document.getElementById("zeus-ending-modal").style.display="flex";
+}else{
+// 再討伐：通常の制覇モーダル（2体目以降の討伐数を反映）
+document.getElementById("zeus-clear-msg").innerHTML=
+`エク＝ゼウスを<span style="color:#f5c518;font-weight:bold;">第${player.zeusKillCount}体目</span>として打ち倒した。<br>次なる降臨はさらなる強さをもって現れるだろう。`;
+document.getElementById("zeus-clear-modal").style.display="flex";
+}
+}
 function updateBossHeaderStyle(){
 const fill=document.getElementById("hp-bar-fill");
 const btn=document.getElementById("attackBtn");
@@ -880,9 +1066,15 @@ const nameEl=document.getElementById("boss-display-name");
 // HPバーとボタンのクラスをリセット
 fill.className="";
 btn.className="btn-attack";
-if(bossType==="main"){
 fill.style.background="";
 fill.style.backgroundImage="";
+if(bossType==="zeus"){
+fill.className="hpfill-zeus";
+btn.className="btn-attack attack-zeus";
+nameEl.style.color="var(--zeus-gold)";
+return;
+}
+if(bossType==="main"){
 nameEl.style.color="#888";
 return;
 }
@@ -1152,9 +1344,9 @@ const fullTitle=getFullRankTitle();
 const stars=getRankStars();
 const starMsg=stars>0?`<br><span style="color:gold;font-size:1.1em;font-weight:bold;">【${getStarStr()}】の輝きが称号に宿った！</span>`:'';
 document.getElementById("rank-up-msg-text").innerHTML=
- `魂の核が激しく鼓動する……！<br><br>`
- +`<span style="font-size:1.4em;color:var(--growth);font-weight:bold;">再起Lv.${lv.toLocaleString()} 到達</span><br>`
- +`称号が【${starHTML}${RANK_NAMES[getRankIdx()]}】に昇格した。${starMsg}`;
+`魂の核が激しく鼓動する……！<br><br>`
++`<span style="font-size:1.4em;color:var(--growth);font-weight:bold;">再起Lv.${lv.toLocaleString()} 到達</span><br>`
++`称号が【${starHTML}${RANK_NAMES[getRankIdx()]}】に昇格した。${starMsg}`;
 document.getElementById("rank-up-modal").style.display="flex";
 }
 function closeRankUpModal(){document.getElementById("rank-up-modal").style.display="none";isModalOpen=false;}
@@ -1317,16 +1509,16 @@ function activateDisasterStar(bonus){
 // === 発動前チェック: 消費100個の遺物ボーナスより上昇量が少ない場合はスキップ ===
 const _r311=RELIC_MAP.get(311);
 if(_r311){
-  let _cAtk=(_r311.atk||0)*100,_cHp=(_r311.hp||0)*100;
-  if(player.hasDivineGuide){_cAtk*=100;_cHp*=100;}
-  const _hasReg=(player.inventory[603]||0)>0,_hasZan=(player.inventory[804]||0)>0;
-  if(_hasReg){_cAtk*=1.5;_cHp*=1.5;}
-  if(_hasZan){_cAtk*=1000;_cHp*=1000;}
-  const _cb=Math.pow(2,bonus.compCount||0),_gm=greedMult();
-  const _crystalTotal=safeBigInt(_cAtk*_cb*_gm)+safeBigInt(_cHp*_cb*_gm);
-  const _atkGainPreview=player.baseAtk/100n>0n?player.baseAtk/100n:1n;
-  const _hpGainPreview=player.baseHP/20n>0n?player.baseHP/20n:1n;
-  if(_atkGainPreview+_hpGainPreview<_crystalTotal)return; // 損になるので発動しない
+let _cAtk=(_r311.atk||0)*100,_cHp=(_r311.hp||0)*100;
+if(player.hasDivineGuide){_cAtk*=100;_cHp*=100;}
+const _hasReg=(player.inventory[603]||0)>0,_hasZan=(player.inventory[804]||0)>0;
+if(_hasReg){_cAtk*=1.5;_cHp*=1.5;}
+if(_hasZan){_cAtk*=1000;_cHp*=1000;}
+const _cb=Math.pow(2,bonus.compCount||0),_gm=greedMult();
+const _crystalTotal=safeBigInt(_cAtk*_cb*_gm)+safeBigInt(_cHp*_cb*_gm);
+const _atkGainPreview=player.baseAtk/100n>0n?player.baseAtk/100n:1n;
+const _hpGainPreview=player.baseHP/20n>0n?player.baseHP/20n:1n;
+if(_atkGainPreview+_hpGainPreview<_crystalTotal)return; // 損になるので発動しない
 }
 player.inventory[311]-=100; // 100個消費
 // ATK +1%、HP +5% を baseAtk/baseHP に永続加算
@@ -1348,25 +1540,41 @@ player.attackExpBonus+=(player.totalLevel||1)*100;
 // === Geminiバフ：bonus/tb計算より前に適用してATK・HP両方を即時反映 ===
 let geminiBuffTag="";
 if(bossType==="kousa_gemini"){
- // baseAtkがキャップ未満の時のみバフを付与（指数爆発防止）
- if(geminiAtkCap>0n&&player.baseAtk<geminiAtkCap){
-   const gemAtkGain=player.baseAtk*20n/1000n>0n?player.baseAtk*20n/1000n:1n; // ×1.020相当
-   const gemHpGain=player.baseHP*40n/1000n>0n?player.baseHP*40n/1000n:1n;   // ×1.040相当
-   // キャップを超えないよう加算量を調整
-   const actualAtkGain=player.baseAtk+gemAtkGain>geminiAtkCap?geminiAtkCap-player.baseAtk:gemAtkGain;
-   player.baseAtk+=actualAtkGain;
-   player.baseHP+=gemHpGain;
-   geminiBuffTag=`<span class="c-gemini">【構文侵食】ATK+${fmtV(actualAtkGain)} HP+${fmtV(gemHpGain)}</span>`;
- }else if(geminiAtkCap>0n){
-   geminiBuffTag=`<span class="c-gemini">【構文侵食：上限到達】</span>`;
- }
+// baseAtkがキャップ未満の時のみバフを付与（指数爆発防止）
+if(geminiAtkCap>0n&&player.baseAtk<geminiAtkCap){
+ const gemAtkGain=player.baseAtk*20n/1000n>0n?player.baseAtk*20n/1000n:1n; // ×1.020相当
+ const gemHpGain=player.baseHP*40n/1000n>0n?player.baseHP*40n/1000n:1n;   // ×1.040相当
+ // キャップを超えないよう加算量を調整
+ const actualAtkGain=player.baseAtk+gemAtkGain>geminiAtkCap?geminiAtkCap-player.baseAtk:gemAtkGain;
+ player.baseAtk+=actualAtkGain;
+ player.baseHP+=gemHpGain;
+ geminiBuffTag=`<span class="c-gemini">【構文侵食】ATK+${fmtV(actualAtkGain)} HP+${fmtV(gemHpGain)}</span>`;
+}else if(geminiAtkCap>0n){
+ geminiBuffTag=`<span class="c-gemini">【構文侵食：上限到達】</span>`;
+}
 }
 
 const bonus=getRelicBonus();
 const tb=omegaApply(player.baseAtk+bonus.atk,player.baseHP+bonus.hp);
 const skillM=calcFinalDmgMult();
 const bossMaxHP=_bossMaxHPBigLive!==null?_bossMaxHPBigLive:BOSS_MAX_HP_BASE;
-const isKousa=bossType!=="main";
+const isKousa=bossType!=="main"&&bossType!=="zeus";
+const isZeus=bossType==="zeus";
+
+// ===== ゼウス戦専用処理 =====
+if(isZeus){
+const zeusLvOk=player.totalLevel>=ZEUS_LEVEL_REQ;
+// 再起Lv100万未達の場合、攻撃は ???（無効）
+if(!zeusLvOk){
+const logZ=`<div><span class="c-zeus">⚡【???】その一撃はエク＝ゼウスに届かない。<br><span style="color:#aaa;font-size:.85em;">再起Lv ${ZEUS_LEVEL_REQ.toLocaleString()} に到達しなければ攻撃は通らない……<br>（現在: Lv ${player.totalLevel.toLocaleString()} / あと ${(ZEUS_LEVEL_REQ-player.totalLevel).toLocaleString()}）</span></span></div>`;
+// ゼウスの反撃で即終了
+onZeusVictory(logZ);
+return;
+}
+// 再起Lv100万達成：通常通りダメージ計算（ゼウスHPも削れる）
+// ゼウス反撃時は再起なし終了
+// → 攻撃ダメージ計算は通常フローに乗せるが、「被弾で即死」「救済なし」「再起HP増加なし」を後段で実装
+}
 
 // Gemini効果は撃破時にonKousaDefeatで処理（per-attack廃止）
 
@@ -1380,8 +1588,8 @@ else if(player.hasWorldOrder&&!player.hasCrown&&(player.inventory[117]||0)>=2000
 else if(player.hasCrown&&!player.hasMeta&&(player.inventory[117]||0)>=300000&&player.hadoExpAccum>=30000000)openCosmicModal("meta");
 }
 
-// 星の記憶（メイン戦＋kousa戦で発動・Geminiは除く）
-if(bossType!=="kousa_gemini"&&(player.inventory[803]||0)>0&&(player.inventory[311]||0)>=100&&bossMaxHP>(player.baseAtk+bonus.atk))activateDisasterStar(bonus);
+// 星の記憶（メイン戦＋kousa戦で発動・Geminiとゼウスは除く）
+if(bossType!=="kousa_gemini"&&!isZeus&&(player.inventory[803]||0)>0&&(player.inventory[311]||0)>=100&&bossMaxHP>(player.baseAtk+bonus.atk))activateDisasterStar(bonus);
 
 // ダメージ計算：全てBigInt演算でNumber()オーバーフロー回避
 // bonus.mult と skillM をスケール整数化してBigInt乗算
@@ -1512,13 +1720,13 @@ isRescue=true;
 // === Geminiシールド処理 ===
 let shieldBlocked=false;
 if(bossType==="kousa_gemini"&&geminiShield>0){
- geminiShield--;
- shieldBlocked=true;
- const shieldTag=`<span class="c-gemini">【Geminiシールド】ダメージ無効！残耐久：${geminiShield}</span>`;
- tags=shieldTag+(geminiShield===0?`<span class="c-gemini"> → シールド崩壊！</span>`:"")+geminiBuffTag;
- fd=0n; // ダメージ無効
+geminiShield--;
+shieldBlocked=true;
+const shieldTag=`<span class="c-gemini">【Geminiシールド】ダメージ無効！残耐久：${geminiShield}</span>`;
+tags=shieldTag+(geminiShield===0?`<span class="c-gemini"> → シールド崩壊！</span>`:"")+geminiBuffTag;
+fd=0n; // ダメージ無効
 }else if(geminiBuffTag){
- tags+=geminiBuffTag;
+tags+=geminiBuffTag;
 }
 const lv=Math.min(10,player.totalLevel);
 // 夢幻宝玉(911): 1個につきドロップ上限+1
@@ -1528,25 +1736,42 @@ const dropN=Math.min(_dropCap,lv+Math.floor(player.totalLevel/10)*5+Math.min(50,
 const _dropResult=getDropLog(dropN);
 let logH;
 if(shieldBlocked){
- // シールド中：ダメージ表示なし、シールド情報のみ
- logH=`<div>${tags}</div>`+_dropResult.log;
+// シールド中：ダメージ表示なし、シールド情報のみ
+logH=`<div>${tags}</div>`+_dropResult.log;
 }else{
- // 発動スキルをランダム5件に絞って表示（総ダメージは常に表示）
- const _allTagsArr=(tags.match(/<span[^>]*>[\s\S]*?<\/span>/g)||[]);
- let _dispTags;
- if(_allTagsArr.length<=5){
-   _dispTags=tags;
- }else{
-   const _shuffled=_allTagsArr.slice().sort(()=>Math.random()-.5);
-   _dispTags=_shuffled.slice(0,5).join('')+`<span style="color:#888;font-size:.82em;">（他${_allTagsArr.length-5}スキル発動）</span>`;
- }
- logH=`<div>${_dispTags}<span style="color:#07f;font-weight:bold;">攻撃！${fmtV(isRescue?rescueFd:fd)} ダメージ！</span>${isRescue?`<span style="font-size:.8em;color:#aaa;">（実効値：救済込み）</span>`:""}</div>`+_dropResult.log;
+// 発動スキルをランダム5件に絞って表示（総ダメージは常に表示）
+const _allTagsArr=(tags.match(/<span[^>]*>[\s\S]*?<\/span>/g)||[]);
+let _dispTags;
+if(_allTagsArr.length<=5){
+ _dispTags=tags;
+}else{
+ const _shuffled=_allTagsArr.slice().sort(()=>Math.random()-.5);
+ _dispTags=_shuffled.slice(0,5).join('')+`<span style="color:#888;font-size:.82em;">（他${_allTagsArr.length-5}スキル発動）</span>`;
+}
+logH=`<div>${_dispTags}<span style="color:#07f;font-weight:bold;">攻撃！${fmtV(isRescue?rescueFd:fd)} ダメージ！</span>${isRescue?`<span style="font-size:.8em;color:#aaa;">（実効値：救済込み）</span>`:""}</div>`+_dropResult.log;
 }
 
 // オメガコア蓄積は聖閃の理へ変更につき撤去
 
 // === ボスHP処理（シールド中はスキップ）===
 if(!shieldBlocked){
+// ===== ゼウス撃破判定（救済なし・通常fdのみ）=====
+if(isZeus){
+if(fd>=currentBossHP){
+currentBossHP=0n;comboHit=0;
+onZeusDefeat(logH);
+return;
+}else{
+currentBossHP-=fd;
+}
+// ゼウス反撃：必ずやられる（再起の誓い無効・即終了）
+logH+=`<div><span class="c-zeus">⚡ エク＝ゼウスの反撃……！再起の誓いは通用しない！</span></div>`;
+addLog(logH);
+_attackSaveCounter++;
+if(_attackSaveCounter>=10){saveGame();_attackSaveCounter=0;}
+onZeusVictory("");
+return;
+}
 // 撃破判定：luxDmg適用前のcurrentBossHPに対してrescueFdで判定
 // （luxDmgは非スキルの割合削りなので撃破の主因にしない）
 if(rescueFd>=currentBossHP){
@@ -1559,11 +1784,11 @@ return;
 // メインボス撃破
 if(!player.isCleared){
 if((player.inventory[701]||0)>0&&fd>=bossMaxHP){
- currentBossHP=0n;player.killCount++;player.isCleared=true;enemyDisasterStarUsed=false;
- player.hasCompressionCore=true;isModalOpen=true;
- document.getElementById("clear-modal-title").innerText="神話の終焉";
- document.getElementById("clear-modal-msg").innerHTML=`終末神アポカリス＝ティアは、あなたの放った一撃の前に霧散した。<br><br>しかし、その瞬間に所持していた<span style="color:var(--gold);font-weight:bold;">『パンドラの箱』</span>が激しく震え、蓋が跳ね上がる。<br><br>中から溢れ出したのは希望ではなく、底知れぬ混沌。<span style="color:#f44;font-weight:bold;">「溢れし災厄」</span>が今、世界を再び塗り潰そうとしている。<br><br><hr style="border:0;border-top:1px solid #444;margin:15px 0"><span style="color:var(--growth);">ここからはエンドレスモードです。遊んでくれてありがとうございます！</span>`;
- document.getElementById("clear-modal").style.display="flex";
+currentBossHP=0n;player.killCount++;player.isCleared=true;enemyDisasterStarUsed=false;
+player.hasCompressionCore=true;isModalOpen=true;
+document.getElementById("clear-modal-title").innerText="神話の終焉";
+document.getElementById("clear-modal-msg").innerHTML=`終末神アポカリス＝ティアは、あなたの放った一撃の前に霧散した。<br><br>しかし、その瞬間に所持していた<span style="color:var(--gold);font-weight:bold;">『パンドラの箱』</span>が激しく震え、蓋が跳ね上がる。<br><br>中から溢れ出したのは希望ではなく、底知れぬ混沌。<span style="color:#f44;font-weight:bold;">「溢れし災厄」</span>が今、世界を再び塗り潰そうとしている。<br><br><hr style="border:0;border-top:1px solid #444;margin:15px 0"><span style="color:var(--growth);">ここからはエンドレスモードです。遊んでくれてありがとうございます！</span>`;
+document.getElementById("clear-modal").style.display="flex";
 }else{currentBossHP=bossMaxHP;enemyDisasterStarUsed=false;logH+=`<div><span style="color:#f00;font-weight:bold;">終末の回帰……！時が巻き戻る！！</span></div>`;}
 }else{handleBossDefeat();}
 }
@@ -1572,22 +1797,22 @@ currentBossHP-=rescueFd;
 if(!isKousa&&currentBossHP<1n&&!player.isCleared){comboHit=0;currentBossHP=bossMaxHP;enemyDisasterStarUsed=false;logH+=`<div><span style="color:#f00;font-weight:bold;">終末の回帰……！時が巻き戻る！！</span></div>`;}
 // 天輪（lux）割合ダメをrescueFd適用後に追加で削る（maxDmg非反映）
 if(luxDmg>0n&&currentBossHP>0n){
- if(luxDmg>=currentBossHP){
-   // luxDmgで撃破 → 撃破処理を呼ぶ
-   currentBossHP=0n;
-   comboHit=0;
-   if(isKousa){onKousaDefeat(logH);return;}
-   else if(player.isCleared){handleBossDefeat();}
-   else if((player.inventory[701]||0)>0){
-     player.killCount++;player.isCleared=true;enemyDisasterStarUsed=false;
-     player.hasCompressionCore=true;isModalOpen=true;
-     document.getElementById("clear-modal-title").innerText="神話の終焉";
-     document.getElementById("clear-modal-msg").innerHTML=`終末神アポカリス＝ティアは、あなたの放った一撃の前に霧散した。<br><br>しかし、その瞬間に所持していた<span style="color:var(--gold);font-weight:bold;">『パンドラの箱』</span>が激しく震え、蓋が跳ね上がる。<br><br>中から溢れ出したのは希望ではなく、底知れぬ混沌。<span style="color:#f44;font-weight:bold;">「溢れし災厄」</span>が今、世界を再び塗り潰そうとしている。<br><br><hr style="border:0;border-top:1px solid #444;margin:15px 0"><span style="color:var(--growth);">ここからはエンドレスモードです。遊んでくれてありがとうございます！</span>`;
-     document.getElementById("clear-modal").style.display="flex";
-   }else{currentBossHP=bossMaxHP;enemyDisasterStarUsed=false;}
- }else{
-   currentBossHP-=luxDmg;
- }
+if(luxDmg>=currentBossHP){
+ // luxDmgで撃破 → 撃破処理を呼ぶ
+ currentBossHP=0n;
+ comboHit=0;
+ if(isKousa){onKousaDefeat(logH);return;}
+ else if(player.isCleared){handleBossDefeat();}
+ else if((player.inventory[701]||0)>0){
+   player.killCount++;player.isCleared=true;enemyDisasterStarUsed=false;
+   player.hasCompressionCore=true;isModalOpen=true;
+   document.getElementById("clear-modal-title").innerText="神話の終焉";
+   document.getElementById("clear-modal-msg").innerHTML=`終末神アポカリス＝ティアは、あなたの放った一撃の前に霧散した。<br><br>しかし、その瞬間に所持していた<span style="color:var(--gold);font-weight:bold;">『パンドラの箱』</span>が激しく震え、蓋が跳ね上がる。<br><br>中から溢れ出したのは希望ではなく、底知れぬ混沌。<span style="color:#f44;font-weight:bold;">「溢れし災厄」</span>が今、世界を再び塗り潰そうとしている。<br><br><hr style="border:0;border-top:1px solid #444;margin:15px 0"><span style="color:var(--growth);">ここからはエンドレスモードです。遊んでくれてありがとうございます！</span>`;
+   document.getElementById("clear-modal").style.display="flex";
+ }else{currentBossHP=bossMaxHP;enemyDisasterStarUsed=false;}
+}else{
+ currentBossHP-=luxDmg;
+}
 }
 }
 } // end !shieldBlocked
@@ -1740,6 +1965,8 @@ player.residue.total++;
 applySeisenEffect();
 // 虹災割り込み抽選（30%）
 trySpawnKousa();
+// ゼウス割り込み抽選（0.001%）- 虹災が出なかった場合のみ
+if(bossType==="main")trySpawnZeus();
 }
 
 // ============ UI描画 ============
@@ -1756,21 +1983,29 @@ if(_hpStr!==_dispCache.hp){document.getElementById("p-hp").textContent=_hpStr;_d
 const bmaxHP=(_bossMaxHPBigLive!==null&&_bossMaxHPBigLive>0n)?_bossMaxHPBigLive:1n;
 const hd=document.getElementById("bosshp-cur");
 {let _bhStr;
-if(bossType==="main"&&!player.isCleared){
+if(bossType==="zeus"){
+// ゼウスHPは文字列長が巨大なので専用フォーマット
+_bhStr=fmtV(currentBossHP);
+}else if(bossType==="main"&&!player.isCleared){
 const _bmx=(_bossMaxHPBigLive!==null&&_bossMaxHPBigLive>0n)?_bossMaxHPBigLive:BOSS_MAX_HP_BASE;
-// float近似（精度よりパフォーマンス優先: 表示用なので問題なし）
-const _ratio=_bmx>0n?(Number(currentBossHP)/Number(_bmx))*100:0;
-_bhStr=Math.max(0,Math.floor(isFinite(_ratio)?_ratio*Math.pow(10,18):0)).toLocaleString();
+// BigInt演算で精度を保持（Number変換は10^20超で精度消失するため使用禁止）
+// 表示値 = currentHP/maxHP*100 を小数18桁で表現 = currentHP*10^20/maxHP
+const _pctBig=_bmx>0n?currentBossHP*100000000000000000000n/_bmx:0n;
+_bhStr=_pctBig<0n?'0':_pctBig.toLocaleString();
 }else{_bhStr=fmtV(currentBossHP);}
 if(_bhStr!==_dispCache.bossHp){hd.textContent=_bhStr;_dispCache.bossHp=_bhStr;}
 }
 
 // ボス名表示
 const nameEl=document.getElementById("boss-display-name");
-const isKousa=bossType!=="main";
+const isKousa=bossType!=="main"&&bossType!=="zeus";
+const isZeusUI=bossType==="zeus";
 if(!player.isCleared){
 nameEl.innerHTML="終末神アポカリス＝ティア";
 nameEl.style.color="#888";
+}else if(isZeusUI){
+nameEl.innerHTML=`終極のエク＝ゼウス<span class='boss-type-badge' style='background:rgba(245,197,24,.2);color:#f5c518;border:1px solid #f5c518;'>終極</span>`;
+nameEl.style.color="var(--zeus-gold)";
 }else if(isKousa&&kousaBossData){
 const bdg=bossType==="kousa_gemini"?`<span class='boss-type-badge badge-gemini'>Gemini</span>`:`<span class='boss-type-badge badge-kousa'>厄災</span>`;
 nameEl.innerHTML=kousaBossData.name+bdg;
@@ -1816,18 +2051,18 @@ let _vowRenderKey="";
 let _vowNeedsRender=true;
 function _checkVowRenderKey(){
 const k=player.totalLevel+"|"+player.deathCount+"|"+(player.inventory[401]||0)+"|"+(player.inventory[402]||0)+
-  "|"+(player.inventory[403]||0)+"|"+(player.inventory[404]||0)+"|"+(player.inventory[405]||0)+
-  "|"+(player.inventory[406]||0)+"|"+(player.inventory[605]||0)+"|"+player.totalRelics+
-  "|"+player.attackExpBonus+"|"+(player.killCount||0)+"|"+(player.kousaKillCount||0);
+"|"+(player.inventory[403]||0)+"|"+(player.inventory[404]||0)+"|"+(player.inventory[405]||0)+
+"|"+(player.inventory[406]||0)+"|"+(player.inventory[605]||0)+"|"+player.totalRelics+
+"|"+player.attackExpBonus+"|"+(player.killCount||0)+"|"+(player.kousaKillCount||0)+"|"+(player.zeusKillCount||0);
 // falseには絶対しない。trueにするだけ。リセットはrenderVow()内のみ
 if(k!==_vowRenderKey){_vowNeedsRender=true;_vowRenderKey=k;}
 }
 function renderVow(){
 _vowNeedsRender=false;
 _vowRenderKey=player.totalLevel+"|"+player.deathCount+"|"+(player.inventory[401]||0)+"|"+(player.inventory[402]||0)+
-  "|"+(player.inventory[403]||0)+"|"+(player.inventory[404]||0)+"|"+(player.inventory[405]||0)+
-  "|"+(player.inventory[406]||0)+"|"+(player.inventory[605]||0)+"|"+player.totalRelics+
-  "|"+player.attackExpBonus+"|"+(player.killCount||0)+"|"+(player.kousaKillCount||0);
+"|"+(player.inventory[403]||0)+"|"+(player.inventory[404]||0)+"|"+(player.inventory[405]||0)+
+"|"+(player.inventory[406]||0)+"|"+(player.inventory[605]||0)+"|"+player.totalRelics+
+"|"+player.attackExpBonus+"|"+(player.killCount||0)+"|"+(player.kousaKillCount||0)+"|"+(player.zeusKillCount||0);
 const rlv=player.totalLevel,lv=Math.min(10,rlv);
 const _vowBonus=getRelicBonus();
 const nb=Math.min(50,Math.floor(rlv/10)*5),bc=Math.min(50,player.inventory[401]||0);
@@ -1863,15 +2098,31 @@ const labels=[
 return`<span class="vow-tag" style="color:#ff9500;font-weight:bold;font-size:1.05em;">基礎共鳴：×${br.toFixed(2)}</span><span class="vow-tag" style="color:#aaa;">総残滓：${r.total}</span><br>`
 +labels.map(([id,col,val,lbl])=>`<span class="vow-tag" style="font-size:.9em;"><span class="c-${id}">${col}</span> ${lbl}：${val} (${r[id]})</span>`).join('');
 })()}
+]:[]),
+// ゼウス情報（クリア後のみ表示）
+...((player.isCleared)?[{name:"終極のエク＝ゼウス",capLv10:false,zeus:true,
+desc:"宇宙の頂点より降臨する絶対的懲罰者。再起の誓いは通用しない。撃破時に「全知全能」を入手。",
+hl:(()=>{
+const zeusLvOk=player.totalLevel>=ZEUS_LEVEL_REQ;
+const kills=player.zeusKillCount||0;
+if(!zeusLvOk){
+return`<span class="vow-tag" style="color:#f5c518;">出現率：0.001%</span><span class="vow-tag" style="color:#aaa;">HP：???</span><span class="vow-tag" style="color:#aaa;">ATK：???</span><br><span class="vow-tag" style="color:#ff4444;font-size:.9em;">【条件未達成】再起Lv ${ZEUS_LEVEL_REQ.toLocaleString()} 到達で攻撃解禁（現在 ${player.totalLevel.toLocaleString()} / あと ${(ZEUS_LEVEL_REQ-player.totalLevel).toLocaleString()}）</span>`;
+}
+return`<span class="vow-tag" style="color:#f5c518;">出現率：0.001%</span><span class="vow-tag" style="color:#f5c518;">HP：999.99dw〜</span><br><span class="vow-tag" style="color:#28a745;">【攻撃解禁】再起Lv ${ZEUS_LEVEL_REQ.toLocaleString()} 到達済</span>${kills>0?`<span class="vow-tag" style="color:#f5c518;">⚡ 討伐数：${kills}</span>`:`<span class="vow-tag" style="color:#888;">（未討伐）</span>`}`;
+})()}
 ]:[])
 ];
 document.getElementById("vow-list").innerHTML=skills.map(s=>{
 const lvLabel=s.fusion
 ?(player.hasFusionCore?`<span class="vow-lv max" style="color:#d4af37;text-shadow:0 0 6px rgba(212,175,55,.6);">解放済</span>`:`<span class="vow-lv" style="color:#888;">未解放</span>`)
+:s.zeus
+?(player.zeusKillCount>0?`<span class="vow-lv max" style="color:#f5c518;">討伐済</span>`:`<span class="vow-lv" style="color:#888;">未討伐</span>`)
 :s.capLv10
 ?(lv>=10?`<span class="vow-lv max">LvMax</span>`:`<span class="vow-lv">Lv.${lv}</span>`)
 :`<span class="vow-lv">Lv.${rlv}</span>`;
-const fusionStyle=s.fusion?` style="border-left-color:#d4af37;background:linear-gradient(135deg,#fffbf0,#fff5e0);box-shadow:0 2px 8px rgba(212,175,55,.18);"`:"";return`<div class="vow-item"${fusionStyle}><div class="vow-header"><span class="vow-name"${s.fusion?` style="color:#d4af37;text-shadow:0 0 8px rgba(212,175,55,.4);"`:""}>${s.name}</span>${lvLabel}</div><div><div class="vow-highlight">${s.hl}</div><span class="vow-sub">${s.desc}</span></div></div>`;}).join("");
+const fusionStyle=s.fusion?` style="border-left-color:#d4af37;background:linear-gradient(135deg,#fffbf0,#fff5e0);box-shadow:0 2px 8px rgba(212,175,55,.18);"`:s.zeus?` style="border-left-color:#f5c518;background:linear-gradient(135deg,#1a1400,#fff9e6);box-shadow:0 2px 8px rgba(245,197,24,.2);"`:""
+;const namePrefix=s.zeus?"⚡ ":"";
+return`<div class="vow-item"${fusionStyle}><div class="vow-header"><span class="vow-name"${s.fusion?` style="color:#d4af37;text-shadow:0 0 8px rgba(212,175,55,.4);"`:s.zeus?` style="color:#f5c518;text-shadow:0 0 6px rgba(245,197,24,.5);"`:""}>${namePrefix}${s.name}</span>${lvLabel}</div><div><div class="vow-highlight">${s.hl}</div><span class="vow-sub">${s.desc}</span></div></div>`;}).join("");
 }
 
 // ============ 収束核 ============
@@ -1945,6 +2196,7 @@ let _dispCache_hpBarPct=-1;
 let _relicRenderCache={inv:{},hasR:false,hasZ:false,omegaAtk:"",omegaHp:"",evoStack:0};
 function _relicCardHTML(id,cnt,m,hasR,hasZ){
 if(!m)return"";
+if(m.id===1000)return`<div class="relic-card relic-unique" style="border-color:var(--zeus-gold);background:radial-gradient(135deg,#1a1400,#000);box-shadow:0 0 20px rgba(245,197,24,.4);animation:zeus-pulse 3s infinite;"><div class="relic-name"><span style="font-weight:bold;background:linear-gradient(135deg,#f5c518,#fff,#f5c518);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:.9em;letter-spacing:2px;">⚡ 全知全能</span></div><div class="relic-effect-box"><span style="color:#aaa;font-size:.82em;font-style:italic;">終極のエク＝ゼウス撃破の証明。効果：なし。<br>この遺物は強さを与えない。ただ——お前が成し遂げたことを、永遠に刻む。</span></div></div>`;
 if(m.star===999)return`<div class="relic-card relic-unique"><div class="relic-name"><span class="unique-relic-text">${m.name}</span></div><div class="relic-effect-box">${m.desc?`<span class="relic-desc-line">${m.desc}</span>`:""}</div></div>`;
 if(m.star===9)return`<div class="relic-card relic-rainbow"><div class="relic-name"><span class="rainbow-relic-text">★9 ${m.name}</span></div><div class="relic-effect-box"><span style="color:#aaa;font-size:.85em;">【${m.fromBoss}より】</span><span class="relic-desc-line" style="color:#ccc;">${m.desc}</span></div></div>`;
 if(m.gem){
@@ -1975,8 +2227,8 @@ const hasR=(player.inventory[603]||0)>0,hasZ=(player.inventory[804]||0)>0;
 const curOmegaAtk=player.omegaAtkBig||"0",curOmegaHp=player.omegaHpBig||"0",curEvo=player.evolutionStack||0;
 // グローバルフラグ変化（hasR/hasZ/omegaAtk等）→フルリビルド
 const globalChanged=hasR!==_relicRenderCache.hasR||hasZ!==_relicRenderCache.hasZ
-  ||curOmegaAtk!==_relicRenderCache.omegaAtk||curOmegaHp!==_relicRenderCache.omegaHp
-  ||curEvo!==_relicRenderCache.evoStack;
+||curOmegaAtk!==_relicRenderCache.omegaAtk||curOmegaHp!==_relicRenderCache.omegaHp
+||curEvo!==_relicRenderCache.evoStack;
 // ソート順取得
 const sorted=Object.entries(player.inventory).filter(([,v])=>v>0).sort(([a],[b])=>{
 const ra=RELIC_MAP.get(parseInt(a)),rb=RELIC_MAP.get(parseInt(b));
@@ -2031,6 +2283,9 @@ document.getElementById("st-kousa-kill").textContent=fmtV(player.kousaKillCount|
 // 溢れし討伐数・虹災討伐数はクリア後のみ表示（ネタバレ防止）
 const killCountEl=document.getElementById("kill-count-box");
 if(killCountEl){killCountEl.style.display=player.isCleared?"":"none";}
+// ゼウス討伐数
+const zeusKillEl=document.getElementById("zeus-kill-count-box");
+if(zeusKillEl){zeusKillEl.style.display=(player.zeusKillCount||0)>0?"":"none";}
 // Lv100ボーナス表示（st-boxがなければスキップ）
 const lv100el=document.getElementById("st-lv100bonus");
 if(lv100el){
@@ -2039,6 +2294,9 @@ const lh=BigInt(player.lv100HpBonus||"0");
 lv100el.innerHTML=`覚醒ボーナス: ATK累積 <b>+${fmtV(la)}</b> / HP累積 <b>+${fmtV(lh)}</b><br>経験値ボーナス: <b>×${(1+(player.lv100ExpBonus||0)/100).toFixed(2)}</b>`;
 }
 document.getElementById("st-kill-count").textContent=fmtV(player.killCount||0);
+// ゼウス討伐数表示
+const zeusKillSpan=document.getElementById("st-zeus-kill");
+if(zeusKillSpan)zeusKillSpan.textContent=fmtV(player.zeusKillCount||0);
 // 宝玉シリーズ表示
 const gemBox=document.getElementById("gem-box");
 const gemIds=[
@@ -2068,8 +2326,8 @@ function resetData(){if(confirm("全リセットしますか？")){localStorage.
 
 
 function resetMaxDmg(){if(confirm("最高ダメージをリセットしますか？\n（ボスHPはリセットされません）")){
- player.maxDmg=0n;lastDmg=0n;
- saveGame();triggerUIUpdate();}}
+player.maxDmg=0n;lastDmg=0n;
+saveGame();triggerUIUpdate();}}
 
 loadGame();triggerUIUpdate();
 </script>
