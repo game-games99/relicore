@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RELICORE - v1.38</title>
+<title>RELICORE - v1.38.1</title>
 <style>
 :root{--bg:#fff;--panel:#f8f9fa;--border:#dee2e6;--primary:#007bff;--text:#212529;--hp:#dc3545;--dark:#1a1a1a;--gold:#d4af37;--growth:#ff69b4;--relic-purple:#6610f2;--relic-bg:#fcfaff;--cosmic-blue:#00d4ff;--gemini:#4b0082;--edel:#22c55e;--neria:#3b82f6;--nox:#a855f7;--lilith:#ec4899;--valka:#f97316;--igna:#ef4444;--lux:#eab308;--magmel:linear-gradient(135deg,#ef4444,#f97316,#eab308,#22c55e,#3b82f6,#a855f7,#ec4899)}
 *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;box-sizing:border-box}
@@ -357,7 +357,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
 <div class="privacy-link" onclick="openPolicy()">プライバシーポリシー</div>
 </div>
 </div>
-<div class="ver-footer">RELICORE v1.38</div>
+<div class="ver-footer">RELICORE v1.38.1</div>
 
 <script>
 const SAVE_KEY="relicore_player_data";
@@ -826,6 +826,15 @@ _greedMultRelics=player.totalRelics;
 _greedMultCache=(player.inventory[502]||0)>0?1+Math.log10(player.totalRelics+1)*0.25:1.0;
 return _greedMultCache;
 }
+// ∅6+遅物変化シグナル：低レア大量ドロップでは更新せず、高レア獲得時のみ更新
+// getRelicBonus()のキャッシュキーとして totalRelics の代わりに使用（毎攻撃の再計算を防止）
+let _highStarRelicSig=0;
+// getBaseResonanceキャッシュ
+let _baseResCache=-1,_baseResCacheTotal=-1;
+// 自動攻撃負荷適応：連続攻撃の処理時間を計測してインターバルを自動調整
+let _attackPerfSamples=[],_attackPerfLastAdjust=0;
+// getDropLog内コンプリートカウントキャッシュ
+let _dropCompSig=-1,_dropCompCount=0;
 // omegaApply：オメガコアはomegaAtkBig/omegaHpBigへの直接蓄積方式に変更済みのため乗算は行わない
 function omegaApply(a,h){return{atk:a,hp:h};}
 let _fDmgMultCache=-1,_fDmgMultLv=-1,_fDmgMultKey="";
@@ -843,7 +852,10 @@ _fDmgMultCache=m;return m;
 let _relicBonusCache=null;
 let _relicBonusCacheKey="";
 function _getRelicBonusCacheKey(){
-return player.totalRelics+"|"+player.omegaAtkBig+"|"+player.omegaHpBig+
+// omegaBigの文字列長+末尾4桁をフィンガープリントとして使用（毎回巨大文字列を連結しない）
+const _oaFp=(s=>s.length+"|"+(s.length>4?s.slice(-4):s))(player.omegaAtkBig||"0");
+const _ohFp=(s=>s.length+"|"+(s.length>4?s.slice(-4):s))(player.omegaHpBig||"0");
+return _highStarRelicSig+"|"+_oaFp+"|"+_ohFp+
   "|"+(player.compressedAtkBig||"0")+"|"+(player.compressedHpBig||"0")+
   "|"+(player.inventory[611]||0)+"|"+(player.inventory[711]||0)+
   "|"+(player.inventory[603]||0)+"|"+(player.inventory[804]||0)+
@@ -1216,8 +1228,10 @@ function getBaseResonance(){
 if(!player.hasFusionCore)return 1;
 const t=player.residue.total;
 if(t<=0)return 1;
-// 1討伐目で×2、以後 log10(t+1)^2 で急成長、上限×500
-return Math.min(500, 1+Math.pow(Math.log10(t+1),2)*2);
+if(t===_baseResCacheTotal)return _baseResCache;
+_baseResCacheTotal=t;
+_baseResCache=Math.min(500, 1+Math.pow(Math.log10(t+1),2)*2);
+return _baseResCache;
 }
 // getRelicBonus内で使う：対象遺物かどうか
 
@@ -1429,10 +1443,15 @@ const rateCumulative=[];let _cp=0;
 for(const s of rateKeys){_cp+=rates[s].p;rateCumulative.push({p:_cp,star:parseInt(s),cond:rates[s].cond});}
 let sc={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0},sg={1:{},2:{},3:{},4:{},5:{},6:{},7:{},8:{},9:{}},showR=null;
 const hasR=(player.inventory[603]||0)>0,hasZ=(player.inventory[804]||0)>0;
-// コンプリート倍率: CANDS_BASEを使いO(1)参照
+// コンプリート倍率：_highStarRelicSig変化時のみ再計算（毎攻撃のevery()を抑制）
 let _omegaCompCount=0;
-for(let s=1;s<=8;s++){const at=CANDS_BASE[s];if(at.length>0&&at.every(m=>player.everOwned[m.id]))_omegaCompCount++;}
-if(STAR9.length>0&&STAR9.every(m=>player.everOwned[m.id]))_omegaCompCount++;
+if(_dropCompSig!==_highStarRelicSig){
+_dropCompSig=_highStarRelicSig;
+_dropCompCount=0;
+for(let s=1;s<=8;s++){const at=CANDS_BASE[s];if(at.length>0&&at.every(m=>player.everOwned[m.id]))_dropCompCount++;}
+if(STAR9.length>0&&STAR9.every(m=>player.everOwned[m.id]))_dropCompCount++;
+}
+_omegaCompCount=_dropCompCount;
 const _omegaCbBig=BigInt(Math.round(Math.pow(2,_omegaCompCount)));
 const _omegaGmBig=BigInt(Math.round(greedMult()*10000));
 const maxDmg=player.maxDmg;
@@ -1502,7 +1521,10 @@ player.everOwned[gemId]=true;
 
 }
 if(showR)openRareModal(showR);
-invalidateRelicBonusCache(); // インベントリ変化→キャッシュ無効化
+// ★6+遺物 or 宝玉を獲得した場合のみキャッシュ無効化（低レアの細かな変動は無視して高速化）
+let _highStarGained=false;
+for(let s=6;s<=9;s++){if(sc[s]>0){_highStarGained=true;break;}}
+if(_highStarGained){_highStarRelicSig++;invalidateRelicBonusCache();}
 if(!player.gemUnlocked)checkGemUnlock();
 const gainedAtk=0n,gainedHp=0n;
 let fe=[];for(let s=1;s<=9;s++){if(!sc[s])continue;if(sc[s]>20)fe.push(`<span class="c${Math.min(s,9)}">★${s}遺物 合計${sc[s]}個</span>`);else Object.entries(sg[s]).forEach(([id,c])=>{const m=RELIC_MAP.get(parseInt(id));if(!m)return;fe.push(`<span class="c${Math.min(m.star,9)}">★${m.star} ${m.name}${c>1?"×"+c:""}</span>`);});}
@@ -1531,7 +1553,7 @@ const atkGain=player.baseAtk/100n>0n?player.baseAtk/100n:1n;
 const hpGain=player.baseHP/20n>0n?player.baseHP/20n:1n;
 player.baseAtk+=atkGain;
 player.baseHP+=hpGain;
-invalidateRelicBonusCache();
+_highStarRelicSig++;invalidateRelicBonusCache();
 enemyDisasterStarUsed=true;
 addLog(`<div><span style="color:#d4af37;font-weight:bold;">★星の記憶発動！メモリークリスタル100個を消費。baseATK+${fmtV(atkGain)}（+1%）/ baseHP+${fmtV(hpGain)}（+5%）</span></div>`);
 }
@@ -1876,7 +1898,7 @@ if(_attackSaveCounter>=10){saveGame();_attackSaveCounter=0;}
 // auto-attack 動的インターバル調整（処理時間に応じて33ms〜100msに自動調整）
 if(isAutoAttack&&autoAttackInterval){
 const _atkElapsed=performance.now()-_atkT0;
-const _targetInterval=Math.min(100,Math.max(33,Math.ceil(_atkElapsed*1.5)));
+const _targetInterval=Math.min(250,Math.max(33,Math.ceil(_atkElapsed*1.5)));
 if(Math.abs(_targetInterval-_currentAutoInterval)>5){
 clearInterval(autoAttackInterval);
 autoAttackInterval=setInterval(attack,_targetInterval);
