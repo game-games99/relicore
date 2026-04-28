@@ -2005,7 +2005,8 @@ const smBig=BigInt(Math.round(sm*100000));
 const multBig2=BigInt(Math.round(b.mult*100000));
 const _atkStr=fmtStat(tb.atk);
 const _hpStr=fmtStat(tb.hp*multBig2/100000n);
-if(_atkStr!==_dispCache.atk){document.getElementById("p-atk").textContent=_atkStr;_dispCache.atk=_atkStr;}
+document.getElementById("p-atk").textContent=_atkStr;
+_dispCache.atk=_atkStr;
 if(_hpStr!==_dispCache.hp){document.getElementById("p-hp").textContent=_hpStr;_dispCache.hp=_hpStr;}
 const bmaxHP=(_bossMaxHPBigLive!==null&&_bossMaxHPBigLive>0n)?_bossMaxHPBigLive:1n;
 const hd=document.getElementById("bosshp-cur");
