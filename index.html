@@ -1522,10 +1522,11 @@ player.everOwned[gemId]=true;
 }
 if(showR)openRareModal(showR);
 // ★6+遺物 or 宝玉を獲得した場合のみキャッシュ無効化（低レアの細かな変動は無視して高速化）
-let _highStarGained=false;
-for(let s=6;s<=9;s++){if(sc[s]>0){_highStarGained=true;break;}}
-if(_highStarGained){_highStarRelicSig++;invalidateRelicBonusCache();}
-if(!player.gemUnlocked)checkGemUnlock();
+// 遺物を1個以上取得した場合は必ずキャッシュ無効化（★1〜5でもATK表示を即時更新）
+let _anyGained=false;
+for(let s=1;s<=9;s++){if(sc[s]>0){_anyGained=true;break;}}
+if(_anyGained){_highStarRelicSig++;invalidateRelicBonusCache();
+}if(!player.gemUnlocked)checkGemUnlock();
 const gainedAtk=0n,gainedHp=0n;
 let fe=[];for(let s=1;s<=9;s++){if(!sc[s])continue;if(sc[s]>20)fe.push(`<span class="c${Math.min(s,9)}">★${s}遺物 合計${sc[s]}個</span>`);else Object.entries(sg[s]).forEach(([id,c])=>{const m=RELIC_MAP.get(parseInt(id));if(!m)return;fe.push(`<span class="c${Math.min(m.star,9)}">★${m.star} ${m.name}${c>1?"×"+c:""}</span>`);});}
 return{log:fe.length?`<div style="font-size:.82em;">獲得：${fe.join("、")}</div>`:"",gainedAtk,gainedHp};
