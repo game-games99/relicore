@@ -2003,7 +2003,7 @@ const b=getRelicBonus(),sm=calcFinalDmgMult();
 const tb=omegaApply(player.baseAtk+b.atk,player.baseHP+b.hp);
 const smBig=BigInt(Math.round(sm*100000));
 const multBig2=BigInt(Math.round(b.mult*100000));
-const _atkStr=fmtStat(atvBig);
+const _atkStr=fmtStat(tb.atk);
 const _hpStr=fmtStat(tb.hp*multBig2/100000n);
 if(_atkStr!==_dispCache.atk){document.getElementById("p-atk").textContent=_atkStr;_dispCache.atk=_atkStr;}
 if(_hpStr!==_dispCache.hp){document.getElementById("p-hp").textContent=_hpStr;_dispCache.hp=_hpStr;}
