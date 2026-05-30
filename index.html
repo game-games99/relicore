@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RELICORE - v1.39</title>
+<title>RELICORE - v1.38.1</title>
 <style>
 :root{--bg:#fff;--panel:#f8f9fa;--border:#dee2e6;--primary:#007bff;--text:#212529;--hp:#dc3545;--dark:#1a1a1a;--gold:#d4af37;--growth:#ff69b4;--relic-purple:#6610f2;--relic-bg:#fcfaff;--cosmic-blue:#00d4ff;--gemini:#4b0082;--edel:#22c55e;--neria:#3b82f6;--nox:#a855f7;--lilith:#ec4899;--valka:#f97316;--igna:#ef4444;--lux:#eab308;--magmel:linear-gradient(135deg,#ef4444,#f97316,#eab308,#22c55e,#3b82f6,#a855f7,#ec4899)}
 *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;box-sizing:border-box}
@@ -357,7 +357,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
 <div class="privacy-link" onclick="openPolicy()">プライバシーポリシー</div>
 </div>
 </div>
-<div class="ver-footer">RELICORE v1.39</div>
+<div class="ver-footer">RELICORE v1.38.1</div>
 
 <script>
 const SAVE_KEY="relicore_player_data";
@@ -708,7 +708,7 @@ try{_bossMaxHPBigLive=BigInt(player.bossMaxHP||BOSS_MAX_HP_BASE.toString());}cat
 // v1.38: EXPスケール変更に伴うdeathCountクランプ
 // 旧スケール(lv^3)のdeathCountが残っているとロード直後に大量Lvアップするため、
 // 新スケールの上限(getExpThreshold(totalLevel)-1)にクランプする
-{const _newThresh=Math.floor(1000*Math.max(1,player.totalLevel)*(1+Math.log10(Math.max(1,player.totalLevel)+1)));
+{const _newThresh=getExpThreshold(player.totalLevel);
 if(player.deathCount>=_newThresh)player.deathCount=_newThresh-1;}
 // attackExpBonusにキャップを設定（totalLevel*10000を上限とする）
 {const _abCap=player.totalLevel*10000;
@@ -719,8 +719,10 @@ applyRetroactiveLv100Bonuses();
 // ============ レベル/ランク ============
 // 経験値閾値: 20000 × lv^3
 function getExpThreshold(lv){
-// 旧: 20000*lv^3 (爆発的増加) → 新: lv*(1+log10(lv+1))*1000 (一定ペース)
-return Math.floor(1000*Math.max(1,lv)*(1+Math.log10(Math.max(1,lv)+1)));
+// 設計: lv*(15000 + lv*0.5)
+// → 序盤150回、Lv10000で200回の一定ペース。lv^3の爆発的増加を廃止。
+const _lv=Math.max(1,lv);
+return Math.floor(_lv*(15000+_lv*0.5));
 }
 function checkLevelUp(){
 let leveled=false;
