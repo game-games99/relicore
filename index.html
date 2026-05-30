@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RELICORE - v1.38.1</title>
+<title>RELICORE - v1.39</title>
 <style>
 :root{--bg:#fff;--panel:#f8f9fa;--border:#dee2e6;--primary:#007bff;--text:#212529;--hp:#dc3545;--dark:#1a1a1a;--gold:#d4af37;--growth:#ff69b4;--relic-purple:#6610f2;--relic-bg:#fcfaff;--cosmic-blue:#00d4ff;--gemini:#4b0082;--edel:#22c55e;--neria:#3b82f6;--nox:#a855f7;--lilith:#ec4899;--valka:#f97316;--igna:#ef4444;--lux:#eab308;--magmel:linear-gradient(135deg,#ef4444,#f97316,#eab308,#22c55e,#3b82f6,#a855f7,#ec4899)}
 *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;box-sizing:border-box}
@@ -357,7 +357,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
 <div class="privacy-link" onclick="openPolicy()">プライバシーポリシー</div>
 </div>
 </div>
-<div class="ver-footer">RELICORE v1.38.1</div>
+<div class="ver-footer">RELICORE v1.39</div>
 
 <script>
 const SAVE_KEY="relicore_player_data";
@@ -454,7 +454,7 @@ const RELIC_911=RELIC_MASTER.find(m=>m.id===911);
 const GEM_MAP={8:811,7:711,6:611};
 // ===== 終極のエク＝ゼウス定数 =====
 const ZEUS_BASE_HP=BigInt("99999"+"0".repeat(313));
-const ZEUS_RELIC={id:1000,star:999,name:"全知全能",atk:0,hp:0,desc:"万物の理を超え、終極に到達した者の証明。効果：なし。"};
+const ZEUS_RELIC={id:1000,star:999,name:"全知全能",atk:0,hp:0,desc:"万物の理を超え、終極に到達した者の証明。効果：1回の攻撃で10回分の行動を行う（攻撃回数・報酬獲得数が10倍）。"};
 RELIC_MAP.set(1000,ZEUS_RELIC);
 const ZEUS_LEVEL_REQ=1000000; // 再起Lv100万で攻撃解禁
 // =====
@@ -1561,9 +1561,9 @@ addLog(`<div><span style="color:#d4af37;font-weight:bold;">★星の記憶発動
 function attack(){
 if(isModalOpen)return;
 const _atkT0=performance.now();
-player.totalClicks++;comboHit++;player.attackExpBonus++;
+const _omni=(player.inventory[1000]||0)>0;const _omniMult=_omni?10:1;player.totalClicks+=_omniMult;comboHit+=_omniMult;player.attackExpBonus+=_omniMult;
 // 魂の研磨：攻撃のたびに核レベル×100の経験値を永続蓄積（attackExpBonus）に加算
-player.attackExpBonus+=(player.totalLevel||1)*100;
+player.attackExpBonus+=(player.totalLevel||1)*100*_omniMult;
 
 // === Geminiバフ：bonus/tb計算より前に適用してATK・HP両方を即時反映 ===
 let geminiBuffTag="";
@@ -1761,7 +1761,7 @@ const lv=Math.min(10,player.totalLevel);
 const _mugenCnt=player.inventory[911]||0;
 const _dropCap=100+_mugenCnt;
 const dropN=Math.min(_dropCap,lv+Math.floor(player.totalLevel/10)*5+Math.min(50,player.inventory[401]||0));
-const _dropResult=getDropLog(dropN);
+const _dropResult=getDropLog(_omni?dropN*10:dropN);
 let logH;
 if(shieldBlocked){
 // シールド中：ダメージ表示なし、シールド情報のみ
@@ -2215,7 +2215,7 @@ let _dispCache_hpBarPct=-1;
 let _relicRenderCache={inv:{},hasR:false,hasZ:false,omegaAtk:"",omegaHp:"",evoStack:0};
 function _relicCardHTML(id,cnt,m,hasR,hasZ){
 if(!m)return"";
-if(m.id===1000)return`<div class="relic-card relic-unique" style="border-color:var(--zeus-gold);background:radial-gradient(135deg,#1a1400,#000);box-shadow:0 0 20px rgba(245,197,24,.4);animation:zeus-pulse 3s infinite;"><div class="relic-name"><span style="font-weight:bold;background:linear-gradient(135deg,#f5c518,#fff,#f5c518);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:.9em;letter-spacing:2px;">⚡ 全知全能</span></div><div class="relic-effect-box"><span style="color:#aaa;font-size:.82em;font-style:italic;">終極のエク＝ゼウス撃破の証明。効果：なし。<br>この遺物は強さを与えない。ただ——お前が成し遂げたことを、永遠に刻む。</span></div></div>`;
+if(m.id===1000)return`<div class="relic-card relic-unique" style="border-color:var(--zeus-gold);background:radial-gradient(135deg,#1a1400,#000);box-shadow:0 0 20px rgba(245,197,24,.4);animation:zeus-pulse 3s infinite;"><div class="relic-name"><span style="font-weight:bold;background:linear-gradient(135deg,#f5c518,#fff,#f5c518);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:.9em;letter-spacing:2px;">⚡ 全知全能</span></div><div class="relic-effect-box"><span style="color:#aaa;font-size:.82em;font-style:italic;">終極のエク＝ゼウス撃破の証明。<br>効果：1回の攻撃で10回分の行動——攻撃回数・報酬獲得数が10倍になる。<br>万物の理を超えた者は、もはや時間すら自在に操る。</span></div></div>`;
 if(m.star===999)return`<div class="relic-card relic-unique"><div class="relic-name"><span class="unique-relic-text">${m.name}</span></div><div class="relic-effect-box">${m.desc?`<span class="relic-desc-line">${m.desc}</span>`:""}</div></div>`;
 if(m.star===9)return`<div class="relic-card relic-rainbow"><div class="relic-name"><span class="rainbow-relic-text">★9 ${m.name}</span></div><div class="relic-effect-box"><span style="color:#aaa;font-size:.85em;">【${m.fromBoss}より】</span><span class="relic-desc-line" style="color:#ccc;">${m.desc}</span></div></div>`;
 if(m.gem){
