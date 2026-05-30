@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RELICORE - v1.38.1</title>
+<title>RELICORE - v1.39</title>
 <style>
 :root{--bg:#fff;--panel:#f8f9fa;--border:#dee2e6;--primary:#007bff;--text:#212529;--hp:#dc3545;--dark:#1a1a1a;--gold:#d4af37;--growth:#ff69b4;--relic-purple:#6610f2;--relic-bg:#fcfaff;--cosmic-blue:#00d4ff;--gemini:#4b0082;--edel:#22c55e;--neria:#3b82f6;--nox:#a855f7;--lilith:#ec4899;--valka:#f97316;--igna:#ef4444;--lux:#eab308;--magmel:linear-gradient(135deg,#ef4444,#f97316,#eab308,#22c55e,#3b82f6,#a855f7,#ec4899)}
 *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;box-sizing:border-box}
@@ -357,7 +357,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
 <div class="privacy-link" onclick="openPolicy()">プライバシーポリシー</div>
 </div>
 </div>
-<div class="ver-footer">RELICORE v1.38.1</div>
+<div class="ver-footer">RELICORE v1.39</div>
 
 <script>
 const SAVE_KEY="relicore_player_data";
@@ -1872,14 +1872,17 @@ const km=player.inventory[405]||0;const _ensTK=(player.killCount||0)+(player.kou
 const lv100ExpMult=1+(player.lv100ExpBonus||0)/100;
 const _atkBonusCap=player.totalLevel*10000;
 const _atkBonusClamped=Math.min(player.attackExpBonus||0,_atkBonusCap);
-const exp=Math.floor((player.totalLevel*100+km*500+Math.floor(_atkBonusClamped/1000))*ens*lv100ExpMult);
-player.hadoExpAccum+=exp;
+// hadoExpAccum(波動蓄積)はens/lv100ExpMult込みの従来式
+const expHado=Math.floor((player.totalLevel*100+km*500+Math.floor(_atkBonusClamped/1000))*ens*lv100ExpMult);
+// deathCount(LvUP経験値)はtotalLevel*100固定 — ens/multの乗算を除外してペースを安定させる
+const expDeath=player.totalLevel*100;
+player.hadoExpAccum+=expHado;
 if(curHP>mitig){
-player.deathCount+=exp;logH+=`<div><span style="color:#28a745;font-weight:bold;">敵の反撃！${fmtV(mitig)} ダメージ。障壁展開！</span></div>`+getGuaranteedDrop();
+player.deathCount+=expDeath;logH+=`<div><span style="color:#28a745;font-weight:bold;">敵の反撃！${fmtV(mitig)} ダメージ。障壁展開！</span></div>`+getGuaranteedDrop();
 }else{
 let rep=1;if((player.inventory[505]||0)>0&&Math.random()<0.1)rep=2;
 let upHP=0n;for(let i=0;i<rep;i++)upHP+=BigInt(Math.floor(Math.random()*Math.max(1,player.totalLevel*100)+1+player.totalLevel+(Math.min(50000,player.inventory[402]||0)*5)));
-player.baseHP+=upHP;player.deathCount+=exp;
+player.baseHP+=upHP;player.deathCount+=expDeath;
 logH+=`<div><span style="color:#dc3545;">敵の反撃！${fmtV(mitig)} ダメージ。</span><span style="color:#07f;font-weight:bold;">再起の誓いによって新たなる力を得た</span>${rep>1?'<span style="color:gold;font-weight:bold;">【双重再起】</span>':''}<span style="color:var(--growth);font-weight:bold;">(基礎HP+${fmtV(upHP)})</span></div>`;
 }
 checkLevelUp();
@@ -1890,8 +1893,9 @@ const km=player.inventory[405]||0;const _ensTK=(player.killCount||0)+(player.kou
 const lv100ExpMult2=1+(player.lv100ExpBonus||0)/100;
 const _atkBonusCap2=player.totalLevel*10000;
 const _atkBonusClamped2=Math.min(player.attackExpBonus||0,_atkBonusCap2);
-const exp=Math.floor((player.totalLevel*100+km*500+Math.floor(_atkBonusClamped2/1000))*ens*lv100ExpMult2);
-player.hadoExpAccum+=exp;player.deathCount+=exp;
+const expHado2=Math.floor((player.totalLevel*100+km*500+Math.floor(_atkBonusClamped2/1000))*ens*lv100ExpMult2);
+const expDeath2=player.totalLevel*100;
+player.hadoExpAccum+=expHado2;player.deathCount+=expDeath2;
 // 虹災の攻撃力：ボスHPの0.1%相当
 const kousaAtk=bossMaxHP/1000n;
 const multForHP=BigInt(Math.max(1,Math.round(bonus.mult*1000)));
