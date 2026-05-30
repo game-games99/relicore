@@ -705,13 +705,22 @@ restoreAutoAttack();
 _omegaAtkBigLive=BigInt(player.omegaAtkBig||"0");
 _omegaHpBigLive=BigInt(player.omegaHpBig||"0");
 try{_bossMaxHPBigLive=BigInt(player.bossMaxHP||BOSS_MAX_HP_BASE.toString());}catch(e){_bossMaxHPBigLive=BOSS_MAX_HP_BASE;}
+// v1.38: EXPスケール変更に伴うdeathCountクランプ
+// 旧スケール(lv^3)のdeathCountが残っているとロード直後に大量Lvアップするため、
+// 新スケールの上限(getExpThreshold(totalLevel)-1)にクランプする
+{const _newThresh=Math.floor(1000*Math.max(1,player.totalLevel)*(1+Math.log10(Math.max(1,player.totalLevel)+1)));
+if(player.deathCount>=_newThresh)player.deathCount=_newThresh-1;}
+// attackExpBonusにキャップを設定（totalLevel*10000を上限とする）
+{const _abCap=player.totalLevel*10000;
+if((player.attackExpBonus||0)>_abCap)player.attackExpBonus=_abCap;}
 applyRetroactiveLv100Bonuses();
 }
 
 // ============ レベル/ランク ============
 // 経験値閾値: 20000 × lv^3
 function getExpThreshold(lv){
-return Math.floor(20000*Math.pow(Math.max(1,lv),3));
+// 旧: 20000*lv^3 (爆発的増加) → 新: lv*(1+log10(lv+1))*1000 (一定ペース)
+return Math.floor(1000*Math.max(1,lv)*(1+Math.log10(Math.max(1,lv)+1)));
 }
 function checkLevelUp(){
 let leveled=false;
@@ -1564,6 +1573,8 @@ const _atkT0=performance.now();
 const _omni=(player.inventory[1000]||0)>0;const _omniMult=_omni?10:1;player.totalClicks+=_omniMult;comboHit+=_omniMult;player.attackExpBonus+=_omniMult;
 // 魂の研磨：攻撃のたびに核レベル×100の経験値を永続蓄積（attackExpBonus）に加算
 player.attackExpBonus+=(player.totalLevel||1)*100*_omniMult;
+// attackExpBonusキャップ（totalLevel*10000）
+{const _abCap=player.totalLevel*10000;if(player.attackExpBonus>_abCap)player.attackExpBonus=_abCap;}
 
 // === Geminiバフ：bonus/tb計算より前に適用してATK・HP両方を即時反映 ===
 let geminiBuffTag="";
@@ -1857,7 +1868,9 @@ const cutPct=BigInt(Math.floor(Math.random()*(101-Math.min(95,minCut)))+Math.min
 const mitig=eatk*(100n-cutPct)/100n>0n?eatk*(100n-cutPct)/100n:0n;
 const km=player.inventory[405]||0;const _ensTK=(player.killCount||0)+(player.kousaKillCount||0);const ens=(player.inventory[605]||0)>=1?Math.min(20,1+Math.log10(_ensTK+1)):1.0;
 const lv100ExpMult=1+(player.lv100ExpBonus||0)/100;
-const exp=Math.floor((Number(player.totalClicks)+player.totalLevel+km*100000+player.attackExpBonus)*ens*lv100ExpMult);
+const _atkBonusCap=player.totalLevel*10000;
+const _atkBonusClamped=Math.min(player.attackExpBonus||0,_atkBonusCap);
+const exp=Math.floor((player.totalLevel*100+km*500+Math.floor(_atkBonusClamped/1000))*ens*lv100ExpMult);
 player.hadoExpAccum+=exp;
 if(curHP>mitig){
 player.deathCount+=exp;logH+=`<div><span style="color:#28a745;font-weight:bold;">敵の反撃！${fmtV(mitig)} ダメージ。障壁展開！</span></div>`+getGuaranteedDrop();
@@ -1873,7 +1886,9 @@ checkLevelUp();
 if(isKousa&&currentBossHP>0n&&kousaBossData){
 const km=player.inventory[405]||0;const _ensTK=(player.killCount||0)+(player.kousaKillCount||0);const ens=(player.inventory[605]||0)>=1?Math.min(20,1+Math.log10(_ensTK+1)):1.0;
 const lv100ExpMult2=1+(player.lv100ExpBonus||0)/100;
-const exp=Math.floor((Number(player.totalClicks)+player.totalLevel+km*100000+player.attackExpBonus)*ens*lv100ExpMult2);
+const _atkBonusCap2=player.totalLevel*10000;
+const _atkBonusClamped2=Math.min(player.attackExpBonus||0,_atkBonusCap2);
+const exp=Math.floor((player.totalLevel*100+km*500+Math.floor(_atkBonusClamped2/1000))*ens*lv100ExpMult2);
 player.hadoExpAccum+=exp;player.deathCount+=exp;
 // 虹災の攻撃力：ボスHPの0.1%相当
 const kousaAtk=bossMaxHP/1000n;
@@ -2104,9 +2119,10 @@ const skills=[
 {name:"魂の研磨",capLv10:false,desc:"経験値ボーナスが向上。攻撃のたびに基礎値+1で永続蓄積。攻撃のたびに核レベル×100の経験値を追加獲得（核レベルは表記上限なし）。",hl:(()=>{
 const km=player.inventory[405]||0;
 const _hlTK=(player.killCount||0)+(player.kousaKillCount||0);const ens=(player.inventory[605]||0)>=1?Math.min(20,1+Math.log10(_hlTK+1)):1.0;
-const nbBonus=(player.totalLevel||1)*100;
-const total=Math.floor((Number(player.totalClicks)+player.totalLevel+km*100000+player.attackExpBonus)*ens);
-return`<span class="vow-tag">経験値：+${rlv+km*100000}</span><span class="vow-tag">【賢者：+${km*100000}】</span><span class="vow-tag" style="color:var(--growth);">【攻撃蓄積：+${(player.attackExpBonus||0).toLocaleString()}】</span><span class="vow-tag" style="color:#00d4ff;">【核Lv×100：+${nbBonus}/回】</span><span class="vow-tag" style="color:var(--gold);">現在1回: ${total.toLocaleString()}</span><span class="vow-tag" style="color:#f97316;">【レリ・エンス×${ens.toFixed(2)}】</span>`;
+const _abCapV=player.totalLevel*10000;
+const _abClampedV=Math.min(player.attackExpBonus||0,_abCapV);
+const total=Math.floor((player.totalLevel*100+km*500+Math.floor(_abClampedV/1000))*ens);
+return`<span class="vow-tag">経験値ベース：${(player.totalLevel*100).toLocaleString()}/回</span><span class="vow-tag" style="color:var(--growth);">【攻撃蓄積：+${Math.floor(_abClampedV/1000).toLocaleString()}】</span><span class="vow-tag">【賢者：+${km*500}】</span><span class="vow-tag" style="color:var(--gold);">現在1回: ${total.toLocaleString()}</span><span class="vow-tag" style="color:#f97316;">【レリ・エンス×${ens.toFixed(2)}】</span>`;
 })()},
 {name:"死を刻む",capLv10:false,desc:"経験を積むたびに最終ダメージを増加させる。再起Lvが高いほどさらに増加。",hl:(()=>{const kf=(player.inventory[406]||0)*0.00004;const lvB=Math.log10((player.totalLevel||1)+1)*0.01;const total=calcFinalDmgMult()*_vowBonus.mult;return`<span class="vow-tag">最終ダメ倍率：x${total.toFixed(4)}</span><span class="vow-tag">【死神：+${(kf*100).toFixed(4)}%】</span><span class="vow-tag" style="color:var(--gold);">【再起Lv：+${(lvB*100).toFixed(4)}%】</span>`})()}
 // 共鳴＝災核融合はクリア後のみ表示
