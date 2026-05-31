@@ -1006,7 +1006,7 @@ mimicHP=100;
 bossType="mimic";
 // ミミック出現中はメインボスHPを保持（虹災と同じ方式）
 player.mainBossMaxHP=player.mainBossMaxHP||player.bossMaxHP;
-addLog(`<div><span class="c-mimic">💎【ジュエルミミック出現！】宝箱に擬態した謎の生命体……HPは100だが、ダメージはすべて1になる。100回攻撃して撃破せよ！</span></div>`);
+addLog(`<div><span class="c-mimic">💎【ジュエルミミック出現！】宝箱に擬態した謎の生命体……すべてのダメージは1になる</span></div>`);
 updateBossHeaderStyle();
 saveGame();triggerUIUpdate();
 }
