@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RELICORE - v1.39</title>
+<title>RELICORE - v1.40</title>
 <style>
 :root{--bg:#fff;--panel:#f8f9fa;--border:#dee2e6;--primary:#007bff;--text:#212529;--hp:#dc3545;--dark:#1a1a1a;--gold:#d4af37;--growth:#ff69b4;--relic-purple:#6610f2;--relic-bg:#fcfaff;--cosmic-blue:#00d4ff;--gemini:#4b0082;--edel:#22c55e;--neria:#3b82f6;--nox:#a855f7;--lilith:#ec4899;--valka:#f97316;--igna:#ef4444;--lux:#eab308;--magmel:linear-gradient(135deg,#ef4444,#f97316,#eab308,#22c55e,#3b82f6,#a855f7,#ec4899);--mimic:#2d9e5f}
 *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;box-sizing:border-box}
@@ -362,7 +362,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
 <div class="privacy-link" onclick="openPolicy()">プライバシーポリシー</div>
 </div>
 </div>
-<div class="ver-footer">RELICORE v1.39</div>
+<div class="ver-footer">RELICORE v1.40</div>
 
 <script>
 const SAVE_KEY="relicore_player_data";
@@ -824,7 +824,7 @@ const d=getRankSymbolData();
 if(!d)return"";
 const txt=d.count<=9?d.symbol.repeat(d.count):`${d.symbol}${d.count.toLocaleString()}`;
 if(d.color==="rainbow"){
-  return`<span style="background:var(--magmel);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:bold;">${txt}</span>`;
+ return`<span style="background:var(--magmel);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:bold;">${txt}</span>`;
 }
 return`<span style="color:${d.color};font-weight:bold;">${txt}</span>`;
 }
@@ -883,11 +883,11 @@ function _getRelicBonusCacheKey(){
 const _oaFp=(s=>s.length+"|"+(s.length>4?s.slice(-4):s))(player.omegaAtkBig||"0");
 const _ohFp=(s=>s.length+"|"+(s.length>4?s.slice(-4):s))(player.omegaHpBig||"0");
 return _highStarRelicSig+"|"+_oaFp+"|"+_ohFp+
- "|"+(player.compressedAtkBig||"0")+"|"+(player.compressedHpBig||"0")+
- "|"+(player.inventory[611]||0)+"|"+(player.inventory[711]||0)+
- "|"+(player.inventory[603]||0)+"|"+(player.inventory[804]||0)+
- "|"+(+player.hasHado)+(+player.hasGreatHado)+(+player.hasDivineGuide)+
- +(+player.hasWorldOrder)+(+player.hasCrown)+(+player.hasMeta);
+"|"+(player.compressedAtkBig||"0")+"|"+(player.compressedHpBig||"0")+
+"|"+(player.inventory[611]||0)+"|"+(player.inventory[711]||0)+
+"|"+(player.inventory[603]||0)+"|"+(player.inventory[804]||0)+
+"|"+(+player.hasHado)+(+player.hasGreatHado)+(+player.hasDivineGuide)+
++(+player.hasWorldOrder)+(+player.hasCrown)+(+player.hasMeta);
 }
 function invalidateRelicBonusCache(){_relicBonusCache=null;_relicBonusCacheKey="";}
 function getRelicBonus(){
@@ -1134,11 +1134,11 @@ isModalOpen=true;
 // 出現モーダルのサブテキストを討伐数に応じて更新
 const _subEl=document.getElementById("zeus-appear-sub");
 if(_subEl){
- if(kills===0){
-   _subEl.textContent="Ek=Zeus, The Absolute Pinnacle";
- }else{
-   _subEl.innerHTML=`<span style="color:#ff4444;font-weight:bold;">第${kills+1}体目 — HP ×1000<sup>${kills}</sup> の強化体</span>`;
- }
+if(kills===0){
+  _subEl.textContent="Ek=Zeus, The Absolute Pinnacle";
+}else{
+  _subEl.innerHTML=`<span style="color:#ff4444;font-weight:bold;">第${kills+1}体目 — HP ×1000<sup>${kills}</sup> の強化体</span>`;
+}
 }
 document.getElementById("zeus-appear-modal").style.display="flex";
 saveGame();triggerUIUpdate();
@@ -1460,7 +1460,7 @@ function showOrderAwakenModal(){isModalOpen=true;document.getElementById("order-
 function closeOrderAwakenModal(){player.inventory[999]=1;player.rebalanceSeen=true;document.getElementById("order-awaken-modal").style.display="none";isModalOpen=false;saveGame();triggerUIUpdate();}
 
 // ===== 宝玉解放チェック（72種コンプリート時に1度だけ発動） =====
-const GEM_IDS=[611,711,811,911];
+const GEM_IDS=[611,711,811,911,1101,1102,1103,1104];
 // コレクション対象遺物（宝玉除く）= ★1〜★9 + 特殊(再起の誓い/秩序のリバランス) = 72種
 function getNormalRelics(){
 return RELIC_MASTER.filter(m=>!m.gem);
@@ -1664,16 +1664,16 @@ function activateDisasterStar(bonus){
 // === 発動前チェック: 消費100個の遺物ボーナスより上昇量が少ない場合はスキップ ===
 const _r311=RELIC_MAP.get(311);
 if(_r311){
- let _cAtk=(_r311.atk||0)*100,_cHp=(_r311.hp||0)*100;
- if(player.hasDivineGuide){_cAtk*=100;_cHp*=100;}
- const _hasReg=(player.inventory[603]||0)>0,_hasZan=(player.inventory[804]||0)>0;
- if(_hasReg){_cAtk*=1.5;_cHp*=1.5;}
- if(_hasZan){_cAtk*=1000;_cHp*=1000;}
- const _cb=Math.pow(2,bonus.compCount||0),_gm=greedMult();
- const _crystalTotal=safeBigInt(_cAtk*_cb*_gm)+safeBigInt(_cHp*_cb*_gm);
- const _atkGainPreview=player.baseAtk/100n>0n?player.baseAtk/100n:1n;
- const _hpGainPreview=player.baseHP/20n>0n?player.baseHP/20n:1n;
- if(_atkGainPreview+_hpGainPreview<_crystalTotal)return; // 損になるので発動しない
+let _cAtk=(_r311.atk||0)*100,_cHp=(_r311.hp||0)*100;
+if(player.hasDivineGuide){_cAtk*=100;_cHp*=100;}
+const _hasReg=(player.inventory[603]||0)>0,_hasZan=(player.inventory[804]||0)>0;
+if(_hasReg){_cAtk*=1.5;_cHp*=1.5;}
+if(_hasZan){_cAtk*=1000;_cHp*=1000;}
+const _cb=Math.pow(2,bonus.compCount||0),_gm=greedMult();
+const _crystalTotal=safeBigInt(_cAtk*_cb*_gm)+safeBigInt(_cHp*_cb*_gm);
+const _atkGainPreview=player.baseAtk/100n>0n?player.baseAtk/100n:1n;
+const _hpGainPreview=player.baseHP/20n>0n?player.baseHP/20n:1n;
+if(_atkGainPreview+_hpGainPreview<_crystalTotal)return; // 損になるので発動しない
 }
 player.inventory[311]-=100; // 100個消費
 // ATK +1%、HP +5% を baseAtk/baseHP に永続加算
@@ -1699,15 +1699,15 @@ let geminiBuffTag="";
 if(bossType==="kousa_gemini"){
 // baseAtkがキャップ未満の時のみバフを付与（指数爆発防止）
 if(geminiAtkCap>0n&&player.baseAtk<geminiAtkCap){
-  const gemAtkGain=player.baseAtk*20n/1000n>0n?player.baseAtk*20n/1000n:1n; // ×1.020相当
-  const gemHpGain=player.baseHP*40n/1000n>0n?player.baseHP*40n/1000n:1n;   // ×1.040相当
-  // キャップを超えないよう加算量を調整
-  const actualAtkGain=player.baseAtk+gemAtkGain>geminiAtkCap?geminiAtkCap-player.baseAtk:gemAtkGain;
-  player.baseAtk+=actualAtkGain;
-  player.baseHP+=gemHpGain;
-  geminiBuffTag=`<span class="c-gemini">【構文侵食】ATK+${fmtV(actualAtkGain)} HP+${fmtV(gemHpGain)}</span>`;
+ const gemAtkGain=player.baseAtk*20n/1000n>0n?player.baseAtk*20n/1000n:1n; // ×1.020相当
+ const gemHpGain=player.baseHP*40n/1000n>0n?player.baseHP*40n/1000n:1n;   // ×1.040相当
+ // キャップを超えないよう加算量を調整
+ const actualAtkGain=player.baseAtk+gemAtkGain>geminiAtkCap?geminiAtkCap-player.baseAtk:gemAtkGain;
+ player.baseAtk+=actualAtkGain;
+ player.baseHP+=gemHpGain;
+ geminiBuffTag=`<span class="c-gemini">【構文侵食】ATK+${fmtV(actualAtkGain)} HP+${fmtV(gemHpGain)}</span>`;
 }else if(geminiAtkCap>0n){
-  geminiBuffTag=`<span class="c-gemini">【構文侵食：上限到達】</span>`;
+ geminiBuffTag=`<span class="c-gemini">【構文侵食：上限到達】</span>`;
 }
 }
 
@@ -1848,8 +1848,11 @@ if(isOvermatched&&fd>RAW_ATK_CAP)fd=RAW_ATK_CAP;
 }
 
 if(fd<1n)fd=1n;
+
 // ミミック：全ダメージを1に固定
-if(isMimic){fd=1n;rescueFd=1n;}
+if(isMimic){
+  fd=1n;
+}
 
 // ===== maxDmg・lastDmg更新 =====
 // lastDmg は常に更新（次ボスHP計算の基準値として使用）
@@ -1903,10 +1906,10 @@ logH=`<div>${tags}</div>`+_dropResult.log;
 const _allTagsArr=(tags.match(/<span[^>]*>[\s\S]*?<\/span>/g)||[]);
 let _dispTags;
 if(_allTagsArr.length<=5){
-  _dispTags=tags;
+ _dispTags=tags;
 }else{
-  const _shuffled=_allTagsArr.slice().sort(()=>Math.random()-.5);
-  _dispTags=_shuffled.slice(0,5).join('')+`<span style="color:#888;font-size:.82em;">（他${_allTagsArr.length-5}スキル発動）</span>`;
+ const _shuffled=_allTagsArr.slice().sort(()=>Math.random()-.5);
+ _dispTags=_shuffled.slice(0,5).join('')+`<span style="color:#888;font-size:.82em;">（他${_allTagsArr.length-5}スキル発動）</span>`;
 }
 logH=`<div>${_dispTags}<span style="color:#07f;font-weight:bold;">攻撃！${fmtV(isRescue?rescueFd:fd)} ダメージ！</span>${isRescue?`<span style="font-size:.8em;color:#aaa;">（実効値：救済込み）</span>`:""}</div>`+_dropResult.log;
 }
@@ -1973,20 +1976,20 @@ if(!isKousa&&currentBossHP<1n&&!player.isCleared){comboHit=0;currentBossHP=bossM
 // 天輪（lux）割合ダメをrescueFd適用後に追加で削る（maxDmg非反映）
 if(luxDmg>0n&&currentBossHP>0n){
 if(luxDmg>=currentBossHP){
-  // luxDmgで撃破 → 撃破処理を呼ぶ
-  currentBossHP=0n;
-  comboHit=0;
-  if(isKousa){onKousaDefeat(logH);return;}
-  else if(player.isCleared){handleBossDefeat();}
-  else if((player.inventory[701]||0)>0){
-    player.killCount++;player.isCleared=true;enemyDisasterStarUsed=false;
-    player.hasCompressionCore=true;isModalOpen=true;
-    document.getElementById("clear-modal-title").innerText="神話の終焉";
-    document.getElementById("clear-modal-msg").innerHTML=`終末神アポカリス＝ティアは、あなたの放った一撃の前に霧散した。<br><br>しかし、その瞬間に所持していた<span style="color:var(--gold);font-weight:bold;">『パンドラの箱』</span>が激しく震え、蓋が跳ね上がる。<br><br>中から溢れ出したのは希望ではなく、底知れぬ混沌。<span style="color:#f44;font-weight:bold;">「溢れし災厄」</span>が今、世界を再び塗り潰そうとしている。<br><br><hr style="border:0;border-top:1px solid #444;margin:15px 0"><span style="color:var(--growth);">ここからはエンドレスモードです。遊んでくれてありがとうございます！</span>`;
-    document.getElementById("clear-modal").style.display="flex";
-  }else{currentBossHP=bossMaxHP;enemyDisasterStarUsed=false;}
+ // luxDmgで撃破 → 撃破処理を呼ぶ
+ currentBossHP=0n;
+ comboHit=0;
+ if(isKousa){onKousaDefeat(logH);return;}
+ else if(player.isCleared){handleBossDefeat();}
+ else if((player.inventory[701]||0)>0){
+   player.killCount++;player.isCleared=true;enemyDisasterStarUsed=false;
+   player.hasCompressionCore=true;isModalOpen=true;
+   document.getElementById("clear-modal-title").innerText="神話の終焉";
+   document.getElementById("clear-modal-msg").innerHTML=`終末神アポカリス＝ティアは、あなたの放った一撃の前に霧散した。<br><br>しかし、その瞬間に所持していた<span style="color:var(--gold);font-weight:bold;">『パンドラの箱』</span>が激しく震え、蓋が跳ね上がる。<br><br>中から溢れ出したのは希望ではなく、底知れぬ混沌。<span style="color:#f44;font-weight:bold;">「溢れし災厄」</span>が今、世界を再び塗り潰そうとしている。<br><br><hr style="border:0;border-top:1px solid #444;margin:15px 0"><span style="color:var(--growth);">ここからはエンドレスモードです。遊んでくれてありがとうございます！</span>`;
+   document.getElementById("clear-modal").style.display="flex";
+ }else{currentBossHP=bossMaxHP;enemyDisasterStarUsed=false;}
 }else{
-  currentBossHP-=luxDmg;
+ currentBossHP-=luxDmg;
 }
 }
 }
@@ -2247,18 +2250,18 @@ let _vowRenderKey="";
 let _vowNeedsRender=true;
 function _checkVowRenderKey(){
 const k=player.totalLevel+"|"+player.deathCount+"|"+(player.inventory[401]||0)+"|"+(player.inventory[402]||0)+
- "|"+(player.inventory[403]||0)+"|"+(player.inventory[404]||0)+"|"+(player.inventory[405]||0)+
- "|"+(player.inventory[406]||0)+"|"+(player.inventory[605]||0)+"|"+player.totalRelics+
- "|"+player.attackExpBonus+"|"+(player.killCount||0)+"|"+(player.kousaKillCount||0)+"|"+(player.zeusKillCount||0);
+"|"+(player.inventory[403]||0)+"|"+(player.inventory[404]||0)+"|"+(player.inventory[405]||0)+
+"|"+(player.inventory[406]||0)+"|"+(player.inventory[605]||0)+"|"+player.totalRelics+
+"|"+player.attackExpBonus+"|"+(player.killCount||0)+"|"+(player.kousaKillCount||0)+"|"+(player.zeusKillCount||0);
 // falseには絶対しない。trueにするだけ。リセットはrenderVow()内のみ
 if(k!==_vowRenderKey){_vowNeedsRender=true;_vowRenderKey=k;}
 }
 function renderVow(){
 _vowNeedsRender=false;
 _vowRenderKey=player.totalLevel+"|"+player.deathCount+"|"+(player.inventory[401]||0)+"|"+(player.inventory[402]||0)+
- "|"+(player.inventory[403]||0)+"|"+(player.inventory[404]||0)+"|"+(player.inventory[405]||0)+
- "|"+(player.inventory[406]||0)+"|"+(player.inventory[605]||0)+"|"+player.totalRelics+
- "|"+player.attackExpBonus+"|"+(player.killCount||0)+"|"+(player.kousaKillCount||0)+"|"+(player.zeusKillCount||0);
+"|"+(player.inventory[403]||0)+"|"+(player.inventory[404]||0)+"|"+(player.inventory[405]||0)+
+"|"+(player.inventory[406]||0)+"|"+(player.inventory[605]||0)+"|"+player.totalRelics+
+"|"+player.attackExpBonus+"|"+(player.killCount||0)+"|"+(player.kousaKillCount||0)+"|"+(player.zeusKillCount||0);
 const rlv=player.totalLevel,lv=Math.min(10,rlv);
 const _vowBonus=getRelicBonus();
 const nb=Math.min(50,Math.floor(rlv/10)*5),bc=Math.min(50,player.inventory[401]||0);
@@ -2417,8 +2420,8 @@ const hasR=(player.inventory[603]||0)>0,hasZ=(player.inventory[804]||0)>0;
 const curOmegaAtk=player.omegaAtkBig||"0",curOmegaHp=player.omegaHpBig||"0",curEvo=player.evolutionStack||0;
 // グローバルフラグ変化（hasR/hasZ/omegaAtk等）→フルリビルド
 const globalChanged=hasR!==_relicRenderCache.hasR||hasZ!==_relicRenderCache.hasZ
- ||curOmegaAtk!==_relicRenderCache.omegaAtk||curOmegaHp!==_relicRenderCache.omegaHp
- ||curEvo!==_relicRenderCache.evoStack;
+||curOmegaAtk!==_relicRenderCache.omegaAtk||curOmegaHp!==_relicRenderCache.omegaHp
+||curEvo!==_relicRenderCache.evoStack;
 // ソート順取得
 const sorted=Object.entries(player.inventory).filter(([,v])=>v>0).sort(([a],[b])=>{
 const ra=RELIC_MAP.get(parseInt(a)),rb=RELIC_MAP.get(parseInt(b));
@@ -2465,8 +2468,9 @@ const _normalRelics=getNormalRelics();
 const _normalCnt=_normalRelics.filter(m=>player.everOwned[m.id]).length;
 const _gemCnt=GEM_IDS.filter(id=>(player.inventory[id]||0)>0).length;
 const _totalOwned=player.gemUnlocked?_normalCnt+_gemCnt:_normalCnt;
-const _totalMax=player.gemUnlocked?76:72;
-document.getElementById("st-collection").textContent=`${_totalOwned}/${_totalMax}`;
+const _totalMax=player.gemUnlocked
+ ? _normalRelics.length + GEM_IDS.length
+ : _normalRelics.length;document.getElementById("st-collection").textContent=`${_totalOwned}/${_totalMax}`;
 document.getElementById("st-comp-count").textContent=b.compCount;
 document.getElementById("st-comp-bonus").textContent="x"+b.compBonus.toFixed(2);
 document.getElementById("st-kousa-kill").textContent=fmtV(player.kousaKillCount||0);
