@@ -4,9 +4,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RELICORE - v1.39</title>
+<title>RELICORE - v1.38.1</title>
 <style>
-:root{--bg:#fff;--panel:#f8f9fa;--border:#dee2e6;--primary:#007bff;--text:#212529;--hp:#dc3545;--dark:#1a1a1a;--gold:#d4af37;--growth:#ff69b4;--relic-purple:#6610f2;--relic-bg:#fcfaff;--cosmic-blue:#00d4ff;--gemini:#4b0082;--edel:#22c55e;--neria:#3b82f6;--nox:#a855f7;--lilith:#ec4899;--valka:#f97316;--igna:#ef4444;--lux:#eab308;--magmel:linear-gradient(135deg,#ef4444,#f97316,#eab308,#22c55e,#3b82f6,#a855f7,#ec4899)}
+:root{--bg:#fff;--panel:#f8f9fa;--border:#dee2e6;--primary:#007bff;--text:#212529;--hp:#dc3545;--dark:#1a1a1a;--gold:#d4af37;--growth:#ff69b4;--relic-purple:#6610f2;--relic-bg:#fcfaff;--cosmic-blue:#00d4ff;--gemini:#4b0082;--edel:#22c55e;--neria:#3b82f6;--nox:#a855f7;--lilith:#ec4899;--valka:#f97316;--igna:#ef4444;--lux:#eab308;--magmel:linear-gradient(135deg,#ef4444,#f97316,#eab308,#22c55e,#3b82f6,#a855f7,#ec4899);--mimic:#2d9e5f}
 *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-serif;margin:0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 .btn-attack,.clickable-stat,.story-btn,.cosmic-btn,.btn-serial,.btn-reset{touch-action:manipulation}
@@ -132,6 +132,11 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
 .attack-kousa-lux{background:#a16207!important;box-shadow:0 4px 0 #92400e!important}
 .attack-kousa-magmel{background:linear-gradient(90deg,#ef4444,#a855f7)!important;box-shadow:0 4px 0 #581c87!important}
 .attack-kousa-gemini{background:#4b0082!important;box-shadow:0 4px 0 #2e0057!important}
+.attack-mimic{background:linear-gradient(135deg,#1a6b3a,#2d9e5f)!important;box-shadow:0 4px 0 #0f3d21!important;animation:mimic-shimmer 1.5s ease-in-out infinite!important}
+.hpfill-mimic{background:linear-gradient(90deg,#0f3d21,#2d9e5f)!important}
+@keyframes mimic-shimmer{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3) drop-shadow(0 0 6px #7fff7f)}}
+.badge-mimic{background:rgba(45,158,95,.3);color:#7fff7f;border:1px solid #2d9e5f}
+.c-mimic{color:#7fff7f;font-weight:bold}
 #log{height:400px;font-size:.82em;background:#fafafa;border:1px solid var(--border);padding:10px;overflow-y:auto;border-radius:8px;line-height:1.4}
 .log-set{border-bottom:1px solid #eee;padding-bottom:8px;margin-bottom:8px}
 .vow-list-container{display:grid;grid-template-columns:1fr;gap:10px}
@@ -357,7 +362,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,sans-s
 <div class="privacy-link" onclick="openPolicy()">プライバシーポリシー</div>
 </div>
 </div>
-<div class="ver-footer">RELICORE v1.39</div>
+<div class="ver-footer">RELICORE v1.38.1</div>
 
 <script>
 const SAVE_KEY="relicore_player_data";
@@ -369,7 +374,7 @@ let isModalOpen=false,needsUIUpdate=false;
 let lastDmg=0n; // 直前の与ダメージ（ボスHP計算に使用）
 
 // ============ ボス状態管理 ============
-// bossType: "main"(終末神/溢れし災厄) | "kousa_edel" | "kousa_neria" | ... | "kousa_gemini"
+// bossType: "main"(終末神/溢れし災厄) | "kousa_edel" | "kousa_neria" | ... | "kousa_gemini" | "mimic"
 let bossType="main";
 let kousaBossData=null; // 現在の虹災ボス定義オブジェクト
 let currentBossHP=BOSS_MAX_HP_BASE; // BigInt
@@ -454,6 +459,14 @@ const RELIC_911=RELIC_MASTER.find(m=>m.id===911);
 const GEM_MAP={8:811,7:711,6:611};
 // ===== 終極のエク＝ゼウス定数 =====
 const ZEUS_BASE_HP=BigInt("99999"+"0".repeat(313));
+// ============ ジュエルシリーズ遺物 ============
+const JEWEL_RELICS=[
+{id:1101,star:5,name:"メモリークォーツ",atk:0,hp:0,gem:true,jewel:true,desc:"獲得経験値増加。1個につき+0.001%（上限なし）。"},
+{id:1102,star:8,name:"星呼石レゾナ",atk:0,hp:0,gem:true,jewel:true,desc:"ジュエルミミックの出現率UP。1個につき+0.01%（上限+10%）。"},
+{id:1103,star:8,name:"幻晶石イリス",atk:0,hp:0,gem:true,jewel:true,desc:"ジュエルミミックのドロップレア度UP。1個につき+0.01%（上限+10%）。"},
+{id:1104,star:9,name:"竜輝石ゼニス",atk:0,hp:0,gem:true,jewel:true,desc:"ジュエルミミック討伐時のジュエル系アイテム個数増加（上限+10個）。"}
+];
+JEWEL_RELICS.forEach(r=>RELIC_MAP.set(r.id,r));
 const ZEUS_RELIC={id:1000,star:999,name:"全知全能",atk:0,hp:0,desc:"万物の理を超え、終極に到達した者の証明。効果：1回の攻撃で10回分の行動を行う（攻撃回数・報酬獲得数が10倍）。"};
 RELIC_MAP.set(1000,ZEUS_RELIC);
 const ZEUS_LEVEL_REQ=1000000; // 再起Lv100万で攻撃解禁
@@ -464,7 +477,7 @@ inventory:{0:1},everOwned:{0:true},deathCount:0,hadoExpAccum:0,totalLevel:1,base
 storySeen:false,rebalanceSeen:false,hasHado:false,hasGreatHado:false,hasDivineGuide:false,
 hasWorldOrder:false,hasCrown:false,hasMeta:false,isUra:false,
 bossMaxHP:BOSS_MAX_HP_BASE.toString(),totalClicks:0,totalRelics:0,killCount:0,
-isCleared:false,soujinCounter:0,evolutionStack:0,omegaCharge:0n,kousaKillCount:0,
+isCleared:false,soujinCounter:0,evolutionStack:0,omegaCharge:0n,kousaKillCount:0,mimicKillCount:0,
 hasCompressionCore:false,compressionPower:0,compressedAtk:0,compressedHp:0,
 attackExpBonus:0,
 hasAutoPrivilege:false,autoSpeed:1,
@@ -606,7 +619,7 @@ erosionStack,waterAccumDmg:waterAccumDmg.toString(),luxHitCounter,
 kousaBossId:kousaBossData?kousaBossData.id:null,
 compressedAtkBig:player.compressedAtkBig||"0",compressedHpBig:player.compressedHpBig||"0",
 zeusPreBossHP:zeusPreBossHP||null,
-gameVersion:"1.38"};
+gameVersion:"1.39"};
 // BigIntはJSON非対応なのでstring保存
 localStorage.setItem(SAVE_KEY,JSON.stringify(d));
 }
@@ -653,6 +666,9 @@ player.lv100HpBonus=p.lv100HpBonus||"0";
 player.lv100ExpBonus=p.lv100ExpBonus||0;
 player.lv100MilestonesApplied=p.lv100MilestonesApplied||0;
 player.zeusKillCount=p.zeusKillCount||0;
+player.mimicKillCount=p.mimicKillCount||0;
+// ジュエル遺物ロード（旧セーブ互換）
+JEWEL_RELICS.forEach(r=>{if(p.inventory&&p.inventory[r.id]){player.inventory[r.id]=p.inventory[r.id];player.everOwned[r.id]=true;}});
 zeusPreBossHP=p.zeusPreBossHP||null;
 // lv100AtkBonus/HpBonus 異常値補正：累積値がbaseAtk/baseHPを超える場合はN回複利から逆算して再設定
 {const _la=BigInt(player.lv100AtkBonus||"0"),_lh=BigInt(player.lv100HpBonus||"0");
@@ -957,6 +973,105 @@ let rv=Math.random()*100,cum=0;
 for(const e of KOUSA_RATES){cum+=e.r;if(rv<=cum)return KOUSA_BOSSES.find(b=>b.id===e.id);}
 return KOUSA_BOSSES.find(b=>b.id==="edel");
 }
+// ============ ジュエルミミック ============
+let mimicHP=0; // 現在HP（整数、最大100）
+
+function getMimicSpawnRate(){
+// 基本5% + レゾナ(1102)による加算（0.01%/個、上限+10%）
+const rezCnt=player.inventory[1102]||0;
+const bonus=Math.min(0.10,rezCnt*0.0001);
+return 0.05+bonus;
+}
+
+function getMimicIrisBonus(){
+// イリス(1103)によるレア率加算（0.01%/個、上限+10%）
+return Math.min(0.10,(player.inventory[1103]||0)*0.0001);
+}
+
+function getMimicZenithBonus(){
+// ゼニス(1104)によるドロップ個数加算（1個/個、上限+10個）
+return Math.min(10,player.inventory[1104]||0);
+}
+
+function trySpawnMimic(){
+// メインボス戦中のみ出現（虹災・ゼウス・ミミック戦中は出ない）
+if(bossType!=="main")return;
+// マグメルを1度でも討伐していないと出現しない
+if(!(player.residue&&player.residue.magmel>0)&&!(player.inventory[908]>0))return;
+if(Math.random()<getMimicSpawnRate())spawnMimic();
+}
+
+function spawnMimic(){
+mimicHP=100;
+bossType="mimic";
+// ミミック出現中はメインボスHPを保持（虹災と同じ方式）
+player.mainBossMaxHP=player.mainBossMaxHP||player.bossMaxHP;
+addLog(`<div><span class="c-mimic">💎【ジュエルミミック出現！】宝箱に擬態した謎の生命体……HPは100だが、ダメージはすべて1になる。100回攻撃して撃破せよ！</span></div>`);
+updateBossHeaderStyle();
+saveGame();triggerUIUpdate();
+}
+
+function getMimicDropLog(){
+// ドロップ計算
+// 基本確率: メモリークォーツ97.5%、レゾナ1.24%、イリス1.24%、ゼニス0.02%→合計99.99%→調整: 97.52%, 1.24%, 1.24%, 0.2%→ゼニス0.2%でOK
+// 合計: 97.52+1.24+1.24+0.2 = 100.0(調整: メモリークォーツ = 100 - 1.24 - 1.24 - 0.2 = 97.32)
+// 指定通り: メモリークォーツ97.5%, レゾナ1.24%, イリス1.24%, ゼニス0.2%, 残り(0.02%)はメモリークォーツに吸収
+// 実際: 97.32+1.24+1.24+0.2=100.0
+const irisBonus=getMimicIrisBonus(); // 0〜0.10
+// irisボーナス分だけレア枠を強化（メモリークォーツ→レアへ振替）
+// レア枠基本: レゾナ1.24%, イリス1.24%, ゼニス0.2%
+// イリス所持でレア率全体UP（メモリークォーツ比率を下げてレア枠へ）
+const rareTotal=2.48+0.2+irisBonus*100; // irisボーナスをパーセントに
+const quartzRate=Math.max(0,100-rareTotal);
+// ゼニス個数ボーナス
+const zenBonus=getMimicZenithBonus();
+const baseDropCount=1+zenBonus;
+
+let fe=[];
+let gained={};
+for(let i=0;i<baseDropCount;i++){
+const rv=Math.random()*100;
+let id;
+if(rv<0.2){id=1104;} // ゼニス
+else if(rv<0.2+1.24){id=1103;} // イリス
+else if(rv<0.2+1.24+1.24){id=1102;} // レゾナ
+else{id=1101;} // メモリークォーツ
+// irisボーナスによるレアシフト（既にiris所持で確率変動済み）
+player.inventory[id]=(player.inventory[id]||0)+1;
+player.totalRelics++;
+player.everOwned[id]=true;
+gained[id]=(gained[id]||0)+1;
+}
+_highStarRelicSig++;invalidateRelicBonusCache();
+// ログ生成
+Object.entries(gained).forEach(([id,cnt])=>{
+const r=RELIC_MAP.get(parseInt(id));
+if(!r)return;
+const col=id=="1104"?"#00e5ff":id=="1103"?"#c084fc":id=="1102"?"#ffd700":"#7fff7f";
+fe.push(`<span style="color:${col};font-weight:bold;">★${r.star} ${r.name}×${cnt}</span>`);
+});
+return fe.length?`<div style="font-size:.82em;">💎 ジュエル獲得：${fe.join("、")}</div>`:"";
+}
+
+function onMimicDefeat(logH){
+player.mimicKillCount=(player.mimicKillCount||0)+1;
+mimicHP=0;
+bossType="main";
+// メインボスHP復元
+const _restoredHP=player.mainBossMaxHP?BigInt(player.mainBossMaxHP):BigInt(player.bossMaxHP);
+player.bossMaxHP=_restoredHP.toString();
+_bossMaxHPBigLive=_restoredHP;
+player.mainBossMaxHP=null;
+currentBossHP=_restoredHP;
+const dropLog=getMimicDropLog();
+logH+=`<div><span class="c-mimic">💎【ジュエルミミック討伐！】(累計${player.mimicKillCount}体)</span></div>`+dropLog;
+addLog(logH);
+applySeisenEffect();
+updateBossHeaderStyle();
+if(!player.gemUnlocked)checkGemUnlock();
+saveGame();triggerUIUpdate();
+}
+
 function trySpawnKousa(){if(Math.random()<0.50)spawnKousa();}
 function spawnKousa(){
 kousaBossData=selectKousaBoss();
@@ -1446,6 +1561,7 @@ player.totalRelics+=n;
 return`<div style="font-size:.82em;">【狼煙】${Object.entries(g).map(([id,c])=>{const m=RELIC_MAP.get(parseInt(id));return m?`<span class="c${m.star}">★${m.star} ${m.name}${c>1?"×"+c:""}</span>`:"";}).join("、")}</div>`;
 }
 function getDropLog(count){
+count=Math.min(count,80+(player.inventory[911]||0));
 const raw=getCurrentDropRates(),tp=Object.values(raw).reduce((s,i)=>s+i.p,0);
 const rates={};for(let s in raw)rates[s]={p:(raw[s].p/tp)*100,cond:raw[s].cond};
 // レート配列をループ外で固定配列化（forループ高速化）
@@ -1599,8 +1715,9 @@ const bonus=getRelicBonus();
 const tb=omegaApply(player.baseAtk+bonus.atk,player.baseHP+bonus.hp);
 const skillM=calcFinalDmgMult();
 const bossMaxHP=_bossMaxHPBigLive!==null?_bossMaxHPBigLive:BOSS_MAX_HP_BASE;
-const isKousa=bossType!=="main"&&bossType!=="zeus";
+const isKousa=bossType!=="main"&&bossType!=="zeus"&&bossType!=="mimic";
 const isZeus=bossType==="zeus";
+const isMimic=bossType==="mimic";
 
 // ===== ゼウス戦専用処理 =====
 if(isZeus){
@@ -1731,6 +1848,8 @@ if(isOvermatched&&fd>RAW_ATK_CAP)fd=RAW_ATK_CAP;
 }
 
 if(fd<1n)fd=1n;
+// ミミック：全ダメージを1に固定
+if(isMimic){fd=1n;rescueFd=1n;}
 
 // ===== maxDmg・lastDmg更新 =====
 // lastDmg は常に更新（次ボスHP計算の基準値として使用）
@@ -1772,7 +1891,7 @@ tags+=geminiBuffTag;
 const lv=Math.min(10,player.totalLevel);
 // 夢幻宝玉(911): 1個につきドロップ上限+1
 const _mugenCnt=player.inventory[911]||0;
-const _dropCap=100+_mugenCnt;
+const _dropCap=80+_mugenCnt;
 const dropN=Math.min(_dropCap,lv+Math.floor(player.totalLevel/10)*5+Math.min(50,player.inventory[401]||0));
 const _dropResult=getDropLog(_omni?dropN*10:dropN);
 let logH;
@@ -1796,6 +1915,21 @@ logH=`<div>${_dispTags}<span style="color:#07f;font-weight:bold;">攻撃！${fmt
 
 // === ボスHP処理（シールド中はスキップ）===
 if(!shieldBlocked){
+// ===== ミミック撃破判定（HP整数管理） =====
+if(isMimic){
+mimicHP=Math.max(0,mimicHP-1);
+if(mimicHP<=0){
+comboHit=0;
+onMimicDefeat(logH);
+return;
+}
+// ミミック生存中はEXP加算なし・反撃なし
+logH=`<div><span class="c-mimic">💎 ミミックに攻撃！残りHP: ${mimicHP}/100</span></div>`;
+addLog(logH);
+_attackSaveCounter++;if(_attackSaveCounter>=10){saveGame();_attackSaveCounter=0;}
+triggerUIUpdate();
+return;
+}
 // ===== ゼウス撃破判定（救済なし・通常fdのみ）=====
 if(isZeus){
 if(fd>=currentBossHP){
@@ -1875,7 +2009,9 @@ const _atkBonusClamped=Math.min(player.attackExpBonus||0,_atkBonusCap);
 // hadoExpAccum(波動蓄積)はens/lv100ExpMult込みの従来式
 const expHado=Math.floor((player.totalLevel*100+km*500+Math.floor(_atkBonusClamped/1000))*ens*lv100ExpMult);
 // deathCount(LvUP経験値)はtotalLevel*100固定 — ens/multの乗算を除外してペースを安定させる
-const expDeath=player.totalLevel*100;
+const _qtzCnt=player.inventory[1101]||0;
+const _qtzMult=1+_qtzCnt*0.00001; // 0.001%/個
+const expDeath=Math.floor(player.totalLevel*100*_qtzMult);
 player.hadoExpAccum+=expHado;
 if(curHP>mitig){
 player.deathCount+=expDeath;logH+=`<div><span style="color:#28a745;font-weight:bold;">敵の反撃！${fmtV(mitig)} ダメージ。障壁展開！</span></div>`+getGuaranteedDrop();
@@ -1894,7 +2030,9 @@ const lv100ExpMult2=1+(player.lv100ExpBonus||0)/100;
 const _atkBonusCap2=player.totalLevel*10000;
 const _atkBonusClamped2=Math.min(player.attackExpBonus||0,_atkBonusCap2);
 const expHado2=Math.floor((player.totalLevel*100+km*500+Math.floor(_atkBonusClamped2/1000))*ens*lv100ExpMult2);
-const expDeath2=player.totalLevel*100;
+const _qtzCnt2=player.inventory[1101]||0;
+const _qtzMult2=1+_qtzCnt2*0.00001;
+const expDeath2=Math.floor(player.totalLevel*100*_qtzMult2);
 player.hadoExpAccum+=expHado2;player.deathCount+=expDeath2;
 // 虹災の攻撃力：ボスHPの0.1%相当
 const kousaAtk=bossMaxHP/1000n;
@@ -2012,6 +2150,8 @@ if(!player.hasFusionCore){player.hasFusionCore=true;addLog(`<div><span style="co
 player.residue.total++;
 // 聖閃の理：新ボス出現時に発動
 applySeisenEffect();
+// ミミック出現抽選
+trySpawnMimic();
 // 虹災割り込み抽選（30%）
 trySpawnKousa();
 // ゼウス割り込み抽選（0.001%）- 虹災が出なかった場合のみ
@@ -2055,7 +2195,12 @@ nameEl.style.color="#888";
 }else if(isZeusUI){
 nameEl.innerHTML=`終極のエク＝ゼウス<span class='boss-type-badge' style='background:rgba(245,197,24,.2);color:#f5c518;border:1px solid #f5c518;'>終極</span>`;
 nameEl.style.color="var(--zeus-gold)";
-}else if(isKousa&&kousaBossData){
+}else if(bossType==="mimic"){
+fill.className="hpfill-mimic";
+btn.className="btn-attack attack-mimic";
+nameEl.style.color="var(--mimic)";
+nameEl.textContent="💎 ジュエルミミック";
+}else if(kousaBossData){
 const bdg=bossType==="kousa_gemini"?`<span class='boss-type-badge badge-gemini'>Gemini</span>`:`<span class='boss-type-badge badge-kousa'>厄災</span>`;
 nameEl.innerHTML=kousaBossData.name+bdg;
 nameEl.style.color=kousaBossData.colorVar;
@@ -2247,7 +2392,11 @@ let gemEffectHtml="";
 if(m.id===611){const mv=1+0.01*cnt;gemEffectHtml=`<span style="color:${gemColor};font-weight:bold;font-size:1.1em;">全遺物効果 ×${mv.toFixed(2)}</span><span class="relic-desc-line" style="color:#aaa;">次の1個で ×${(mv+0.01).toFixed(2)}</span>`;}
 else if(m.id===711){const mv=1+0.50*Math.pow(cnt,0.6);const nv=1+0.50*Math.pow(cnt+1,0.6);gemEffectHtml=`<span style="color:${gemColor};font-weight:bold;font-size:1.1em;">ATK/HP ×${mv.toFixed(3)}</span><span class="relic-desc-line" style="color:#aaa;">次の1個で +${(nv-mv).toFixed(4)} → ×${nv.toFixed(3)}</span>`;}
 else if(m.id===811){gemEffectHtml=`<span style="color:${gemColor};font-weight:bold;font-size:1.1em;">ダメージ上限 ATK×${100+cnt}</span><span class="relic-desc-line" style="color:#aaa;">次の1個で +1% → ×${100+cnt+1}倍</span>`;}
-else if(m.id===911){gemEffectHtml=`<span style="color:${gemColor};font-weight:bold;font-size:1.1em;">ドロップ上限 ${100+cnt}個/攻撃</span><span class="relic-desc-line" style="color:#aaa;">次の1個で +1 → ${100+cnt+1}個</span>`;}
+else if(m.id===911){gemEffectHtml=`<span style="color:${gemColor};font-weight:bold;font-size:1.1em;">ドロップ上限 ${80+cnt}個/攻撃</span><span class="relic-desc-line" style="color:#aaa;">次+1 → ${80+cnt+1}個</span>`;}
+else if(m.id===1101){const pct=(cnt*0.001).toFixed(3);gemEffectHtml=`<span style="color:${gemColor};font-weight:bold;font-size:1.1em;">経験値+${pct}%</span><span class="relic-desc-line" style="color:#aaa;">次+1個で +${((cnt+1)*0.001).toFixed(3)}%</span>`;}
+else if(m.id===1102){const up=Math.min(10,+(cnt*0.01).toFixed(2));gemEffectHtml=`<span style="color:${gemColor};font-weight:bold;font-size:1.1em;">ミミック出現率 +${up}%（基本5%+${up}%）</span><span class="relic-desc-line" style="color:#aaa;">上限+10%まで</span>`;}
+else if(m.id===1103){const up=Math.min(10,+(cnt*0.01).toFixed(2));gemEffectHtml=`<span style="color:${gemColor};font-weight:bold;font-size:1.1em;">ミミックドロップレア度 +${up}%</span><span class="relic-desc-line" style="color:#aaa;">上限+10%まで</span>`;}
+else if(m.id===1104){const bonus=Math.min(10,cnt);gemEffectHtml=`<span style="color:${gemColor};font-weight:bold;font-size:1.1em;">ジュエルドロップ +${bonus}個（合計${1+bonus}個）</span><span class="relic-desc-line" style="color:#aaa;">上限+10個まで</span>`;}
 else if(m.gemBase){const gv=1+m.gemBase*Math.pow(cnt,0.6);const gnv=1+m.gemBase*Math.pow(cnt+1,0.6);gemEffectHtml=`<span style="color:${gemColor};font-weight:bold;font-size:1.1em;">倍率 ×${gv.toFixed(3)}</span><span class="relic-desc-line" style="color:#aaa;">次+${(gnv-gv).toFixed(4)}</span>`;}
 return`<div class="relic-card ${cl2}" style="border-color:${gemColor};"><div class="relic-name"><span style="color:${gemColor};font-weight:bold;">★${m.star} ${m.name} ×${cnt.toLocaleString()}</span></div><div class="relic-effect-box">${gemEffectHtml}<span class="relic-desc-line">${m.desc}</span></div></div>`;
 }
