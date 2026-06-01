@@ -1570,7 +1570,7 @@ player.totalRelics+=n;
 return`<div style="font-size:.82em;">【狼煙】${Object.entries(g).map(([id,c])=>{const m=RELIC_MAP.get(parseInt(id));return m?`<span class="c${m.star}">★${m.star} ${m.name}${c>1?"×"+c:""}</span>`:"";}).join("、")}</div>`;
 }
 function getDropLog(count){
-count=Math.min(count,80+(player.inventory[911]||0));
+count=Math.min(count,100+(player.inventory[911]||0));
 const raw=getCurrentDropRates(),tp=Object.values(raw).reduce((s,i)=>s+i.p,0);
 const rates={};for(let s in raw)rates[s]={p:(raw[s].p/tp)*100,cond:raw[s].cond};
 // レート配列をループ外で固定配列化（forループ高速化）
@@ -1903,7 +1903,7 @@ tags+=geminiBuffTag;
 const lv=Math.min(10,player.totalLevel);
 // 夢幻宝玉(911): 1個につきドロップ上限+1
 const _mugenCnt=player.inventory[911]||0;
-const _dropCap=80+_mugenCnt;
+const _dropCap=100+_mugenCnt;
 const dropN=Math.min(_dropCap,lv+Math.floor(player.totalLevel/10)*5+Math.min(50,player.inventory[401]||0));
 const _dropResult=getDropLog(_omni?dropN*10:dropN);
 let logH;
